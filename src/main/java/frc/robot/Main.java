@@ -7,7 +7,17 @@ package frc.robot;
 import edu.wpi.first.wpilibj.RobotBase;
 
 public final class Main {
-  private Main() {}
+  private Main() {
+
+    //    **** LEGEND ****   //
+    //     k - Constant      //
+    //     s - Subsystem     //
+    //     m - Motor         //
+    //     e - Encoder       //
+    //     w - Switch        //
+    //     j - Joystick      //
+
+  }
 
   public static void main(String... args) {
     RobotBase.startRobot(Robot::new);
