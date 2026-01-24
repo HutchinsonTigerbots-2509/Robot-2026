@@ -4,6 +4,10 @@
 
 package frc.robot.constants;
 
+import com.pathplanner.lib.config.RobotConfig;
+
+// import frc.robot.subsystems.Pathplanner;
+
 /** Add your docs here. */
 public class SubsystemConstants {
 
@@ -12,7 +16,6 @@ public class SubsystemConstants {
     public static final int kIntakeMotorId = 10;
     public static final int kShootMotorId = 11;
 
-    // Pathplanner constants
-    // public static RobotCofig
-    
+    // public static RobotConfig kConfig = Pathplanner.config;
+
 }
