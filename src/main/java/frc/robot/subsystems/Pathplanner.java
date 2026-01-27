@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.struct.SwerveModuleStateStruct;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
@@ -33,8 +34,11 @@ public class Pathplanner extends SubsystemBase {
   Drivetrain sDrivetrain;
 
   SwerveDrivePoseEstimator eSwerveEstimator;
-  public static RobotConfig config;
+  static RobotConfig config;
   static Pose2d startPose2d;
+  static String defaultAuto;
+  private final SendableChooser<Command> autoSelect;
+
 
 
   public Pathplanner(Drivetrain kDrivetrain) {
@@ -42,6 +46,8 @@ public class Pathplanner extends SubsystemBase {
     sDrivetrain = kDrivetrain;
 
     startPose2d = new Pose2d(0,0, new Rotation2d(0));
+    defaultAuto = "TestAuto";
+    autoSelect = null;
 
     try{
       config = RobotConfig.fromGUISettings();
@@ -81,6 +87,8 @@ public class Pathplanner extends SubsystemBase {
     // buildAutoChooser();
 
     // ApplyStart();
+
+    getAutonomousCommand();
     
     eSwerveEstimator = new SwerveDrivePoseEstimator(this.getKinematics(), getRotation2d(), getModulePositions(), startPose2d);
     eSwerveEstimator.resetPose(startPose2d);
@@ -147,11 +155,11 @@ public class Pathplanner extends SubsystemBase {
   }
 
   // This is here for testing purposes
-  public Command getAutonomousCommand() {
+  public static Command getAutonomousCommand() {
     // This method loads the auto when it is called, however, it is recommended
     // to first load your paths/autos when code starts, then return the
     // pre-loaded auto/path
-    return new PathPlannerAuto("New Auto");
+    return new PathPlannerAuto(defaultAuto);
   }
 
   // public void buildAutoChooser() {

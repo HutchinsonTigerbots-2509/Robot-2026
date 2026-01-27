@@ -61,7 +61,7 @@ public class RobotContainer {
         // );
 
         // SmartDashboard.putData("Auto Chooser", autoChooser);
-        autoChooser = AutoBuilder.buildAutoChooser();
+        // autoChooser = AutoBuilder.buildAutoChooser();
 
     }
 
@@ -141,11 +141,9 @@ public class RobotContainer {
 
     public static final Pathplanner sPathPlanner = new Pathplanner(sDrivetrain);
 
-    private final SendableChooser<Command> autoChooser;
-
-    public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
-    }
+    // public Command getAutonomousCommand() {
+    //     return autoChooser.getSelected();
+    // }
 
     public static void PathplannerDriveSwerve(ChassisSpeeds speeds) {
         double vx = speeds.vxMetersPerSecond;
@@ -154,6 +152,10 @@ public class RobotContainer {
         if (DriverStation.isAutonomous()) {
             sDrivetrain.applyRequest(() -> drive.withVelocityX(vx).withVelocityY(vy).withRotationalRate(vOmega));
         }   
+    }
+
+    public static Command getAutonomousCommand() {
+        return Pathplanner.getAutonomousCommand();
     }
 
 }
