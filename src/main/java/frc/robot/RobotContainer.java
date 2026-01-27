@@ -29,7 +29,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Pathplanner;
+// import frc.robot.subsystems.Pathplanner;
+import frc.robot.subsystems.Pathplanner2;
 import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
@@ -107,7 +108,7 @@ public class RobotContainer {
 
         joystick.a().whileTrue(new RunCommand(() -> Shooter.shootpositive())).onFalse(new InstantCommand(() -> Shooter.shootzero()));
         joystick.b().whileTrue(new RunCommand(() -> Shooter.shootpositivehalf())).onFalse(new InstantCommand(() -> Shooter.shootzero()));
-        joystick.x().whileTrue(drivetrain.applyRequest(() -> brake));
+        joystick.x().whileTrue(new RunCommand(() -> Shooter.shootpositive34())).onFalse(new InstantCommand(() -> Shooter.shootzero()));
         joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));
 
         drivetrain.registerTelemetry(logger::telemeterize);
@@ -139,7 +140,7 @@ public class RobotContainer {
 
     public static final Drivetrain sDrivetrain = DrivetrainConstants.createDrivetrain();
 
-    public static final Pathplanner sPathPlanner = new Pathplanner(sDrivetrain);
+    public static final Pathplanner2 sPathPlanner = new Pathplanner2(sDrivetrain);
 
     // public Command getAutonomousCommand() {
     //     return autoChooser.getSelected();
@@ -155,7 +156,7 @@ public class RobotContainer {
     }
 
     public static Command getAutonomousCommand() {
-        return Pathplanner.getAutonomousCommand();
+        return Pathplanner2.getAutonomousCommand();
     }
 
 }

@@ -24,6 +24,10 @@ public class Shooter extends SubsystemBase {
     mShooter.set(1);
   }
 
+  public static void shootpositive34() {
+    mShooter.set(0.75);
+  }
+
   public static void shootpositivehalf() {
     mShooter.set(0.5);
   }
