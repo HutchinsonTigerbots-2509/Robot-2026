@@ -6,11 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.io.IOException;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,12 +23,10 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.constants.DrivetrainConstants;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Drivetrain;
-// import frc.robot.subsystems.Pathplanner;
-import frc.robot.subsystems.Pathplanner2;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.autonomous.Pathplanner;
+import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.drivetrain.DrivetrainConstants;
+import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
     private static double MaxSpeed = 1.0 * DrivetrainConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -140,7 +135,7 @@ public class RobotContainer {
 
     public static final Drivetrain sDrivetrain = DrivetrainConstants.createDrivetrain();
 
-    public static final Pathplanner2 sPathPlanner = new Pathplanner2(sDrivetrain);
+    public static final Pathplanner sPathPlanner = new Pathplanner(sDrivetrain);
 
     // public Command getAutonomousCommand() {
     //     return autoChooser.getSelected();
@@ -155,8 +150,9 @@ public class RobotContainer {
         }   
     }
 
-    public static Command getAutonomousCommand() {
-        return Pathplanner2.getAutonomousCommand();
+    public Command getAutonomousCommand() {
+        // return Pathplanner.getAutonomousCommand();
+        return new PathPlannerAuto("TestAuto");
     }
 
 }

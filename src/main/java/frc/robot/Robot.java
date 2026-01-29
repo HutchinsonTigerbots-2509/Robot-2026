@@ -23,8 +23,7 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         m_robotContainer = new RobotContainer();
-        
-        SignalLogger.stop();
+         //SignalLogger.stop();
     }
 
     @Override
@@ -44,7 +43,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        m_autonomousCommand = RobotContainer.getAutonomousCommand();
+       m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().schedule(m_autonomousCommand);
@@ -52,7 +51,9 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void autonomousPeriodic() {}
+    public void autonomousPeriodic() {
+        CommandScheduler.getInstance().run(); 
+    }
 
     @Override
     public void autonomousExit() {}
