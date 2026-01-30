@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -23,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystems.autonomous.Pathplanner;
+// import frc.robot.subsystems.autonomous.Pathplanner;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants;
 import frc.robot.subsystems.shooter.Shooter;
@@ -133,26 +134,26 @@ public class RobotContainer {
     
     //              -----Autonomous-----            
 
-    public static final Drivetrain sDrivetrain = DrivetrainConstants.createDrivetrain();
+    // public static final Drivetrain sDrivetrain = DrivetrainConstants.createDrivetrain(); // This creates a second drivetrain. Should probably fix this.
 
-    public static final Pathplanner sPathPlanner = new Pathplanner(sDrivetrain);
+    // public static final Pathplanner sPathPlanner = new Pathplanner(sDrivetrain);
 
     // public Command getAutonomousCommand() {
     //     return autoChooser.getSelected();
     // }
 
-    public static void PathplannerDriveSwerve(ChassisSpeeds speeds) {
-        double vx = speeds.vxMetersPerSecond;
-        double vy = speeds.vyMetersPerSecond;
-        double vOmega = speeds.omegaRadiansPerSecond;
-        if (DriverStation.isAutonomous()) {
-            sDrivetrain.applyRequest(() -> drive.withVelocityX(vx).withVelocityY(vy).withRotationalRate(vOmega));
-        }   
-    }
+    // public static void PathplannerDriveSwerve(ChassisSpeeds speeds) {
+    //     double vx = speeds.vxMetersPerSecond;
+    //     double vy = speeds.vyMetersPerSecond;
+    //     double vOmega = speeds.omegaRadiansPerSecond;
+    //     if (DriverStation.isAutonomous()) {
+    //         sDrivetrain.applyRequest(() -> drive.withVelocityX(vx).withVelocityY(vy).withRotationalRate(vOmega));
+    //     }   
+    // }
 
-    public Command getAutonomousCommand() {
-        // return Pathplanner.getAutonomousCommand();
-        return new PathPlannerAuto("TestAuto");
-    }
+    // public Command getAutonomousCommand() {
+    //     // return Pathplanner.getAutonomousCommand();
+    //     return new PathPlannerAuto("TestAuto");
+    // }
 
 }
