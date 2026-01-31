@@ -7,6 +7,7 @@ package frc.robot.subsystems.shooter;
 /** Add your docs here. */
 public class ShooterConstants {
 
-    public static final int kShootMotorId = 11;
+    public static final int kShoot1MotorId = 11;
+    public static final int kShoot2MotorId = 12;
 
 }

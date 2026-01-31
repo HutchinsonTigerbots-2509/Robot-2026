@@ -1,98 +1,90 @@
-// // Copyright (c) FIRST and other WPILib contributors.
-// // Open Source Software; you can modify and/or share it under the terms of
-// // the WPILib BSD license file in the root directory of this project.
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
-// package frc.robot.subsystems.autonomous;
+package frc.robot.subsystems.autonomous;
 
-// import java.io.Console;
-// import java.util.List;
+import java.io.Console;
+import java.util.List;
 
-// import com.pathplanner.lib.auto.AutoBuilder;
-// import com.pathplanner.lib.commands.PathPlannerAuto;
-// import com.pathplanner.lib.config.PIDConstants;
-// import com.pathplanner.lib.config.RobotConfig;
-// import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
-// import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-// import edu.wpi.first.math.geometry.Pose2d;
-// import edu.wpi.first.math.geometry.Rotation2d;
-// import edu.wpi.first.math.kinematics.ChassisSpeeds;
-// import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-// import edu.wpi.first.math.kinematics.SwerveModulePosition;
-// import edu.wpi.first.math.kinematics.SwerveModuleState;
-// import edu.wpi.first.wpilibj.DriverStation;
-// import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-// import edu.wpi.first.wpilibj2.command.Command;
-// import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// import frc.robot.RobotContainer;
-// import frc.robot.subsystems.drivetrain.Drivetrain;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 
-// public class Pathplanner extends SubsystemBase {
-//   /** Creates a new Pathplanner. */
+public class Pathplanner extends SubsystemBase {
+  /** Creates a new Pathplanner. */
 
-//   Drivetrain sDrivetrain;
+  Drivetrain sDrivetrain;
 
 //   SwerveDrivePoseEstimator eSwerveEstimator;
-//   static RobotConfig config;
-//   static Pose2d startPose2d;
-//   String defaultAuto = "TestAuto";
-// //   private final SendableChooser<Command> autoSelect;
+  static RobotConfig config;
+  static Pose2d startPose2d;
+  String defaultAuto = "TestAuto";
+  // private final SendableChooser<Command> autoSelect;
 
+  public Pathplanner(Drivetrain kDrivetrain) {
 
+    sDrivetrain = kDrivetrain;
+    startPose2d = new Pose2d(0,0, new Rotation2d(0));
+    // defaultAuto = new pathPla "TestAuto";
+    // autoSelect = new SendableChooser<>();
 
-//   public Pathplanner(Drivetrain kDrivetrain) {
+    try{
+      AutoBuilder.configure(
+        () -> RobotContainer.getPose(), // Robot pose supplier
+        resetPose -> RobotContainer.resetPose(startPose2d), // Method to reset odometry (will be called if your auto has a starting pose)
+        () -> RobotContainer.getRobotRelativeSpeeds(), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        speeds -> RobotContainer.driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+        new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+          new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+          new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+        ),
+        RobotConfig.fromGUISettings(), // The robot configuration
+        () -> {
+          // Boolean supplier that controls when the path will be mirrored for the red alliance
+          // This will flip the path being followed to the red side of the field.
+          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-//     sDrivetrain = kDrivetrain;
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+            return false;
+        },
+        sDrivetrain // Reference to this subsystem to set requirements
+      );    
+    } catch (Exception e) {
+        // Handle exception as needed
+        e.printStackTrace();
+    }
+    // buildAutoChooser();
+    // ApplyStart();
+    // getAutonomousCommand();
+    RobotContainer.eSwerveEstimator = new SwerveDrivePoseEstimator(sDrivetrain.getKinematics(), RobotContainer.getRotation2d(), RobotContainer.getModulePositions(), startPose2d);
+    RobotContainer.eSwerveEstimator.resetPose(startPose2d);
+  }
 
-//     startPose2d = new Pose2d(0,0, new Rotation2d(0));
-//     // defaultAuto = new pathPla "TestAuto";
-//     // autoSelect = new SendableChooser<>();
-
-//     try{
-//       AutoBuilder.configure(
-//         () -> getPose(), // Robot pose supplier
-//         resetPose -> resetPose(startPose2d), // Method to reset odometry (will be called if your auto has a starting pose)
-//         () -> getRobotRelativeSpeeds(), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-//         speeds -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-//         new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-//           new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-//           new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
-//         ),
-//         RobotConfig.fromGUISettings(), // The robot configuration
-//         () -> {
-//           // Boolean supplier that controls when the path will be mirrored for the red alliance
-//           // This will flip the path being followed to the red side of the field.
-//           // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-//           var alliance = DriverStation.getAlliance();
-//           if (alliance.isPresent()) {
-//             return alliance.get() == DriverStation.Alliance.Red;
-//           }
-//             return false;
-//         },
-//         sDrivetrain // Reference to this subsystem to set requirements
-//       );    
-//     } catch (Exception e) {
-//         // Handle exception as needed
-//         e.printStackTrace();
-//     }
-
-//     // buildAutoChooser();
-
-//     // ApplyStart();
-
-//     // getAutonomousCommand();
-
-    
-//     eSwerveEstimator = new SwerveDrivePoseEstimator(this.getKinematics(), getRotation2d(), getModulePositions(), startPose2d);
-//     eSwerveEstimator.resetPose(startPose2d);
-//   }
-
-//   @Override
-//   public void periodic() {
-//     // This method will be called once per scheduler run
-//     eSwerveEstimator.update(getRotation2d(), getModulePositions());
-//   }
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    // eSwerveEstimator.update(getRotation2d(), getModulePositions());
+  }
 
 //   public Pose2d getPose() {
 //     Pose2d pos0 = eSwerveEstimator.getEstimatedPosition();
@@ -112,7 +104,7 @@
 //   }
 
 //   public void driveRobotRelative(ChassisSpeeds speed2) {
-//     RobotContainer.PathplannerDriveSwerve(speed2);
+//     // RobotContainer.PathplannerDriveSwerve(speed2);
 //   }
 
 //   public void setGyro(Double pos2) {
@@ -149,35 +141,34 @@
 //     return ModStates;
 //   }
 
-//   // // This is here for testing purposes
-//   // public Command getAutonomousCommand() {
-//   //   // This method loads the auto when it is called, however, it is recommended
-//   //   // to first load your paths/autos when code starts, then return the
-//   //   // pre-loaded auto/path
-//   //   //return new PathPlannerAuto(defaultAuto);
-//   //   return //PathplannerAuto(defaultAuto);
-//   // }
+  // // This is here for testing purposes
+  // public Command getAutonomousCommand() {
+  //   // This method loads the auto when it is called, however, it is recommended
+  //   // to first load your paths/autos when code starts, then return the
+  //   // pre-loaded auto/path
+  //   //return new PathPlannerAuto(defaultAuto);
+  //   return //PathplannerAuto(defaultAuto);
+  // }
 
-// //   public void buildAutoChooser() {
-// //     autoSelect.setDefaultOption(defaultAuto, AutoBuilder.buildAuto(defaultAuto));
-// //     List<String> options = AutoBuilder.getAllAutoNames();
-// //     for (String n : options) {
-// //       if(n != defaultAuto)
-// //       autoSelect.addOption(n, AutoBuilder.buildAuto(n));
-// //     };
-// //   }
+//   public void buildAutoChooser() {
+//     autoSelect.setDefaultOption(defaultAuto, AutoBuilder.buildAuto(defaultAuto));
+//     List<String> options = AutoBuilder.getAllAutoNames();
+//     for (String n : options) {
+//       if(n != defaultAuto)
+//       autoSelect.addOption(n, AutoBuilder.buildAuto(n));
+//     };
+//   }
 
-// //   public void ApplyStart() {
-// //     String autoName = autoSelect.getSelected().getName();
-// //     try {
-// //       AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get());
-// //       startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
-// //     } catch (Exception e) {
-// //       // TODO Auto-generated catch block
-// //       e.printStackTrace();
-// //       startPose2d = new Pose2d(0,0,new Rotation2d(0));
-// //     }
-// //   };
+//   public void ApplyStart() {
+//     String autoName = autoSelect.getSelected().getName();
+//     try {
+//       AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get());
+//       startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
+//     } catch (Exception e) {
+//       // TODO Auto-generated catch block
+//       e.printStackTrace();
+//       startPose2d = new Pose2d(0,0,new Rotation2d(0));
+//     }
+//   };
 
-
-// }
+}

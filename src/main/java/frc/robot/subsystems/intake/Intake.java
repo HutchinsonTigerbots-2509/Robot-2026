@@ -19,7 +19,7 @@ public class Intake extends SubsystemBase {
 
   static public TalonFX mIntake = new TalonFX(IntakeConstants.kIntakeMotorId);
 
-  public static void shootpositive() {
+  public static void intakepositive() {
     mIntake.set(1);
   }
 
@@ -27,7 +27,19 @@ public class Intake extends SubsystemBase {
     mIntake.set(0);
   }
 
-  public static void intakenegative() {
-    mIntake.set(-1);
+  public static void intakenegative1() {
+    mIntake.set(-0.4);
+  }
+
+  public static void intakenegative75() {
+    mIntake.set(-0.35);
+  }
+
+  public static void intakenegative5() {
+    mIntake.set(-0.3);
+  }
+
+  public static void intakenegative25() {
+    mIntake.set(-0.25);
   }
 }
