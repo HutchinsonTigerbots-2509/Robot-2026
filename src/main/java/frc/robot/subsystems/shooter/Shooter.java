@@ -5,6 +5,7 @@
 package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,7 +21,11 @@ public class Shooter extends SubsystemBase {
   public TalonFX mShooter2 = new TalonFX(ShooterConstants.kShoot2MotorId);
   public Encoder eShooter = new Encoder(8, 7); //TODO: Put in actual encoder channels
   
-  public Shooter() {}
+  public Shooter() {
+    SmartDashboard.putNumber("shooter speed", num);
+    ShooterConstants.shootPID.setIZone(0.0); //TODO: Find acceptable IZone.
+    ShooterConstants.shootPID.setTolerance(0.0); //TODO: Find acceptable tolerance.
+  }
   
   @Override
   public void periodic() {
@@ -71,19 +76,20 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shootUnload(Drivetrain sDrivetrain, Feeder sFeeder, Vision sVision) {
-    // This method should align the drivetrain with the fuel hub and then call shootWithFeeder(sFeeder)
+    //TODO: This method should align the drivetrain with the fuel hub and then call shootWithFeeder(sFeeder)
+    // Get camera output from shoot camera and and then align the robot with the april tags from the fuel hub
   }
 
   public void shootCancel(Drivetrain sDrivetrain, Feeder sFeeder) {
-    // sDrivetrain.applyRequest(() -> idle);
+    final var idle = new SwerveRequest.Idle(); //TODO: Probably not going to work. There is probably a better way.
+    sDrivetrain.applyRequest(() -> idle);
     sFeeder.feedZero();
+    shootZero();
   }
 
   public void shootWithFeeder(Feeder sFeeder) { //TODO: We are going to need to add an encoder to the shooter
-    double setpoint = 0.0; //TODO: Find acceptable setpoint.
+    double setpoint = 0.0; //TODO: Find acceptable setpoint. If we shoot from a set distance, this can be moved to the constructor.
     ShooterConstants.shootPID.setSetpoint(setpoint);
-    ShooterConstants.shootPID.setIZone(0.0); //TODO: Find acceptable IZone. I would like to put this in the constructor
-    ShooterConstants.shootPID.setTolerance(0.0); //TODO: Find acceptable tolerance. I would like to put this in the constructor
     mShooter1.set(shootOutput(ShooterConstants.shootPID.calculate(eShooter.getRate()), setpoint));
     mShooter2.set(shootOutput(ShooterConstants.shootPID.calculate(eShooter.getRate()), setpoint));
     if (ShooterConstants.shootPID.atSetpoint()) {

@@ -11,7 +11,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
-  public Intake() {}
+  public Intake() {
+    SmartDashboard.putNumber("intake speed", num);
+  }
 
   @Override
   public void periodic() {
@@ -21,7 +23,7 @@ public class Intake extends SubsystemBase {
   public TalonFX mIntake = new TalonFX(IntakeConstants.kIntakeMotorId);
 
   public void intakeForward() {
-    mIntake.set(-0.2);
+    mIntake.set(-0.2); //TODO: Find optimal intake speed.
   }
 
   public void intakeZero() {

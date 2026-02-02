@@ -70,7 +70,6 @@ public class RobotContainer {
     private SendableChooser<Command> autoSelect = new SendableChooser<Command>();
     private final boolean isCompetition = false; // Change this to true when at a competition!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    private static SlewRateLimiter Slewer = new SlewRateLimiter(1.0);
     private static SlewRateLimiter Slewer1 = new SlewRateLimiter(2.0);
     private static SlewRateLimiter Slewer2 = new SlewRateLimiter(2.0);
 
@@ -105,18 +104,10 @@ public class RobotContainer {
             sDrivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        sDrivetrain.setDefaultCommand(
-            sDrivetrain.applyRequest(() ->  
-                drive.withVelocityX((Slewer.calculate(-joystick.getLeftY()) * MaxSpeed))
-                    .withVelocityY((Slewer.calculate(-joystick.getLeftX()) * MaxSpeed))
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
-            )
-        );
-
-        joystick.leftTrigger().onTrue(new RunCommand(() -> sShooter.shootUnload(sDrivetrain, sFeeder, sVision)));
-        joystick.leftBumper().onTrue(new RunCommand(() -> sShooter.shootCancel(sDrivetrain, sFeeder)));
-        joystick.rightTrigger().onTrue(new RunCommand(() -> sIntake.intakeForward()));
-        joystick.rightBumper().onTrue(new RunCommand(() -> sIntake.intakeZero()));
+        joystick.leftTrigger().onTrue(new InstantCommand(() -> sShooter.shootUnload(sDrivetrain, sFeeder, sVision)));
+        joystick.leftBumper().onTrue(new InstantCommand(() -> sShooter.shootCancel(sDrivetrain, sFeeder)));
+        joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakeForward()));
+        joystick.rightBumper().onTrue(new InstantCommand(() -> sIntake.intakeZero()));
 
         // VVVV Generated bindings VVVV
 
@@ -138,12 +129,12 @@ public class RobotContainer {
         // joystick.a().whileTrue(new RunCommand(() -> sShooter.shootnum())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
         // joystick.x().onTrue(new InstantCommand(() -> sShooter.shootincrement()));
         // joystick.b().onTrue(new InstantCommand(() -> sShooter.shootresetincrement()));
-        // joystick.x().whileTrue(new RunCommand(() -> sShooter.shootrecall()));
+        // joystick.y().whileTrue(new InstantCommand(() -> sShooter.shootrecall()));
 
         // joystick.a().whileTrue(new RunCommand(() -> sIntake.intakenum())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
         // joystick.x().onTrue(new InstantCommand(() -> sIntake.intakeincrement()));
         // joystick.b().onTrue(new InstantCommand(() -> sIntake.intakeresetnum()));
-        // joystick.x().whileTrue(new RunCommand(() -> sIntake.intakerecall()));
+        // joystick.y().whileTrue(new InstantCommand(() -> sIntake.intakerecall()));
 
         sDrivetrain.registerTelemetry(logger::telemeterize); //TODO: Might also be the cause of the signal logger still going
     }
