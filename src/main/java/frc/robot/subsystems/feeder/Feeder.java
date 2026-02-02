@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.feeder;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Feeder extends SubsystemBase {
@@ -13,5 +15,19 @@ public class Feeder extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  public TalonFX mFeeder = new TalonFX(FeederConstants.kFeederMotorId);
+
+  public void feedToShoot() {
+    mFeeder.set(0.1);
+  }
+
+  public void feedZero() {
+    mFeeder.set(0);
+  }
+
+  public void feednegative() {
+    mFeeder.set(-0.1);
   }
 }

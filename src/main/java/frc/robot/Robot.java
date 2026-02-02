@@ -9,21 +9,19 @@ import com.ctre.phoenix6.HootAutoReplay;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import com.ctre.phoenix6.SignalLogger;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private final RobotContainer m_robotContainer;
 
-    /* log and replay timestamp and joystick data */
+    /* log and replay timestamp and joystick data */   //TODO: This is probably the cause of the SignalLogger starting everytime
     private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
         .withTimestampReplay()
         .withJoystickReplay();
 
     public Robot() {
         m_robotContainer = new RobotContainer();
-        // SignalLogger.stop();
     }
 
     @Override
@@ -45,15 +43,13 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-        // if (m_autonomousCommand != null) {
-        //     CommandScheduler.getInstance().schedule(m_autonomousCommand);
-        // }
+        if (m_autonomousCommand != null) {
+            CommandScheduler.getInstance().schedule(m_autonomousCommand);
+        }
     }
 
     @Override
-    public void autonomousPeriodic() {
-        // CommandScheduler.getInstance().run(); 
-    }
+    public void autonomousPeriodic() {}
 
     @Override
     public void autonomousExit() {}

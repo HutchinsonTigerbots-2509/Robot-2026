@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
-
 import edu.wpi.first.wpilibj.RobotBase;
 
 public final class Main {
@@ -23,6 +21,5 @@ public final class Main {
 
   public static void main(String... args) {
     RobotBase.startRobot(Robot::new);
-    // SignalLogger.stop();
   }
 }

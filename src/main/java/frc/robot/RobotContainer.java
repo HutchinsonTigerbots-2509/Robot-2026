@@ -6,9 +6,11 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.ctre.phoenix6.SignalLogger;
+import java.util.List;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -20,27 +22,30 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.autonomous.Pathplanner;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants;
+import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.vision.Vision;
 
 public class RobotContainer {
     private static double MaxSpeed = 1.0 * DrivetrainConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final static SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
+    private final static SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -49,33 +54,32 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
+    private final Joystick ButtonBoardA = new Joystick(1);
+    private final Joystick ButtonBoardB = new Joystick(2);
+    private final JoystickButton A0 = new JoystickButton(ButtonBoardA, 0); //TODO: Map out rest of button board. Also, can just use another controller
 
-    public static final Drivetrain sDrivetrain = DrivetrainConstants.createDrivetrain();
+    private static final Drivetrain sDrivetrain = DrivetrainConstants.createDrivetrain();
+    private static final Pathplanner sPathPlanner = new Pathplanner(sDrivetrain);
+    private static final Climber sClimber = new Climber();
+    private static final Feeder sFeeder = new Feeder();
+    private static final Intake sIntake = new Intake();
+    private static final Shooter sShooter = new Shooter();
+    private static final Vision sVision = new Vision();
 
-    public static boolean fieldOriented = true;
+    public static SwerveDrivePoseEstimator eSwerveEstimator;
+    private SendableChooser<Command> autoSelect = new SendableChooser<Command>();
+    private final boolean isCompetition = false; // Change this to true when at a competition!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    public static SlewRateLimiter Slewer1 = new SlewRateLimiter(2.0);  // Creates our Slew Limiter which makes our drivetrain slowly accelorate, Please Ignore spelling <3
-    public static SlewRateLimiter Slewer2 = new SlewRateLimiter(2.0);
+    private static SlewRateLimiter Slewer = new SlewRateLimiter(1.0);
+    private static SlewRateLimiter Slewer1 = new SlewRateLimiter(2.0);
+    private static SlewRateLimiter Slewer2 = new SlewRateLimiter(2.0);
 
     public RobotContainer() {
         configureBindings();
-
-        // boolean isCompetition = false; // Change this to true when at a competition
-
-        // autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
-        //     (stream) -> isCompetition
-        //     ? stream.filter(auto -> auto.getName().startsWith("comp"))
-        //     : stream
-        // );
-
-        // SmartDashboard.putData("Auto Chooser", autoChooser);
-        // autoChooser = AutoBuilder.buildAutoChooser();
-
+        SmartDashboard.putData("Auto Chooser", AutoBuilder.buildAutoChooser());
     }
 
     private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
         // sDrivetrain.setDefaultCommand(
         //     // Drivetrain will execute this command periodically
         //     sDrivetrain.applyRequest(() ->
@@ -85,13 +89,14 @@ public class RobotContainer {
         //     )
         // );
 
+        // Also, to get rid of chattering while stationary we should set minimum inputs where the robot will idle if under those.
         sDrivetrain.setDefaultCommand(
             sDrivetrain.applyRequest(() ->  
                 drive.withVelocityX((Slewer1.calculate(calculateFieldX(joystick)) * MaxSpeed) * 0.5) // Drive forward with negative Y (forward)
                     .withVelocityY((Slewer2.calculate(calculateFieldY(joystick)) * MaxSpeed) * 0.5) // Drive left with negative X (left)
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
             )
-        ); // Drive counterclockwise with negative X (left)
+        );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -99,6 +104,19 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
             sDrivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
+
+        sDrivetrain.setDefaultCommand(
+            sDrivetrain.applyRequest(() ->  
+                drive.withVelocityX((Slewer.calculate(-joystick.getLeftY()) * MaxSpeed))
+                    .withVelocityY((Slewer.calculate(-joystick.getLeftX()) * MaxSpeed))
+                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
+            )
+        );
+
+        joystick.leftTrigger().onTrue(new RunCommand(() -> sShooter.shootUnload(sDrivetrain, sFeeder, sVision)));
+        joystick.leftBumper().onTrue(new RunCommand(() -> sShooter.shootCancel(sDrivetrain, sFeeder)));
+        joystick.rightTrigger().onTrue(new RunCommand(() -> sIntake.intakeForward()));
+        joystick.rightBumper().onTrue(new RunCommand(() -> sIntake.intakeZero()));
 
         // VVVV Generated bindings VVVV
 
@@ -114,61 +132,39 @@ public class RobotContainer {
         // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        // joystick.leftTrigger().onTrue(new RunCommand(() -> Shooter.shootpositive1())).onFalse(new InstantCommand(() -> Shooter.shootzero()));
-        // joystick.rightTrigger().onTrue(new RunCommand(() -> Shooter.shootpositive95())).onFalse(new InstantCommand(() -> Shooter.shootzero()));
-
         // // Reset the field-centric heading on left bumper press.
-        // joystick.leftBumper().onTrue(new RunCommand(() -> Shooter.shootpositive875())).onFalse(new InstantCommand(() -> Shooter.shootzero()));
-        // joystick.rightBumper().onTrue(new RunCommand(() -> Shooter.shootpositive8())).onFalse(new InstantCommand(() -> Shooter.shootzero()));
+        // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        // joystick.a().whileTrue(new RunCommand(() -> Shooter.shootpositive5())).onFalse(new InstantCommand(() -> Shooter.shootzero()));
-        // joystick.b().whileTrue(new RunCommand(() -> Shooter.shootpositive575())).onFalse(new InstantCommand(() -> Shooter.shootzero()));
-        // joystick.x().whileTrue(new RunCommand(() -> Shooter.shootpositive65())).onFalse(new InstantCommand(() -> Shooter.shootzero()));
-        // joystick.y().whileTrue(new RunCommand(() -> Shooter.shootpositive725())).onFalse(new InstantCommand(() -> Intake.intakezero()));
-        // // joystick.y().onTrue(new RunCommand(() -> Shooter.shootpositive725())).onFalse(new InstantCommand(() -> Intake.intakezero()));
+        // joystick.a().whileTrue(new RunCommand(() -> sShooter.shootnum())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
+        // joystick.x().onTrue(new InstantCommand(() -> sShooter.shootincrement()));
+        // joystick.b().onTrue(new InstantCommand(() -> sShooter.shootresetincrement()));
+        // joystick.x().whileTrue(new RunCommand(() -> sShooter.shootrecall()));
 
-        // // joystick.a().whileTrue(new RunCommand(() -> Shooter.shoot())).onFalse(new InstantCommand(() -> Shooter.shootzero()));
-        // // joystick.x().onTrue(new InstantCommand(() -> Shooter.shootincrement()));
-        // // joystick.b().onTrue(new InstantCommand(() -> Shooter.shootresetincrement()));
-        // joystick.x().whileTrue(new RunCommand(() -> Intake.intakepositive())).onFalse(new InstantCommand(() -> Intake.intakezero()));
-        joystick.leftBumper().whileTrue(new RunCommand(() -> Intake.intakenegative25())).onFalse(new InstantCommand(() -> Intake.intakezero()));
-        joystick.rightBumper().whileTrue(new RunCommand(() -> Intake.intakenegative5())).onFalse(new InstantCommand(() -> Intake.intakezero()));
-        joystick.leftTrigger().whileTrue(new RunCommand(() -> Intake.intakenegative75())).onFalse(new InstantCommand(() -> Intake.intakezero()));
-        joystick.rightTrigger().whileTrue(new RunCommand(() -> Intake.intakenegative1())).onFalse(new InstantCommand(() -> Intake.intakezero()));
+        // joystick.a().whileTrue(new RunCommand(() -> sIntake.intakenum())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
+        // joystick.x().onTrue(new InstantCommand(() -> sIntake.intakeincrement()));
+        // joystick.b().onTrue(new InstantCommand(() -> sIntake.intakeresetnum()));
+        // joystick.x().whileTrue(new RunCommand(() -> sIntake.intakerecall()));
 
-        sDrivetrain.registerTelemetry(logger::telemeterize);
+        sDrivetrain.registerTelemetry(logger::telemeterize); //TODO: Might also be the cause of the signal logger still going
     }
 
     public static double calculateFieldX(CommandXboxController controller) {
-
         double gyro = Math.toRadians(sDrivetrain.getPigeon2().getYaw().getValueAsDouble() /*+ fieldOffset*/);
-        //SmartDashboard.putNumber("gyro", gyro);
         double cos = Math.cos(gyro);
-        //SmartDashboard.putNumber("Cos", cos);
         double sin = Math.sin(gyro);
-        //SmartDashboard.putNumber("Sin", sin);
-
-        double tX = -controller.getLeftY(); // The X in FRC means forwards and backwards
+        double tX = -controller.getLeftY();
         double tY = -controller.getLeftX();
-
         double fieldX = ((tX * cos) + (tY * sin));
-
         return fieldX;
     }
 
     public static double calculateFieldY(CommandXboxController controller) {
-
         double gyro = Math.toRadians(sDrivetrain.getPigeon2().getYaw().getValueAsDouble() /*+ fieldOffset*/);
         double cos = Math.cos(gyro);
         double sin = Math.sin(gyro);
-
-        double tX = -controller.getLeftY(); // The X in FRC means forwards and backwards
+        double tX = -controller.getLeftY();
         double tY = -controller.getLeftX();
-
         double fieldY = ((tY  * cos) - (tX * sin));
-            
-        //SmartDashboard.putNumber("fieldY", fieldY);
-
         return fieldY;
     }
 
@@ -191,58 +187,47 @@ public class RobotContainer {
     //         // Finally idle for the rest of auton
     //         sDrivetrain.applyRequest(() -> idle)
     //     );
-    // }
-
-    
-    //              -----Autonomous-----            
-
-    public static final Pathplanner sPathPlanner = new Pathplanner(sDrivetrain);
-    public static SwerveDrivePoseEstimator eSwerveEstimator;
+    // }       
     
     // public Command getAutonomousCommand() {
     //     return autoChooser.getSelected();
     // }
     
-    public static void PathplannerDriveSwerve(ChassisSpeeds speeds) {
+    public Command getAutonomousCommand() {
+        return new PathPlannerAuto("TestAuto");
+    }
+    
+    public static Pose2d getPose() {
+        Pose2d pos = eSwerveEstimator.getEstimatedPosition();
+        return pos;
+    }
+
+    public static void resetPose(Pose2d pos) {
+        sDrivetrain.resetPose(pos);
+        setGyro(pos.getRotation().getDegrees());
+        eSwerveEstimator.resetPose(pos);  
+    }
+    
+    public static ChassisSpeeds getRobotRelativeSpeeds() {
+        ChassisSpeeds speeds;
+        speeds = sDrivetrain.getKinematics().toChassisSpeeds(getModuleStates());
+        return speeds;
+    }
+            
+    public static void driveRobotRelative(ChassisSpeeds speeds) {
         double vx = speeds.vxMetersPerSecond;
         double vy = speeds.vyMetersPerSecond;
         double vOmega = speeds.omegaRadiansPerSecond;
         if (DriverStation.isAutonomous()) {
             sDrivetrain.applyRequest(() -> drive.withVelocityX(vx).withVelocityY(vy).withRotationalRate(vOmega));
-        }   
-    }
-    
-    public Command getAutonomousCommand() {
-        // return Pathplanner.getAutonomousCommand();
-        return new PathPlannerAuto("TestAuto");
-    }
-    
-    public static Pose2d getPose() {
-        Pose2d pos0 = eSwerveEstimator.getEstimatedPosition();
-        return pos0;
-    }
-
-    public static void resetPose(Pose2d pos1) {
-        sDrivetrain.resetPose(pos1);
-        setGyro(pos1.getRotation().getDegrees());
-        eSwerveEstimator.resetPose(pos1);  
-    }
-    
-    public static ChassisSpeeds getRobotRelativeSpeeds() {
-        ChassisSpeeds speed1;
-        speed1 = sDrivetrain.getKinematics().toChassisSpeeds(getModuleStates());
-        return speed1;
+        }
     }
             
-    public static void driveRobotRelative(ChassisSpeeds speed2) {
-        // RobotContainer.PathplannerDriveSwerve(speed2);
-    }
-            
-    public static void setGyro(Double pos2) {
-        sDrivetrain.getPigeon2().setYaw(pos2);
+    public static void setGyro(Double pos) {
+        sDrivetrain.getPigeon2().setYaw(pos);
     }
         
-    public SwerveDriveKinematics getKinematics() {
+    public static SwerveDriveKinematics getKinematics() {
         SwerveDriveKinematics kinematics = sDrivetrain.getKinematics();
         return kinematics;
     }
@@ -252,7 +237,6 @@ public class RobotContainer {
         return pos3;
     }
         
-    //** Returns the List of SwerveModulePositions in ( F:LR  R:LR ) order */
     public static SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition FL = sDrivetrain.getModule(0).getPosition(false);
         SwerveModulePosition FR = sDrivetrain.getModule(1).getPosition(false);
@@ -262,7 +246,6 @@ public class RobotContainer {
         return ModPositions;
     }
         
-    //** Returns the list of SwerveModuleStates in ( F:LR  R:LR ) order */
     public static SwerveModuleState[] getModuleStates() {
         SwerveModuleState FL = sDrivetrain.getModule(0).getCurrentState();
         SwerveModuleState FR = sDrivetrain.getModule(1).getCurrentState();
@@ -270,6 +253,23 @@ public class RobotContainer {
         SwerveModuleState RR = sDrivetrain.getModule(3).getCurrentState();
         SwerveModuleState[] ModStates = new SwerveModuleState[] {FL, FR, RL, RR};
         return ModStates;
+    }
+
+    public void buildAutoChooser() {
+        autoSelect.setDefaultOption("Do Nothing", AutoBuilder.buildAuto("Do Nothing"));
+        List<String> options = AutoBuilder.getAllAutoNames();
+        if (isCompetition) {
+            for (String n : options) {
+                if(n.startsWith("c") && n != "Do Nothing")
+                autoSelect.addOption(n, AutoBuilder.buildAuto(n));
+            };
+        }
+        else {
+            for (String n : options) {
+                if(n != "Do Nothing")
+                autoSelect.addOption(n, AutoBuilder.buildAuto(n));
+            };
+        }
     }
 
 }

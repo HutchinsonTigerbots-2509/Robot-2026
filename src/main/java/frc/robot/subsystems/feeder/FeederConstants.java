@@ -5,4 +5,8 @@
 package frc.robot.subsystems.feeder;
 
 /** Add your docs here. */
-public class FeederConstants {}
+public class FeederConstants {
+
+    public static final int kFeederMotorId = 13;
+
+}

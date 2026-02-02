@@ -17,17 +17,17 @@ public class Climber extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  static public TalonFX mClimber = new TalonFX(ClimberConstants.kClimbMotorId);
+  public TalonFX mClimber = new TalonFX(ClimberConstants.kClimbMotorId);
 
-  public static void climbpositive() {
+  public void climbpositive() {
     mClimber.set(1);
   }
 
-  public static void climbzero() {
+  public void climbzero() {
     mClimber.set(0);
   }
 
-  public static void climbnegative() {
+  public void climbnegative() {
     mClimber.set(-1);
   }
 }

@@ -6,6 +6,7 @@ package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
@@ -17,29 +18,45 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  static public TalonFX mIntake = new TalonFX(IntakeConstants.kIntakeMotorId);
+  public TalonFX mIntake = new TalonFX(IntakeConstants.kIntakeMotorId);
 
-  public static void intakepositive() {
-    mIntake.set(1);
+  public void intakeForward() {
+    mIntake.set(-0.2);
   }
 
-  public static void intakezero() {
-    mIntake.set(0);
+  public void intakeZero() {
+    mIntake.set(0.0);
   }
 
-  public static void intakenegative1() {
-    mIntake.set(-0.4);
+  // VVVVV Methods below are for testing VVVVV
+
+  public Double num = -0.10;
+  public void intakeincrement() {
+    if(num > -1) {
+      num = num - 0.01;
+      System.out.println("YOUR SPEED IS: " + num);
+      SmartDashboard.putNumber("intake speed", num);
+    }
+    else {
+      System.out.println("MAXIMUM SPEED");
+      SmartDashboard.putNumber("intake speed", num);
+    }
   }
 
-  public static void intakenegative75() {
-    mIntake.set(-0.35);
+  public void intakeresetnum() {
+    num = -0.10;
+    System.out.println("YOUR SPEED HAS BEEN RESET TO: " + num);
+    SmartDashboard.putNumber("intake speed", num);
   }
 
-  public static void intakenegative5() {
-    mIntake.set(-0.3);
+  public void intakenum() {
+    mIntake.set(num);
+    System.out.println("YOU ARE INTAKING AT: " + num);
+    SmartDashboard.putNumber("intake speed", num);
   }
 
-  public static void intakenegative25() {
-    mIntake.set(-0.25);
+  public void intakerecall() {
+    System.out.println("YOUR SPEED IS: " + num);
+    SmartDashboard.putNumber("intake speed", num);
   }
 }

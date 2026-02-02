@@ -4,10 +4,14 @@
 
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.math.controller.PIDController;
+
 /** Add your docs here. */
 public class ShooterConstants {
 
     public static final int kShoot1MotorId = 11;
     public static final int kShoot2MotorId = 12;
+
+    public static PIDController shootPID = new PIDController(5.0,0.0,0.0);
 
 }

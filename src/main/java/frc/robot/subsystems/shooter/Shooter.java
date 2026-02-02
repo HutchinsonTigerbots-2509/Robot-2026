@@ -6,106 +6,111 @@ package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.vision.Vision;
 
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
 
-  public static Double num = 0.5;
-    public static PIDController shootPID;
+  public TalonFX mShooter1 = new TalonFX(ShooterConstants.kShoot1MotorId);
+  public TalonFX mShooter2 = new TalonFX(ShooterConstants.kShoot2MotorId);
+  public Encoder eShooter = new Encoder(8, 7); //TODO: Put in actual encoder channels
   
-    public Shooter() {}
+  public Shooter() {}
   
-    @Override
-    public void periodic() {
-      // This method will be called once per scheduler run
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
+
+  public Double num = 0.5;
+  public void shootincrement() {
+    if(num < 1) {
+      num = num + 0.05;
+      System.out.println("YOUR SPEED IS: " + num);
+      SmartDashboard.putNumber("shooter speed", num);
     }
-  
-    static public TalonFX mShooter1 = new TalonFX(ShooterConstants.kShoot1MotorId);
-    static public TalonFX mShooter2 = new TalonFX(ShooterConstants.kShoot2MotorId);
-  
-    public static void shootpositive1() {
-      mShooter1.set(1);
-      mShooter2.set(1);
+    else {
+      System.out.println("MAXIMUM SPEED");
+      SmartDashboard.putNumber("shooter speed", num);
     }
-  
-    public static void shootpositive95() {
-      mShooter1.set(0.95);
-      mShooter2.set(0.95);
+  }
+
+  public void shootresetincrement() {
+    num = 0.5;
+    System.out.println("YOUR SPEED HAS BEEN RESET TO: " + num);
+    SmartDashboard.putNumber("shooter speed", num);
+  }
+
+  public void shootnum() {
+    mShooter1.set(num);
+    mShooter2.set(num);
+    System.out.println("YOU ARE SHOOTING AT: " + num);
+    SmartDashboard.putNumber("shooter speed", num);
+  }
+
+  public void shootrecall() {
+    System.out.println("YOUR SPEED IS: " + num);
+    SmartDashboard.putNumber("shooter speed", num);
+  }
+
+  public void shootzero() {
+    mShooter1.set(0.0);
+    mShooter2.set(0.0);
+  }
+
+  // ^^^^^ The methods above are for testing ^^^^^
+
+  public void shootZero() {
+    mShooter1.set(0.0);
+    mShooter2.set(0.0);
+  }
+
+  public void shootUnload(Drivetrain sDrivetrain, Feeder sFeeder, Vision sVision) {
+    // This method should align the drivetrain with the fuel hub and then call shootWithFeeder(sFeeder)
+  }
+
+  public void shootCancel(Drivetrain sDrivetrain, Feeder sFeeder) {
+    // sDrivetrain.applyRequest(() -> idle);
+    sFeeder.feedZero();
+  }
+
+  public void shootWithFeeder(Feeder sFeeder) { //TODO: We are going to need to add an encoder to the shooter
+    double setpoint = 0.0; //TODO: Find acceptable setpoint.
+    ShooterConstants.shootPID.setSetpoint(setpoint);
+    ShooterConstants.shootPID.setIZone(0.0); //TODO: Find acceptable IZone. I would like to put this in the constructor
+    ShooterConstants.shootPID.setTolerance(0.0); //TODO: Find acceptable tolerance. I would like to put this in the constructor
+    mShooter1.set(shootOutput(ShooterConstants.shootPID.calculate(eShooter.getRate()), setpoint));
+    mShooter2.set(shootOutput(ShooterConstants.shootPID.calculate(eShooter.getRate()), setpoint));
+    if (ShooterConstants.shootPID.atSetpoint()) {
+      sFeeder.feedToShoot();
     }
-  
-    public static void shootpositive875() {
-      mShooter1.set(0.875);
-      mShooter2.set(0.875);
+    else {
+      sFeeder.feedZero();
     }
-  
-    public static void shootpositive8() {
-      mShooter1.set(0.8);
-      mShooter2.set(0.8);
-    }
-  
-    public static void shootpositive725() {
-      mShooter1.set(0.725);
-      mShooter2.set(0.725);
-    }
-  
-    public static void shootpositive65() {
-      mShooter1.set(0.65);
-      mShooter2.set(0.65);
-    }
-  
-    public static void shootpositive575() {
-      mShooter1.set(0.575);
-      mShooter2.set(0.575);
-    }
-  
-    public static void shootpositive5() {
-      mShooter1.set(0.5);
-      mShooter2.set(0.5);
-    }
-  
-    public static void shootzero() {
-      mShooter1.set(0);
-      mShooter2.set(0);
-    }
-  
-    public static void shootnegative() {
-      mShooter1.set(-1);
-      mShooter2.set(-1);
-    }
-  
-    public static void shootincrement() {
-      if(num < 0) {
-        num = num + 0.05;
-        System.out.println("YOUR SPEED IS: " + num);
+  }
+
+  public double shootOutput(double output, double setpoint) {
+    SmartDashboard.putNumber("input", output);
+    SmartDashboard.putNumber("setpointIn", setpoint);
+    output = output * 1.0; //TODO: Find encoder and motor ratio. The decrease in RPMs as the battery drains will make this difficult.
+    setpoint = setpoint * 1.0;
+    SmartDashboard.putNumber("output", output);
+    SmartDashboard.putNumber("setpointOut", setpoint);
+    if (output > setpoint) {
+      if (output > 1.0) {
+        return 1.0;
       }
       else {
-        System.out.println("MAXIMUM SPEED");
+        return output;
       }
     }
-
-    public static void shootresetincrement() {
-      num = 0.5;
-      System.out.println("YOUR SPEED HAS BEEN RESET TO: " + num);
+    else {
+      return setpoint;
     }
-
-    public static void shoot() {
-      mShooter1.set(num);
-      mShooter2.set(num);
-      System.out.println("YOU ARE SHOOTING AT: " + num);
-    }
-
-  // public static void shootvariable(Double num) {
-  //   mShooter1.set(num);
-  //   mShooter2.set(num);
-  // }
-
-  // public static PIDController shootPID = new PIDController(
-  //   kShootP, 
-  //   kShootI, 
-  //   kShootD 
-  //   // IDConstants.kDriveUpdateRate
-  // );
-
+  }
 }
