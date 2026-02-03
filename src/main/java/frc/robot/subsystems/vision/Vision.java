@@ -19,8 +19,8 @@ public class Vision extends SubsystemBase {
   private PIDController visionClimbRotationPID = new PIDController(5.0,0.0,0.0);
   private PIDController visionClimbDistancePID = new PIDController(5.0,0.0,0.0);
 
-  private String cameraShoot = "cameraShoot";
-  private String cameraIntake = "cameraIntake";
+  private String cameraShoot = "shoot";
+  private String cameraIntake = "intake";
 
   private int[] allTags = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32};
   private int[] allianceTags;
@@ -28,6 +28,7 @@ public class Vision extends SubsystemBase {
   private int[] climbTags;
 
   public Vision() {
+    SmartDashboard.putNumber("horizontal offset", Limelight.getTX(cameraShoot));
     visionShootRotationPID.setIZone(0.0); //TODO: Find acceptable IZone.
     visionShootRotationPID.setTolerance(0.0); //TODO: Find acceptable tolerance.
     visionShootDistancePID.setIZone(0.0); //TODO: Find acceptable IZone.
@@ -47,7 +48,7 @@ public class Vision extends SubsystemBase {
     //TODO: This method should align the robot for climbing.
   }
   
-
+  // RobotCentric vision drive
   public void visionShoot(Feeder sFeeder, Shooter sShooter) {
     Limelight.SetFiducialIDFiltersOverride(cameraShoot, shootTags);
     visionShootRotationPID.setSetpoint(0.0); //TODO: Find acceptable setpoint. If we shoot from a set angle, this can be moved to the constructor.
@@ -77,5 +78,14 @@ public class Vision extends SubsystemBase {
   public double driveOutput(double output) { // Not sure if I need sperate ones for direction and rotation.
     output = output * 1.0; //TODO: Find ratio for distance : drivetrain power
       return output;
+  }
+
+  public void visionDriveTowards() {
+    if (Limelight.getTV(cameraShoot)) {
+      RobotContainer.driveVision(0.0, 0.0, -1 * driveOutput(visionShootRotationPID.calculate(Limelight.getTX(cameraShoot))));
+    }
+    else {
+      RobotContainer.driveBrake();
+    }
   }
 }
