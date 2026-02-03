@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -22,7 +23,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -48,7 +51,7 @@ public class RobotContainer {
     private final static SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
@@ -67,11 +70,14 @@ public class RobotContainer {
     private static final Vision sVision = new Vision();
 
     public static SwerveDrivePoseEstimator eSwerveEstimator;
-    private SendableChooser<Command> autoSelect = new SendableChooser<Command>();
-    private final boolean isCompetition = false; // Change this to true when at a competition!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    private static SendableChooser<Command> autoSelect = new SendableChooser<Command>();
+    private static final boolean isCompetition = false; // Change this to true when at a competition!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     private static SlewRateLimiter Slewer1 = new SlewRateLimiter(2.0);
     private static SlewRateLimiter Slewer2 = new SlewRateLimiter(2.0);
+
+    private static Field2d field2d = new Field2d();
+    // private static boolean allianceBlue = DriverStation.MatchDataSender();  //TODO: I don't know how reliable this is.
 
     public RobotContainer() {
         configureBindings();
@@ -88,11 +94,11 @@ public class RobotContainer {
         //     )
         // );
 
-        // Also, to get rid of chattering while stationary we should set minimum inputs where the robot will idle if under those.
+        // To get rid of chattering while stationary we should set minimum inputs where the robot will idle if under those.
         sDrivetrain.setDefaultCommand(
             sDrivetrain.applyRequest(() ->  
-                drive.withVelocityX((Slewer1.calculate(calculateFieldX(joystick)) * MaxSpeed) * 0.5) // Drive forward with negative Y (forward)
-                    .withVelocityY((Slewer2.calculate(calculateFieldY(joystick)) * MaxSpeed) * 0.5) // Drive left with negative X (left)
+                drive.withVelocityX((Slewer1.calculate(calculateFieldX(joystick)) * MaxSpeed) * 0.5)
+                    .withVelocityY((Slewer2.calculate(calculateFieldY(joystick)) * MaxSpeed) * 0.5)
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
             )
         );
@@ -104,8 +110,8 @@ public class RobotContainer {
             sDrivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        joystick.leftTrigger().onTrue(new InstantCommand(() -> sShooter.shootUnload(sDrivetrain, sFeeder, sVision)));
-        joystick.leftBumper().onTrue(new InstantCommand(() -> sShooter.shootCancel(sDrivetrain, sFeeder)));
+        joystick.leftTrigger().onTrue(new InstantCommand(() -> sShooter.shootUnload(sFeeder, sVision)));
+        joystick.leftBumper().onTrue(new InstantCommand(() -> sShooter.shootCancel(sFeeder)));
         joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakeForward()));
         joystick.rightBumper().onTrue(new InstantCommand(() -> sIntake.intakeZero()));
 
@@ -137,6 +143,19 @@ public class RobotContainer {
         // joystick.y().whileTrue(new InstantCommand(() -> sIntake.intakerecall()));
 
         sDrivetrain.registerTelemetry(logger::telemeterize); //TODO: Might also be the cause of the signal logger still going
+    }
+
+    public static void driveVision(double vx, double vy, double vOmega) {
+        sDrivetrain.applyRequest(() -> drive.withVelocityX(vx).withVelocityY(vy).withRotationalRate(vOmega));
+    }
+
+    public static void driveIdle() {
+        final var idle = new SwerveRequest.Idle();
+        sDrivetrain.applyRequest(() -> idle);
+    }
+
+    public static void driveBrake() {
+        sDrivetrain.applyRequest(() -> brake);
     }
 
     public static double calculateFieldX(CommandXboxController controller) {
@@ -246,7 +265,7 @@ public class RobotContainer {
         return ModStates;
     }
 
-    public void buildAutoChooser() {
+    public static void buildAutoChooser() {
         autoSelect.setDefaultOption("Do Nothing", AutoBuilder.buildAuto("Do Nothing"));
         List<String> options = AutoBuilder.getAllAutoNames();
         if (isCompetition) {
@@ -262,5 +281,4 @@ public class RobotContainer {
             };
         }
     }
-
 }

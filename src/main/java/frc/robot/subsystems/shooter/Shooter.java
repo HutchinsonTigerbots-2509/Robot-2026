@@ -5,12 +5,11 @@
 package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.vision.Vision;
 
@@ -75,14 +74,18 @@ public class Shooter extends SubsystemBase {
     mShooter2.set(0.0);
   }
 
-  public void shootUnload(Drivetrain sDrivetrain, Feeder sFeeder, Vision sVision) {
-    //TODO: This method should align the drivetrain with the fuel hub and then call shootWithFeeder(sFeeder)
-    // Get camera output from shoot camera and and then align the robot with the april tags from the fuel hub
+  public void shootUnload(Feeder sFeeder, Vision sVision) { // I think this method will require RunCommands
+    if (sVision.isAligned("shoot")) {
+      RobotContainer.driveBrake();
+      shootWithFeeder(sFeeder);
+    }
+    else {
+      sVision.visionShoot();
+    }
   }
 
-  public void shootCancel(Drivetrain sDrivetrain, Feeder sFeeder) {
-    final var idle = new SwerveRequest.Idle(); //TODO: Probably not going to work. There is probably a better way.
-    sDrivetrain.applyRequest(() -> idle);
+  public void shootCancel(Feeder sFeeder) {
+    RobotContainer.driveIdle();
     sFeeder.feedZero();
     shootZero();
   }
