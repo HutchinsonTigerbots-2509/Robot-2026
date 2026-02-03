@@ -110,7 +110,7 @@ public class RobotContainer {
             sDrivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        joystick.leftTrigger().onTrue(new InstantCommand(() -> sShooter.shootUnload(sFeeder, sVision)));
+        joystick.leftTrigger().onTrue(new InstantCommand(() -> sVision.visionShoot(sFeeder, sShooter)));
         joystick.leftBumper().onTrue(new InstantCommand(() -> sShooter.shootCancel(sFeeder)));
         joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakeForward()));
         joystick.rightBumper().onTrue(new InstantCommand(() -> sIntake.intakeZero()));

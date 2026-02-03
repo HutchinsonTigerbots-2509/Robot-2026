@@ -19,15 +19,15 @@ public class Climber extends SubsystemBase {
 
   public TalonFX mClimber = new TalonFX(ClimberConstants.kClimbMotorId);
 
-  public void climbpositive() {
+  public void climbUp() {
     mClimber.set(1);
   }
 
-  public void climbzero() {
+  public void climbZero() {
     mClimber.set(0);
   }
 
-  public void climbnegative() {
+  public void climbDown() {
     mClimber.set(-1);
   }
 }

@@ -74,14 +74,9 @@ public class Shooter extends SubsystemBase {
     mShooter2.set(0.0);
   }
 
-  public void shootUnload(Feeder sFeeder, Vision sVision) { // I think this method will require RunCommands
-    if (sVision.isAligned("shoot")) {
-      RobotContainer.driveBrake();
-      shootWithFeeder(sFeeder);
-    }
-    else {
-      sVision.visionShoot();
-    }
+  public void shootUnload(Feeder sFeeder) { // I think this method will require RunCommands
+    RobotContainer.driveBrake();
+    shootWithFeeder(sFeeder);
   }
 
   public void shootCancel(Feeder sFeeder) {
