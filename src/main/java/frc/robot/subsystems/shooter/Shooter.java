@@ -34,7 +34,19 @@ public class Shooter extends SubsystemBase {
   public Double num = 0.5;
   public void shootincrement() {
     if(num < 1) {
-      num = num + 0.05;
+      num = num + 0.01;
+      System.out.println("YOUR SPEED IS: " + num);
+      SmartDashboard.putNumber("shooter speed", num);
+    }
+    else {
+      System.out.println("MAXIMUM SPEED");
+      SmartDashboard.putNumber("shooter speed", num);
+    }
+  }
+  
+  public void shootincrement10() {
+    if(num < 1) {
+      num = num + 0.10;
       System.out.println("YOUR SPEED IS: " + num);
       SmartDashboard.putNumber("shooter speed", num);
     }

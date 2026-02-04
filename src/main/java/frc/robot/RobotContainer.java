@@ -48,7 +48,7 @@ public class RobotContainer {
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final static SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
+    private final static SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -94,14 +94,13 @@ public class RobotContainer {
         //     )
         // );
 
-        // To get rid of chattering while stationary we should set minimum inputs where the robot will idle if under those.
-        sDrivetrain.setDefaultCommand(
-            sDrivetrain.applyRequest(() ->  
-                drive.withVelocityX((Slewer1.calculate(calculateFieldX(joystick)) * MaxSpeed) * 0.5)
-                    .withVelocityY((Slewer2.calculate(calculateFieldY(joystick)) * MaxSpeed) * 0.5)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
-            )
-        );
+        // sDrivetrain.setDefaultCommand(
+        //     sDrivetrain.applyRequest(() ->  
+        //         drive.withVelocityX((Slewer1.calculate(calculateFieldX(joystick)) * MaxSpeed) * 0.25)
+        //             .withVelocityY((Slewer2.calculate(calculateFieldY(joystick)) * MaxSpeed) * 0.25)
+        //             .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
+        //     )
+        // );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -111,9 +110,13 @@ public class RobotContainer {
         );
 
         joystick.leftTrigger().onTrue(new InstantCommand(() -> sVision.visionShoot(sFeeder, sShooter)));
-        joystick.leftBumper().onTrue(new InstantCommand(() -> sShooter.shootCancel(sFeeder)));
-        joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakeForward()));
+        // joystick.leftBumper().onTrue(new InstantCommand(() -> sShooter.shootCancel(sFeeder)));
+        // joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakeForward()));
         joystick.rightBumper().onTrue(new InstantCommand(() -> sIntake.intakeZero()));
+
+        joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakenum()));
+        joystick.leftBumper().onTrue(sDrivetrain.runOnce(sDrivetrain::seedFieldCentric));
+        // joystick.a().whileTrue(new RunCommand(() -> sVision.validtar())).onFalse(new RunCommand(() -> driveIdle()));
 
         // VVVV Generated bindings VVVV
 
@@ -135,17 +138,19 @@ public class RobotContainer {
         // joystick.a().whileTrue(new RunCommand(() -> sShooter.shootnum())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
         // joystick.x().onTrue(new InstantCommand(() -> sShooter.shootincrement()));
         // joystick.b().onTrue(new InstantCommand(() -> sShooter.shootresetincrement()));
-        // joystick.y().whileTrue(new InstantCommand(() -> sShooter.shootrecall()));
+        // joystick.y().whileTrue(new InstantCommand(() -> sShooter.shootincrement10()));
 
         // joystick.a().whileTrue(new RunCommand(() -> sIntake.intakenum())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
         // joystick.x().onTrue(new InstantCommand(() -> sIntake.intakeincrement()));
         // joystick.b().onTrue(new InstantCommand(() -> sIntake.intakeresetnum()));
-        // joystick.y().whileTrue(new InstantCommand(() -> sIntake.intakerecall()));
+        // joystick.y().whileTrue(new InstantCommand(() -> sIntake.intakeincrement10()));
 
+        // joystick.x().whileTrue(new RunCommand(() -> sVision.visionIntake(sIntake))).onFalse(new RunCommand(() -> sIntake.intakeZero()));
+        
         sDrivetrain.registerTelemetry(logger::telemeterize); //TODO: Might also be the cause of the signal logger still going
     }
 
-    public static void driveVision(double vx, double vy, double vOmega) {
+    public static void driveVision(double vx, double vy, double vOmega) { // This method does not appear to work
         sDrivetrain.applyRequest(() -> drive.withVelocityX(vx).withVelocityY(vy).withRotationalRate(vOmega));
     }
 

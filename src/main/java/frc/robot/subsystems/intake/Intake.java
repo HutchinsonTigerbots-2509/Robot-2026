@@ -45,6 +45,18 @@ public class Intake extends SubsystemBase {
     }
   }
 
+  public void intakeincrement10() {
+    if(num > -1) {
+      num = num - 0.1;
+      System.out.println("YOUR SPEED IS: " + num);
+      SmartDashboard.putNumber("intake speed", num);
+    }
+    else {
+      System.out.println("MAXIMUM SPEED");
+      SmartDashboard.putNumber("intake speed", num);
+    }
+  }
+
   public void intakeresetnum() {
     num = -0.10;
     System.out.println("YOUR SPEED HAS BEEN RESET TO: " + num);
