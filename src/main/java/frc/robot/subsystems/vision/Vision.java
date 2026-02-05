@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
@@ -19,6 +20,8 @@ public class Vision extends SubsystemBase {
   private PIDController visionShootDistancePID = new PIDController(5.0,0.0,0.0);
   private PIDController visionClimbRotationPID = new PIDController(5.0,0.0,0.0);
   private PIDController visionClimbDistancePID = new PIDController(5.0,0.0,0.0);
+
+  private PIDController visionTestPID = new PIDController(5.0,0.0,0.0);
 
   private String cameraShoot = "limelight-shoot";
   private String cameraIntake = "limelight-intake";
@@ -37,6 +40,10 @@ public class Vision extends SubsystemBase {
     visionClimbRotationPID.setTolerance(0.0); //TODO: Find acceptable tolerance.
     visionClimbDistancePID.setIZone(0.0); //TODO: Find acceptable IZone.
     visionClimbDistancePID.setTolerance(0.0); //TODO: Find acceptable tolerance.
+
+    
+    visionTestPID.setIZone(0.0);
+    visionTestPID.setTolerance(0.5);
   }
 
   @Override
@@ -47,63 +54,20 @@ public class Vision extends SubsystemBase {
   public void visionClimb() {
     //TODO: This method should align the robot for climbing.
   }
-  
-  // RobotCentric vision drive
+
   public void visionShoot(Feeder sFeeder, Shooter sShooter) {
-    Limelight.SetFiducialIDFiltersOverride(cameraShoot, shootTags);
-    visionShootRotationPID.setSetpoint(0.0); //TODO: Find acceptable setpoint. If we shoot from a set angle, this can be moved to the constructor.
-    visionShootDistancePID.setSetpoint(0.0); //TODO: Find acceptable setpoint. If we shoot from a set distance, this can be moved to the constructor.
-    boolean loop = true;
-    while (loop) {
-      if (Limelight.getTV(cameraShoot)) {
-        if (visionShootRotationPID.atSetpoint()) {
-          if (visionShootDistancePID.atSetpoint()) {
-            sShooter.shootUnload(sFeeder);
-            loop = false;
-          }
-          else { // This probably won't work.
-            RobotContainer.driveVision(driveOutput(visionShootRotationPID.calculate(Limelight.getTargetPose3d_CameraSpace("cameraShoot").getZ())), 0.0, 0.0);
-          }
-        }
-        else {
-          RobotContainer.driveVision(0.0, 0.0, driveOutput(visionShootRotationPID.calculate(Limelight.getTX(cameraShoot))));
-        }
-      }
-      else {
-        RobotContainer.driveVision(0.0, 0.0, -0.1); // Spins the robot until it finds a shoot April tag
-      }
-    }
+    //TODO: This method should align the robot for shooting.
   }
 
-  public double driveOutput(double output) { // Not sure if I need sperate ones for direction and rotation.
-    output = output * 1.0; //TODO: Find ratio for distance : drivetrain power
-      return output;
+  public void driveOutput(double vx, double vy, double vOmega) {
+    vx = vx * RobotContainer.MaxAngularRate;
+    RobotContainer.driveVision(0.0, 0.0, driveOutput(visionTestPID.calculate(Limelight.getTX(cameraShoot))));
   }
 
-  public void visionDriveTowardsAprilTag() {
-    if (Limelight.getTV(cameraShoot)) {
-      if (Limelight.getTX(cameraShoot) < 1.0) {
-        RobotContainer.driveVision(0.1, 0.0,0.0);
-      }
-      else {
-        RobotContainer.driveVision(0.0, 0.0, driveOutput(visionShootRotationPID.calculate(Limelight.getTX(cameraShoot))));
-      }
+  public void visionTowards() {
+    while (Limelight.getTV(cameraShoot)) {
+      
     }
-    else {
-      RobotContainer.driveVision(0.0, 0.0, -0.1);
-    }
-  }
-
-  public void drivev() {
-    RobotContainer.driveVision(0.1, 0.0,0.0);
-  }
-
-  public void visionIntake(Intake sIntake) {
-    if (Limelight.getTV(cameraShoot)) {
-      sIntake.intakenum();
-    }
-    else {
-      System.out.println("No Target");
-    }
+    RobotContainer.driveIdle();
   }
 }

@@ -94,13 +94,13 @@ public class RobotContainer {
         //     )
         // );
 
-        // sDrivetrain.setDefaultCommand(
-        //     sDrivetrain.applyRequest(() ->  
-        //         drive.withVelocityX((Slewer1.calculate(calculateFieldX(joystick)) * MaxSpeed) * 0.25)
-        //             .withVelocityY((Slewer2.calculate(calculateFieldY(joystick)) * MaxSpeed) * 0.25)
-        //             .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
-        //     )
-        // );
+        sDrivetrain.setDefaultCommand(
+            sDrivetrain.applyRequest(() ->  
+                drive.withVelocityX((Slewer1.calculate(calculateFieldX(joystick)) * MaxSpeed) * 0.25)
+                    .withVelocityY((Slewer2.calculate(calculateFieldY(joystick)) * MaxSpeed) * 0.25)
+                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
+            )
+        );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -150,17 +150,17 @@ public class RobotContainer {
         sDrivetrain.registerTelemetry(logger::telemeterize); //TODO: Might also be the cause of the signal logger still going
     }
 
-    public static void driveVision(double vx, double vy, double vOmega) { // This method does not appear to work
-        sDrivetrain.applyRequest(() -> drive.withVelocityX(vx).withVelocityY(vy).withRotationalRate(vOmega));
+    public static void driveVision(double vx, double vy, double vOmega) {
+        sDrivetrain.applyRequest(() -> drive.withVelocityX(vx).withVelocityY(vy).withRotationalRate(vOmega)).execute();
     }
 
     public static void driveIdle() {
         final var idle = new SwerveRequest.Idle();
-        sDrivetrain.applyRequest(() -> idle);
+        sDrivetrain.applyRequest(() -> idle).execute();
     }
 
     public static void driveBrake() {
-        sDrivetrain.applyRequest(() -> brake);
+        sDrivetrain.applyRequest(() -> brake).execute();
     }
 
     public static double calculateFieldX(CommandXboxController controller) {
