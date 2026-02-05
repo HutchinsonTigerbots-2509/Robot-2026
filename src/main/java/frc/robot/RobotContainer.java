@@ -48,7 +48,7 @@ public class RobotContainer {
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final static SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+    private final static SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -82,6 +82,8 @@ public class RobotContainer {
     public RobotContainer() {
         configureBindings();
         SmartDashboard.putData("Auto Chooser", AutoBuilder.buildAutoChooser());
+        SmartDashboard.putNumber("MaxSpeed", MaxSpeed);
+        SmartDashboard.putNumber("MaxAngularRate", MaxAngularRate);
     }
 
     private void configureBindings() {
@@ -117,6 +119,7 @@ public class RobotContainer {
         joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakenum()));
         joystick.leftBumper().onTrue(sDrivetrain.runOnce(sDrivetrain::seedFieldCentric));
         // joystick.a().whileTrue(new RunCommand(() -> sVision.validtar())).onFalse(new RunCommand(() -> driveIdle()));
+        joystick.x().whileTrue(new RunCommand(() -> sVision.driveToTag())).onFalse(new RunCommand(() -> driveIdle()));
 
         // VVVV Generated bindings VVVV
 
@@ -144,8 +147,6 @@ public class RobotContainer {
         // joystick.x().onTrue(new InstantCommand(() -> sIntake.intakeincrement()));
         // joystick.b().onTrue(new InstantCommand(() -> sIntake.intakeresetnum()));
         // joystick.y().whileTrue(new InstantCommand(() -> sIntake.intakeincrement10()));
-
-        // joystick.x().whileTrue(new RunCommand(() -> sVision.visionIntake(sIntake))).onFalse(new RunCommand(() -> sIntake.intakeZero()));
         
         sDrivetrain.registerTelemetry(logger::telemeterize); //TODO: Might also be the cause of the signal logger still going
     }
@@ -161,6 +162,14 @@ public class RobotContainer {
 
     public static void driveBrake() {
         sDrivetrain.applyRequest(() -> brake).execute();
+    }
+
+    public static double getMaxSpeed() {
+        return MaxSpeed;
+    }
+
+    public static double getMaxAngularRate() {
+        return MaxAngularRate;
     }
 
     public static double calculateFieldX(CommandXboxController controller) {
