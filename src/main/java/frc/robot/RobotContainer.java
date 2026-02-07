@@ -77,7 +77,10 @@ public class RobotContainer {
     private static SlewRateLimiter Slewer2 = new SlewRateLimiter(2.0);
 
     private static Field2d field2d = new Field2d();
-    // private static boolean allianceBlue = DriverStation.MatchDataSender();  //TODO: I don't know how reliable this is.
+    private static Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
+    public static boolean magicBool;
+    public static double magicNum;
+
 
     public RobotContainer() {
         configureBindings();
@@ -111,15 +114,16 @@ public class RobotContainer {
             sDrivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        joystick.leftTrigger().onTrue(new InstantCommand(() -> sVision.visionShoot(sFeeder, sShooter)));
-        // joystick.leftBumper().onTrue(new InstantCommand(() -> sShooter.shootCancel(sFeeder)));
-        // joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakeForward()));
-        joystick.rightBumper().onTrue(new InstantCommand(() -> sIntake.intakeZero()));
+        // joystick.leftTrigger().onTrue(new InstantCommand(() -> sVision.visionShoot(sFeeder, sShooter)));
+        // // joystick.leftBumper().onTrue(new InstantCommand(() -> sShooter.shootCancel(sFeeder)));
+        // // joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakeForward()));
+        // joystick.rightBumper().onTrue(new InstantCommand(() -> sIntake.intakeZero()));
 
-        joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakenum()));
-        joystick.leftBumper().onTrue(sDrivetrain.runOnce(sDrivetrain::seedFieldCentric));
-        // joystick.a().whileTrue(new RunCommand(() -> sVision.validtar())).onFalse(new RunCommand(() -> driveIdle()));
-        joystick.x().whileTrue(new RunCommand(() -> sVision.driveToTag())).onFalse(new RunCommand(() -> driveIdle()));
+        // joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakenum()));
+        joystick.povCenter().onTrue(new InstantCommand(() -> sDrivetrain.getPigeon2().reset()));
+        joystick.povCenter().onTrue(new InstantCommand(() -> System.out.println("Yaw: " + sDrivetrain.getPigeon2().getYaw())));
+        // // joystick.a().whileTrue(new RunCommand(() -> sVision.validtar())).onFalse(new RunCommand(() -> driveIdle()));
+        // joystick.x().whileTrue(new RunCommand(() -> sVision.driveToTag())).onFalse(new RunCommand(() -> driveIdle()));
 
         // VVVV Generated bindings VVVV
 
@@ -138,17 +142,26 @@ public class RobotContainer {
         // // Reset the field-centric heading on left bumper press.
         // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        // joystick.a().whileTrue(new RunCommand(() -> sShooter.shootnum())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
-        // joystick.x().onTrue(new InstantCommand(() -> sShooter.shootincrement()));
-        // joystick.b().onTrue(new InstantCommand(() -> sShooter.shootresetincrement()));
-        // joystick.y().whileTrue(new InstantCommand(() -> sShooter.shootincrement10()));
+        joystick.a().whileTrue(new RunCommand(() -> sShooter.shootnum())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
+        joystick.x().onTrue(new InstantCommand(() -> sShooter.shootincrement()));
+        joystick.b().onTrue(new InstantCommand(() -> sShooter.shootresetincrement()));
+        joystick.y().whileTrue(new InstantCommand(() -> sShooter.shootincrement10()));
 
         // joystick.a().whileTrue(new RunCommand(() -> sIntake.intakenum())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
         // joystick.x().onTrue(new InstantCommand(() -> sIntake.intakeincrement()));
         // joystick.b().onTrue(new InstantCommand(() -> sIntake.intakeresetnum()));
         // joystick.y().whileTrue(new InstantCommand(() -> sIntake.intakeincrement10()));
-        
-        sDrivetrain.registerTelemetry(logger::telemeterize); //TODO: Might also be the cause of the signal logger still going
+
+        joystick.leftTrigger().whileTrue(new RunCommand(() -> sFeeder.feednum())).onFalse(new InstantCommand(() -> sFeeder.feedzero()));
+        joystick.rightBumper().onTrue(new InstantCommand(() -> sFeeder.feedincrement()));
+        joystick.leftBumper().onTrue(new InstantCommand(() -> sFeeder.feedincrementreset()));
+        joystick.rightTrigger().whileTrue(new InstantCommand(() -> sFeeder.feedincrement10()));
+
+        joystick.povUp().whileTrue(new InstantCommand(() -> sShooter.shoot18(sFeeder))).onFalse(new InstantCommand(() -> sShooter.shootCancel(sFeeder)));
+
+
+
+        // sDrivetrain.registerTelemetry(logger::telemeterize); //TODO: Might also be the cause of the signal logger still going
     }
 
     public static void driveVision(double vx, double vy, double vOmega) {
@@ -170,6 +183,17 @@ public class RobotContainer {
 
     public static double getMaxAngularRate() {
         return MaxAngularRate;
+    }
+
+    public static boolean getAllianceBlue() {
+        if (alliance.isPresent()) {
+            if (alliance.get() == DriverStation.Alliance.Blue) {
+                return true;
+            } else if (alliance.get() == DriverStation.Alliance.Red) {
+                return false;
+            }
+        }
+        return magicBool;
     }
 
     public static double calculateFieldX(CommandXboxController controller) {

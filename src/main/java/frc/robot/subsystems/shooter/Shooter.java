@@ -16,30 +16,33 @@ import frc.robot.subsystems.vision.Vision;
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
 
-  public TalonFX mShooter1 = new TalonFX(ShooterConstants.kShoot1MotorId);
-  public TalonFX mShooter2 = new TalonFX(ShooterConstants.kShoot2MotorId);
-  public Encoder eShooter = new Encoder(8, 7); //TODO: Put in actual encoder channels
+  private TalonFX mShooter1 = new TalonFX(ShooterConstants.kShoot1MotorId);
+  private TalonFX mShooter2 = new TalonFX(ShooterConstants.kShoot2MotorId);
+  private Encoder eShooter = new Encoder(1, 2); //TODO: Put in actual encoder channels
   
   public Shooter() {
+    SmartDashboard.putNumber("Shooteractual", 0);
     SmartDashboard.putNumber("shooter speed", num);
-    ShooterConstants.shootPID.setIZone(0.0); //TODO: Find acceptable IZone.
+    SmartDashboard.putNumber("Shooter RPMs", rpm);
     ShooterConstants.shootPID.setTolerance(0.0); //TODO: Find acceptable tolerance.
   }
   
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+        // SmartDashboard.putNumber("Shooter RPMs", rpm);
+    rpm = eShooter.getRate();
   }
 
-  public Double num = 0.5;
+  private Double num = 0.5;
+  private Double rpm = eShooter.getRate();
+  private Double maxRPM;
   public void shootincrement() {
     if(num < 1) {
       num = num + 0.01;
-      System.out.println("YOUR SPEED IS: " + num);
       SmartDashboard.putNumber("shooter speed", num);
     }
     else {
-      System.out.println("MAXIMUM SPEED");
       SmartDashboard.putNumber("shooter speed", num);
     }
   }
@@ -47,30 +50,28 @@ public class Shooter extends SubsystemBase {
   public void shootincrement10() {
     if(num < 1) {
       num = num + 0.10;
-      System.out.println("YOUR SPEED IS: " + num);
       SmartDashboard.putNumber("shooter speed", num);
     }
     else {
-      System.out.println("MAXIMUM SPEED");
       SmartDashboard.putNumber("shooter speed", num);
     }
   }
 
   public void shootresetincrement() {
     num = 0.5;
-    System.out.println("YOUR SPEED HAS BEEN RESET TO: " + num);
     SmartDashboard.putNumber("shooter speed", num);
   }
 
   public void shootnum() {
     mShooter1.set(num);
     mShooter2.set(num);
-    System.out.println("YOU ARE SHOOTING AT: " + num);
     SmartDashboard.putNumber("shooter speed", num);
+    // SmartDashboard.putNumber("Shooteractual", maxSpeed(ShooterConstants.shootPID.calculate(getRPMProp(eShooter.getRate()))));
+    SmartDashboard.putNumber("Shooter RPMs", rpm);
+    System.out.println(rpm);
   }
 
   public void shootrecall() {
-    System.out.println("YOUR SPEED IS: " + num);
     SmartDashboard.putNumber("shooter speed", num);
   }
 
@@ -87,12 +88,10 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shootUnload(Feeder sFeeder) { // I think this method will require RunCommands
-    RobotContainer.driveBrake();
     shootWithFeeder(sFeeder);
   }
 
   public void shootCancel(Feeder sFeeder) {
-    RobotContainer.driveIdle();
     sFeeder.feedZero();
     shootZero();
   }
@@ -128,5 +127,30 @@ public class Shooter extends SubsystemBase {
     else {
       return setpoint;
     }
+  }
+
+  public void shoot18(Feeder sFeeder) {
+    mShooter1.set(maxSpeed(ShooterConstants.shootPID.calculate(getRPMProp(eShooter.getRate()))));
+    mShooter2.set(maxSpeed(ShooterConstants.shootPID.calculate(getRPMProp(eShooter.getRate()))));
+    SmartDashboard.putNumber("Shooteractual", maxSpeed(ShooterConstants.shootPID.calculate(getRPMProp(eShooter.getRate()))));
+    SmartDashboard.putNumber("Shooter RPMs", rpm);
+    System.out.println(rpm);
+    if (ShooterConstants.shootPID.atSetpoint()) {
+      sFeeder.feednum();
+    }
+    else {
+      sFeeder.feedzero();
+    }
+  }
+
+  private double maxSpeed(Double output) {
+    if (ShooterConstants.shootPID.calculate(eShooter.getRate()) < 1.0) {
+      return output;
+    }
+    return 1.0;
+  }
+
+  private double getRPMProp(double rpm) {
+    return rpm / maxRPM;
   }
 }

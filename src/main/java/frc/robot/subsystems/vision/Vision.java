@@ -8,9 +8,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.feeder.Feeder;
-import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
 public class Vision extends SubsystemBase {
@@ -21,12 +20,20 @@ public class Vision extends SubsystemBase {
   private PIDController visionClimbRotationPID = new PIDController(5.0,0.0,0.0);
   private PIDController visionClimbDistancePID = new PIDController(5.0,0.0,0.0);
 
-  private String cameraShoot = "limelight-shoot";
-  private String cameraIntake = "limelight-intake";
+  private final String cameraShoot = "limelight-shoot";
+  private final String cameraIntake = "limelight-intake";
 
-  private int[] allTags = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32};
-  private int[] allianceTags;
-  private int[] shootTags;
+  private final double kShootDistance = 0.0; //TODO: Find correct shooting distance.
+  private final double kShootDistanceTolerance = 0.0;
+  private final double kShootAngleTolerance = 0.0;
+  private final double kShootHigher = kShootDistance + kShootDistanceTolerance;
+  private final double kShootLower = kShootDistance - kShootDistanceTolerance;
+
+  private final double blueHubX = 182.11; //TODO: Find correct hub coordinates. These should be from the Welded Perimeter.
+  private final double blueHubY = 158.34;
+  private final double redHubX = 469.11;
+  private final double redHubY = 158.84;
+
   private int[] climbTags;
 
   public Vision() {
@@ -43,23 +50,6 @@ public class Vision extends SubsystemBase {
     // SmartDashboard.putNumber("yvelo", veloy);
   }
 
-  public void visionClimb() {
-    //TODO: This method should align the robot for climbing.
-  }
-
-  public void visionShoot(Feeder sFeeder, Shooter sShooter) {
-    //TODO: This method should align the robot for shooting.
-  }
-
-  public void visionTowards() {
-    while (Limelight.getTV(cameraShoot)) {
-      if (visionShootRotationPID.atSetpoint()) {
-
-      }
-    }
-    RobotContainer.driveIdle();
-  }
-
   public double visionHP(double hp) { // This method returns the proportion of how far away we are from the April tag horizontally in degrees relative to the cameras field of view.
     return hp/41.0;
   }
@@ -70,32 +60,12 @@ public class Vision extends SubsystemBase {
 
   public double velox() {
     // return visionShootRotationPID.calculate(visionHP(Limelight.getTX(cameraShoot)));
-    return calculateOutput("r", visionShootRotationPID.calculate(visionHP(Limelight.getTX(cameraShoot))) * RobotContainer.getMaxAngularRate());
-  }
-
-  public double calculateOutput(String d, double output) {
-    switch(d) {
-      case "l": 
-        if (output < RobotContainer.getMaxSpeed()) {
-          return output;
-        }
-        else {
-          return RobotContainer.getMaxSpeed();
-        }
-      case "r":
-        if (output < RobotContainer.getMaxAngularRate()) {
-          return output;
-        }
-        else {
-          return RobotContainer.getMaxAngularRate();
-        }
-    }
-    return 0.0;
+    return getCalculateOutput(2, visionShootRotationPID.calculate(visionHP(Limelight.getTX(cameraShoot))) * RobotContainer.getMaxAngularRate());
   }
 
   public void turnToTag() {
     if (Limelight.getTV(cameraShoot)) {
-      RobotContainer.driveVision(0.0, 0.0, calculateOutput("r", visionShootRotationPID.calculate(visionHP(Limelight.getTX(cameraShoot)))));
+      RobotContainer.driveVision(0.0, 0.0, getCalculateOutput(2, visionShootRotationPID.calculate(visionHP(Limelight.getTX(cameraShoot)))));
     }
   }
 
@@ -106,5 +76,143 @@ public class Vision extends SubsystemBase {
     else {
       turnToTag();
     }
+  }
+
+  // VVVVV Comp vision methods below VVVVV
+
+  public void visionClimb(Climber sClimber) {
+    //TODO: This method should align the robot for climbing.
+  }
+
+  public void visionShoot(Feeder sFeeder, Shooter sShooter) {
+    if (correctShootPos()) {
+      RobotContainer.driveBrake();
+      sShooter.shootUnload(sFeeder);
+    } else if (!correctShootPos()) {
+      driveToShootPos();
+    }
+  }
+
+  public void visionCancel(Climber sClimber, Feeder sFeeder, Shooter sShooter) {
+    RobotContainer.driveIdle();
+    sShooter.shootCancel(sFeeder);
+  }
+
+  private boolean correctShootPos() {
+    if (getDistanceToHub() < kShootHigher && getDistanceToHub() > kShootLower && getDifferenceOmega() < kShootAngleTolerance) {
+      return true;
+    }
+    return false;
+  }
+  
+  private void driveToShootPos() {
+    if (getShootingArea()) {
+      RobotContainer.driveVision(
+        getCalculateOutput(1, visionShootDistancePID.calculate(getPropX(getDifferenceX()))), 
+        getCalculateOutput(1, visionShootDistancePID.calculate(getPropY(getDifferenceY()))), 
+        getCalculateOutput(2, visionShootDistancePID.calculate(getPropOmega(getDifferenceOmega()))));
+    }
+    RobotContainer.driveVision(0.0, 0.0, RobotContainer.getMaxAngularRate());
+  }
+  
+  private double getDifferenceX() {
+    return kShootDistance * Math.cos(getAngleShoot());
+  }
+
+  private double getDifferenceY() {
+    return kShootDistance * Math.sin(getAngleShoot());
+  }
+
+  private double getDifferenceOmega() {
+    return Limelight.getBotPose2d(cameraShoot).getRotation().getRadians() - getAngleShoot();
+  }
+
+  private double getAngleShoot() {
+    return Math.atan(getDistanceToHubY() / getDistanceToHuBX());
+  }
+
+  private boolean getShootingArea() {
+    if (RobotContainer.getAllianceBlue()) {
+      if (Limelight.getBotPose2d(cameraShoot).getX() < getHubX()) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (!RobotContainer.getAllianceBlue()){
+      if (Limelight.getBotPose2d(cameraShoot).getX() > getHubX()) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return RobotContainer.magicBool;
+  }
+ 
+  private double getDistanceToHub() {
+    return Math.sqrt((getDistanceToHubY() * getDistanceToHubY()) / (getDistanceToHuBX() * getDistanceToHuBX()));
+  }
+
+  private double getDistanceToHuBX() {
+    return Limelight.getBotPose2d(cameraShoot).getX() - getHubX();
+  }
+
+  private double getDistanceToHubY() {
+    return Limelight.getBotPose2d(cameraShoot).getY() - getHubY();
+  }
+
+  private double getHubX() {
+    if (RobotContainer.getAllianceBlue()) {
+      return blueHubX;
+    } else if (!RobotContainer.getAllianceBlue()){
+      return redHubX;
+    }
+    return RobotContainer.magicNum;
+  }
+
+  private double getHubY() {
+    if (RobotContainer.getAllianceBlue()) {
+      return blueHubY;
+    } else if (!RobotContainer.getAllianceBlue()){
+      return redHubY;
+    }
+    return RobotContainer.magicNum;
+  }
+
+  private double getPropX(double x) {
+    return x / blueHubX;
+  }
+
+  private double getPropY(double y) {
+    return y / blueHubY;
+  }
+
+  private double getPropOmega(double o) {
+    return o / 41.0;
+  }
+
+  private double getCalculateOutput(int i, double output) {
+    switch(i) {
+      case 1: 
+        if (output < RobotContainer.getMaxSpeed() && output > -RobotContainer.getMaxSpeed()) {
+          return output;
+        }
+        else {
+          if (output > RobotContainer.getMaxSpeed()) {
+            return RobotContainer.getMaxSpeed();
+          }
+          return -RobotContainer.getMaxSpeed();
+        }
+      case 2:
+        if (output < RobotContainer.getMaxAngularRate() && output > -RobotContainer.getMaxAngularRate()) {
+          return output;
+        }
+        else {
+          if (output > RobotContainer.getMaxAngularRate()) {
+            return RobotContainer.getMaxAngularRate();
+          }
+          return -RobotContainer.getMaxAngularRate();
+        }
+    }
+    return RobotContainer.magicNum;
   }
 }

@@ -17,7 +17,7 @@ public class Robot extends TimedRobot {
 
     /* log and replay timestamp and joystick data */   //TODO: This is probably the cause of the SignalLogger starting everytime
     private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
-        .withTimestampReplay()
+        // .withTimestampReplay()
         .withJoystickReplay();
 
     public Robot() {
