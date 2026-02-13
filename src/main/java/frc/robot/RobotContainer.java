@@ -120,8 +120,8 @@ public class RobotContainer {
         // joystick.rightBumper().onTrue(new InstantCommand(() -> sIntake.intakeZero()));
 
         // joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakenum()));
-        joystick.povCenter().onTrue(new InstantCommand(() -> sDrivetrain.getPigeon2().reset()));
-        joystick.povCenter().onTrue(new InstantCommand(() -> System.out.println("Yaw: " + sDrivetrain.getPigeon2().getYaw())));
+        joystick.povUp().onTrue(new InstantCommand(() -> sDrivetrain.getPigeon2().reset()));
+        joystick.povUp().onTrue(new InstantCommand(() -> System.out.println("Yaw: " + sDrivetrain.getPigeon2().getYaw())));
         // // joystick.a().whileTrue(new RunCommand(() -> sVision.validtar())).onFalse(new RunCommand(() -> driveIdle()));
         // joystick.x().whileTrue(new RunCommand(() -> sVision.driveToTag())).onFalse(new RunCommand(() -> driveIdle()));
 
@@ -157,9 +157,7 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(new InstantCommand(() -> sFeeder.feedincrementreset()));
         joystick.rightTrigger().whileTrue(new InstantCommand(() -> sFeeder.feedincrement10()));
 
-        joystick.povUp().whileTrue(new InstantCommand(() -> sShooter.shoot18(sFeeder))).onFalse(new InstantCommand(() -> sShooter.shootCancel(sFeeder)));
-
-
+        joystick.povDown().whileTrue(new RunCommand(() -> sShooter.shootWithPID())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
 
         // sDrivetrain.registerTelemetry(logger::telemeterize); //TODO: Might also be the cause of the signal logger still going
     }

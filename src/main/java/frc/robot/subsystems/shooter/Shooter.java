@@ -9,9 +9,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.feeder.Feeder;
-import frc.robot.subsystems.vision.Vision;
 
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
@@ -19,24 +17,36 @@ public class Shooter extends SubsystemBase {
   private TalonFX mShooter1 = new TalonFX(ShooterConstants.kShoot1MotorId);
   private TalonFX mShooter2 = new TalonFX(ShooterConstants.kShoot2MotorId);
   private Encoder eShooter = new Encoder(1, 2); //TODO: Put in actual encoder channels
+
+  private Double kOffset; //This should be the shooter speed target.
+  private Double maxRPM = 120000.0; //This is an approximation.
+  private Double max2RPM = 0.0;
   
   public Shooter() {
-    SmartDashboard.putNumber("Shooteractual", 0);
-    SmartDashboard.putNumber("shooter speed", num);
-    SmartDashboard.putNumber("Shooter RPMs", rpm);
-    ShooterConstants.shootPID.setTolerance(0.0); //TODO: Find acceptable tolerance.
+    // ShooterConstants.shootPID.setTolerance(0.0);
+    // ShooterConstants.shootPID.setSetpoint(0.0); //TODO: Find acceptable setpoint.
+    kOffset = 0.0; // Find an acceptable offset.
+
+    // FOR TESTING PURPOSES
+    ShooterConstants.shootPID.setSetpoint(0.9);
+    kOffset = 0.6;
   }
   
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-        // SmartDashboard.putNumber("Shooter RPMs", rpm);
     rpm = eShooter.getRate();
+    finder();
+    SmartDashboard.putNumber("Shooter RPMs", rpm);
+    SmartDashboard.putNumber("PID Output", maxSpeed(ShooterConstants.shootPID.calculate(propSpeed())));
+    SmartDashboard.putNumber("Max RPMs", max2RPM);
+    SmartDashboard.putNumber("Motor Ouput", maxSpeed(ShooterConstants.shootPID.calculate(eShooter.getRate()) + kOffset));
+    SmartDashboard.putNumber("Proportion Ouput", propSpeed());
+    SmartDashboard.putNumber("PID2 Ouput", ShooterConstants.shootPID.calculate(propSpeed()));
   }
 
   private Double num = 0.5;
   private Double rpm = eShooter.getRate();
-  private Double maxRPM;
   public void shootincrement() {
     if(num < 1) {
       num = num + 0.01;
@@ -68,7 +78,6 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("shooter speed", num);
     // SmartDashboard.putNumber("Shooteractual", maxSpeed(ShooterConstants.shootPID.calculate(getRPMProp(eShooter.getRate()))));
     SmartDashboard.putNumber("Shooter RPMs", rpm);
-    System.out.println(rpm);
   }
 
   public void shootrecall() {
@@ -87,26 +96,9 @@ public class Shooter extends SubsystemBase {
     mShooter2.set(0.0);
   }
 
-  public void shootUnload(Feeder sFeeder) { // I think this method will require RunCommands
-    shootWithFeeder(sFeeder);
-  }
-
   public void shootCancel(Feeder sFeeder) {
     sFeeder.feedZero();
     shootZero();
-  }
-
-  public void shootWithFeeder(Feeder sFeeder) { //TODO: We are going to need to add an encoder to the shooter
-    double setpoint = 0.0; //TODO: Find acceptable setpoint. If we shoot from a set distance, this can be moved to the constructor.
-    ShooterConstants.shootPID.setSetpoint(setpoint);
-    mShooter1.set(shootOutput(ShooterConstants.shootPID.calculate(eShooter.getRate()), setpoint));
-    mShooter2.set(shootOutput(ShooterConstants.shootPID.calculate(eShooter.getRate()), setpoint));
-    if (ShooterConstants.shootPID.atSetpoint()) {
-      sFeeder.feedToShoot();
-    }
-    else {
-      sFeeder.feedZero();
-    }
   }
 
   public double shootOutput(double output, double setpoint) {
@@ -129,28 +121,29 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  public void shoot18(Feeder sFeeder) {
-    mShooter1.set(maxSpeed(ShooterConstants.shootPID.calculate(getRPMProp(eShooter.getRate()))));
-    mShooter2.set(maxSpeed(ShooterConstants.shootPID.calculate(getRPMProp(eShooter.getRate()))));
-    SmartDashboard.putNumber("Shooteractual", maxSpeed(ShooterConstants.shootPID.calculate(getRPMProp(eShooter.getRate()))));
-    SmartDashboard.putNumber("Shooter RPMs", rpm);
-    System.out.println(rpm);
-    if (ShooterConstants.shootPID.atSetpoint()) {
-      sFeeder.feednum();
-    }
-    else {
-      sFeeder.feedzero();
-    }
+  public void shootWithPID() {
+    mShooter1.set(maxSpeed(ShooterConstants.shootPID.calculate(propSpeed()) + kOffset));
+    mShooter2.set(maxSpeed(ShooterConstants.shootPID.calculate(propSpeed()) + kOffset));
   }
 
   private double maxSpeed(Double output) {
-    if (ShooterConstants.shootPID.calculate(eShooter.getRate()) < 1.0) {
+    if (output < 1.0 && output > 0.0) {
       return output;
+    } else if (output > 1.0) {
+      return 1.0;
+    } else {
+      return 0.0;
     }
-    return 1.0;
+
   }
 
-  private double getRPMProp(double rpm) {
-    return rpm / maxRPM;
+  private double propSpeed() {
+    return (eShooter.getRate())/(maxRPM);
+  } 
+
+  private void finder() {
+    if (max2RPM < eShooter.getRate()) {
+      max2RPM = eShooter.getRate();
+    }
   }
 }

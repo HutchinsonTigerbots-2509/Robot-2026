@@ -60,12 +60,12 @@ public class Vision extends SubsystemBase {
 
   public double velox() {
     // return visionShootRotationPID.calculate(visionHP(Limelight.getTX(cameraShoot)));
-    return getCalculateOutput(2, visionShootRotationPID.calculate(visionHP(Limelight.getTX(cameraShoot))) * RobotContainer.getMaxAngularRate());
+    return visionShootRotationPID.calculate(visionHP(Limelight.getTX(cameraShoot))) * RobotContainer.getMaxAngularRate();
   }
 
   public void turnToTag() {
     if (Limelight.getTV(cameraShoot)) {
-      RobotContainer.driveVision(0.0, 0.0, getCalculateOutput(2, visionShootRotationPID.calculate(visionHP(Limelight.getTX(cameraShoot)))));
+      RobotContainer.driveVision(0.0, 0.0, visionShootRotationPID.calculate(visionHP(Limelight.getTX(cameraShoot))));
     }
   }
 
@@ -87,7 +87,7 @@ public class Vision extends SubsystemBase {
   public void visionShoot(Feeder sFeeder, Shooter sShooter) {
     if (correctShootPos()) {
       RobotContainer.driveBrake();
-      sShooter.shootUnload(sFeeder);
+      // sShooter.shootUnload(sFeeder); // Call actual shoot method
     } else if (!correctShootPos()) {
       driveToShootPos();
     }
@@ -108,9 +108,9 @@ public class Vision extends SubsystemBase {
   private void driveToShootPos() {
     if (getShootingArea()) {
       RobotContainer.driveVision(
-        getCalculateOutput(1, visionShootDistancePID.calculate(getPropX(getDifferenceX()))), 
-        getCalculateOutput(1, visionShootDistancePID.calculate(getPropY(getDifferenceY()))), 
-        getCalculateOutput(2, visionShootDistancePID.calculate(getPropOmega(getDifferenceOmega()))));
+        visionShootDistancePID.calculate(getPropX(getDifferenceX())), 
+        visionShootDistancePID.calculate(getPropY(getDifferenceY())), 
+        visionShootDistancePID.calculate(getPropOmega(getDifferenceOmega())));
     }
     RobotContainer.driveVision(0.0, 0.0, RobotContainer.getMaxAngularRate());
   }
@@ -188,31 +188,5 @@ public class Vision extends SubsystemBase {
 
   private double getPropOmega(double o) {
     return o / 41.0;
-  }
-
-  private double getCalculateOutput(int i, double output) {
-    switch(i) {
-      case 1: 
-        if (output < RobotContainer.getMaxSpeed() && output > -RobotContainer.getMaxSpeed()) {
-          return output;
-        }
-        else {
-          if (output > RobotContainer.getMaxSpeed()) {
-            return RobotContainer.getMaxSpeed();
-          }
-          return -RobotContainer.getMaxSpeed();
-        }
-      case 2:
-        if (output < RobotContainer.getMaxAngularRate() && output > -RobotContainer.getMaxAngularRate()) {
-          return output;
-        }
-        else {
-          if (output > RobotContainer.getMaxAngularRate()) {
-            return RobotContainer.getMaxAngularRate();
-          }
-          return -RobotContainer.getMaxAngularRate();
-        }
-    }
-    return RobotContainer.magicNum;
   }
 }
