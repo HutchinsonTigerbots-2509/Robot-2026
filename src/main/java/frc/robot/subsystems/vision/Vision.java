@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.FeederHopper;
 import frc.robot.subsystems.shooter.Shooter;
 
 public class Vision extends SubsystemBase {
@@ -84,7 +84,7 @@ public class Vision extends SubsystemBase {
     //TODO: This method should align the robot for climbing.
   }
 
-  public void visionShoot(Feeder sFeeder, Shooter sShooter) {
+  public void visionShoot(FeederHopper sFeederHopper, Shooter sShooter) {
     if (correctShootPos()) {
       RobotContainer.driveBrake();
       // sShooter.shootUnload(sFeeder); // Call actual shoot method
@@ -93,9 +93,9 @@ public class Vision extends SubsystemBase {
     }
   }
 
-  public void visionCancel(Climber sClimber, Feeder sFeeder, Shooter sShooter) {
+  public void visionCancel(Climber sClimber, FeederHopper sFeederHopper, Shooter sShooter) {
     RobotContainer.driveIdle();
-    sShooter.shootCancel(sFeeder);
+    sShooter.shootCancel(sFeederHopper);
   }
 
   private boolean correctShootPos() {

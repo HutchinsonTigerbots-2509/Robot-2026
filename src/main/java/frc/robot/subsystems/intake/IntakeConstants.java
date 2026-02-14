@@ -8,5 +8,7 @@ package frc.robot.subsystems.intake;
 public class IntakeConstants {
 
     public static final int kIntakeMotorId = 10;
+    public static final int kLiftMotorId = 15;
+    public static final int kLiftSwitchId = 4;
 
 }

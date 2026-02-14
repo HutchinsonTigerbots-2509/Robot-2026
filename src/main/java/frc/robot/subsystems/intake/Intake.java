@@ -5,22 +5,37 @@
 package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
   public Intake() {
-    SmartDashboard.putNumber("intake speed", num);
+    mLift.setNeutralMode(NeutralModeValue.Brake);
+    // mLift.setPosition(0);
+    // eLift.reset();
+
+    SmartDashboard.putNumber("intake setter", -0.8);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("LimitSwitch", !wLiftMax.get());
+    SmartDashboard.putNumber("lift position", eLift.get());
+    if (!wLiftMax.get()) {
+      eLift.reset();
+    }
   }
 
-  public TalonFX mIntake = new TalonFX(IntakeConstants.kIntakeMotorId);
+  private TalonFX mIntake = new TalonFX(IntakeConstants.kIntakeMotorId);
+  private TalonFX mLift = new TalonFX(IntakeConstants.kLiftMotorId);
+  private DigitalInput wLiftMax = new DigitalInput(IntakeConstants.kLiftSwitchId);
+  private Encoder eLift = new Encoder(2, 3);
 
   public void intakeForward() {
     mIntake.set(-0.2); //TODO: Find optimal intake speed.
@@ -30,47 +45,52 @@ public class Intake extends SubsystemBase {
     mIntake.set(0.0);
   }
 
+  public void liftZero() {
+    mLift.set(0);
+  }
+
+  public void LiftOut() {
+    if (!wLiftMax.get()) {
+      mLift.set(0);
+      eLift.reset();
+    } else {
+      mLift.set(0.5);
+    }
+  }
+
+  public void LiftIn() {
+    if (eLift.get() > 25500) {
+      mLift.set(0);
+    }
+    else {
+      mLift.set(-0.5);
+    }
+  }
+
   // VVVVV Methods below are for testing VVVVV
 
-  public Double num = -0.10;
-  public void intakeincrement() {
-    if(num > -1) {
-      num = num - 0.01;
-      System.out.println("YOUR SPEED IS: " + num);
-      SmartDashboard.putNumber("intake speed", num);
-    }
-    else {
-      System.out.println("MAXIMUM SPEED");
-      SmartDashboard.putNumber("intake speed", num);
-    }
+  public void liftDown() {
+    mLift.set(0.1);
   }
 
-  public void intakeincrement10() {
-    if(num > -1) {
-      num = num - 0.1;
-      System.out.println("YOUR SPEED IS: " + num);
-      SmartDashboard.putNumber("intake speed", num);
-    }
-    else {
-      System.out.println("MAXIMUM SPEED");
-      SmartDashboard.putNumber("intake speed", num);
+  public void liftDown1() {
+    if (!wLiftMax.get()) {
+      mLift.set(0);
+      eLift.reset();
+    } else {
+      mLift.set(0.1);
     }
   }
 
-  public void intakeresetnum() {
-    num = -0.10;
-    System.out.println("YOUR SPEED HAS BEEN RESET TO: " + num);
-    SmartDashboard.putNumber("intake speed", num);
+  public void liftUp() {
+    mLift.set(-0.1);
   }
 
-  public void intakenum() {
-    mIntake.set(num);
-    System.out.println("YOU ARE INTAKING AT: " + num);
-    SmartDashboard.putNumber("intake speed", num);
-  }
+  // public void intakeNumMethod() {
+  //   mIntake.set(SmartDashboard.getNumber("intake setter", -0.0)); // Make it negative.
+  // }
 
-  public void intakerecall() {
-    System.out.println("YOUR SPEED IS: " + num);
-    SmartDashboard.putNumber("intake speed", num);
+  public void intakeNumMethod() {
+    mIntake.set(-0.8);
   }
 }

@@ -23,7 +23,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -38,7 +37,7 @@ import frc.robot.subsystems.autonomous.Pathplanner;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants;
-import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.FeederHopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.Vision;
@@ -57,14 +56,29 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
-    private final Joystick ButtonBoardA = new Joystick(1);
-    private final Joystick ButtonBoardB = new Joystick(2);
-    private final JoystickButton A0 = new JoystickButton(ButtonBoardA, 0); //TODO: Map out rest of button board. Also, can just use another controller
+    // private final Joystick ButtonBoardA = new Joystick(1);
+    // private final Joystick ButtonBoardB = new Joystick(2);
+    // private final JoystickButton A1 = new JoystickButton(ButtonBoardA, 1);
+    // private final JoystickButton A2 = new JoystickButton(ButtonBoardA, 2);
+    // private final JoystickButton A3 = new JoystickButton(ButtonBoardA, 3);
+    // private final JoystickButton A4 = new JoystickButton(ButtonBoardA, 4);
+    // private final JoystickButton A5 = new JoystickButton(ButtonBoardA, 5);
+    // private final JoystickButton A6 = new JoystickButton(ButtonBoardA, 6);
+    // private final JoystickButton A7 = new JoystickButton(ButtonBoardA, 7);
+    // private final JoystickButton A8 = new JoystickButton(ButtonBoardA, 8);
+    // private final JoystickButton A9 = new JoystickButton(ButtonBoardA, 9);
+    // private final JoystickButton A10 = new JoystickButton(ButtonBoardA, 10);
+    // private final JoystickButton A11 = new JoystickButton(ButtonBoardA, 11);
+    // private final JoystickButton A12 = new JoystickButton(ButtonBoardA, 12);
+    // private final JoystickButton B10 = new JoystickButton(ButtonBoardB, 10);
+    // private final JoystickButton B11 = new JoystickButton(ButtonBoardB, 11);
+    // private final JoystickButton B12 = new JoystickButton(ButtonBoardB, 12);
+
 
     private static final Drivetrain sDrivetrain = DrivetrainConstants.createDrivetrain();
     private static final Pathplanner sPathPlanner = new Pathplanner(sDrivetrain);
     private static final Climber sClimber = new Climber();
-    private static final Feeder sFeeder = new Feeder();
+    private static final FeederHopper sFeederHopper = new FeederHopper();
     private static final Intake sIntake = new Intake();
     private static final Shooter sShooter = new Shooter();
     private static final Vision sVision = new Vision();
@@ -73,8 +87,8 @@ public class RobotContainer {
     private static SendableChooser<Command> autoSelect = new SendableChooser<Command>();
     private static final boolean isCompetition = false; // Change this to true when at a competition!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    private static SlewRateLimiter Slewer1 = new SlewRateLimiter(2.0);
-    private static SlewRateLimiter Slewer2 = new SlewRateLimiter(2.0);
+    private static SlewRateLimiter Slewer1 = new SlewRateLimiter(2.00);
+    private static SlewRateLimiter Slewer2 = new SlewRateLimiter(2.00);
 
     private static Field2d field2d = new Field2d();
     private static Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
@@ -103,7 +117,7 @@ public class RobotContainer {
             sDrivetrain.applyRequest(() ->  
                 drive.withVelocityX((Slewer1.calculate(calculateFieldX(joystick)) * MaxSpeed) * 0.25)
                     .withVelocityY((Slewer2.calculate(calculateFieldY(joystick)) * MaxSpeed) * 0.25)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
+                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * 0.5)
             )
         );
 
@@ -142,20 +156,34 @@ public class RobotContainer {
         // // Reset the field-centric heading on left bumper press.
         // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        joystick.a().whileTrue(new RunCommand(() -> sShooter.shootnum())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
-        joystick.x().onTrue(new InstantCommand(() -> sShooter.shootincrement()));
-        joystick.b().onTrue(new InstantCommand(() -> sShooter.shootresetincrement()));
-        joystick.y().whileTrue(new InstantCommand(() -> sShooter.shootincrement10()));
+        joystick.leftBumper().whileTrue(new RunCommand(() -> sIntake.intakeNumMethod())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
+        joystick.leftTrigger().whileTrue(new RunCommand(() -> sShooter.shootNumMethod())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
+        joystick.rightTrigger().whileTrue(new RunCommand(() -> sFeederHopper.feederNumMethod())).onFalse(new InstantCommand(() -> sFeederHopper.feedzero()));
 
-        // joystick.a().whileTrue(new RunCommand(() -> sIntake.intakenum())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
-        // joystick.x().onTrue(new InstantCommand(() -> sIntake.intakeincrement()));
-        // joystick.b().onTrue(new InstantCommand(() -> sIntake.intakeresetnum()));
-        // joystick.y().whileTrue(new InstantCommand(() -> sIntake.intakeincrement10()));
+        joystick.b().whileTrue(new InstantCommand(() -> sIntake.liftZero()));
+        joystick.y().whileTrue(new RunCommand(() -> sIntake.liftUp())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
+        // joystick.x().whileTrue(new RunCommand(() -> sIntake.liftDown())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
+        joystick.a().whileTrue(new RunCommand(() -> sIntake.liftDown1())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
+        // joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.LiftOut()));
+        // joystick.leftTrigger().onTrue(new InstantCommand(() -> sIntake.LiftIn()));
 
-        joystick.leftTrigger().whileTrue(new RunCommand(() -> sFeeder.feednum())).onFalse(new InstantCommand(() -> sFeeder.feedzero()));
-        joystick.rightBumper().onTrue(new InstantCommand(() -> sFeeder.feedincrement()));
-        joystick.leftBumper().onTrue(new InstantCommand(() -> sFeeder.feedincrementreset()));
-        joystick.rightTrigger().whileTrue(new InstantCommand(() -> sFeeder.feedincrement10()));
+        // B9.whileTrue(new RunCommand(() -> sIntake.intakeNumMethod())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
+        // B10.whileTrue(new RunCommand(() -> sIntake.intakenum())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
+        // A1.whileTrue(new InstantCommand(() -> System.out.println("A1")));
+        // A2.whileTrue(new InstantCommand(() -> System.out.println("A2")));
+        // A3.whileTrue(new InstantCommand(() -> System.out.println("A3")));
+        // A4.whileTrue(new InstantCommand(() -> System.out.println("A4")));
+        // A5.whileTrue(new InstantCommand(() -> System.out.println("A5")));
+        // A6.whileTrue(new InstantCommand(() -> System.out.println("A6")));
+        // A7.whileTrue(new InstantCommand(() -> System.out.println("A7")));
+        // A8.whileTrue(new InstantCommand(() -> System.out.println("A8")));
+        // A9.whileTrue(new InstantCommand(() -> System.out.println("A9")));
+        // A10.whileTrue(new InstantCommand(() -> System.out.println("A10")));
+        // A11.whileTrue(new InstantCommand(() -> System.out.println("A11")));
+        // A12.whileTrue(new InstantCommand(() -> System.out.println("A12")));
+        // B10.whileTrue(new InstantCommand(() -> System.out.println("B10")));
+        // B11.whileTrue(new InstantCommand(() -> System.out.println("B11")));
+        // B12.whileTrue(new InstantCommand(() -> System.out.println("B12")));
 
         joystick.povDown().whileTrue(new RunCommand(() -> sShooter.shootWithPID())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
 
