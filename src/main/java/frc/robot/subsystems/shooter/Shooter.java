@@ -30,7 +30,7 @@ public class Shooter extends SubsystemBase {
     // FOR TESTING PURPOSES
     ShooterConstants.shootPID.setSetpoint(0.9);
     kOffset = 0.6;
-    SmartDashboard.putNumber("shooter setter", 1.0);
+    SmartDashboard.putNumber("shooter setter", 0.55);
   }
   
   @Override

@@ -34,8 +34,8 @@ public class Intake extends SubsystemBase {
 
   private TalonFX mIntake = new TalonFX(IntakeConstants.kIntakeMotorId);
   private TalonFX mLift = new TalonFX(IntakeConstants.kLiftMotorId);
-  private DigitalInput wLiftMax = new DigitalInput(IntakeConstants.kLiftSwitchId);
-  private Encoder eLift = new Encoder(2, 3);
+  public DigitalInput wLiftMax = new DigitalInput(IntakeConstants.kLiftSwitchId);
+  public Encoder eLift = new Encoder(2, 3);
 
   public void intakeForward() {
     mIntake.set(-0.2); //TODO: Find optimal intake speed.
@@ -49,28 +49,45 @@ public class Intake extends SubsystemBase {
     mLift.set(0);
   }
 
-  public void LiftOut() {
-    if (!wLiftMax.get()) {
-      mLift.set(0);
-      eLift.reset();
-    } else {
-      mLift.set(0.5);
-    }
+  public void liftOut() {
+    mLift.set(0.2);
   }
 
-  public void LiftIn() {
-    if (eLift.get() > 25500) {
-      mLift.set(0);
-    }
-    else {
-      mLift.set(-0.5);
-    }
+  public void liftIn() {
+    mLift.set(-0.2);
   }
 
   // VVVVV Methods below are for testing VVVVV
 
+  // public void LiftOut() {
+  //   if (!wLiftMax.get()) {
+  //     mLift.set(0);
+  //     eLift.reset();
+  //   } else {
+  //     mLift.set(0.2);
+  //   }
+  // }
+
+  // public void LiftIn() {
+  //   if (eLift.get() > 700) {
+  //     mLift.set(0);
+  //   }
+  //   else {
+  //     mLift.set(-0.2);
+  //   }
+  // }
+
   public void liftDown() {
-    mLift.set(0.1);
+    mLift.set(0.05);
+  }
+
+  public void liftUp() {
+    if (eLift.get() > 700) {
+      mLift.set(0);
+    }
+    else {
+      mLift.set(-0.1);
+    }
   }
 
   public void liftDown1() {
@@ -80,10 +97,6 @@ public class Intake extends SubsystemBase {
     } else {
       mLift.set(0.1);
     }
-  }
-
-  public void liftUp() {
-    mLift.set(-0.1);
   }
 
   // public void intakeNumMethod() {
