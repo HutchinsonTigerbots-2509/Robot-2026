@@ -50,7 +50,7 @@ public class Vision extends SubsystemBase {
     // SmartDashboard.putNumber("yvelo", veloy);
     SmartDashboard.putNumber("camera coords", Limelight.getBotPose2d(cameraShoot).getY());
     // System.out.println(Limelight.getBotPose2d(cameraShoot).getY());
-    System.out.println(Limelight.getBotPose(cameraIntake));
+    // System.out.println(Limelight.getBotPose(cameraIntake));
   }
 
   public double visionHP(double hp) { // This method returns the proportion of how far away we are from the April tag horizontally in degrees relative to the cameras field of view.

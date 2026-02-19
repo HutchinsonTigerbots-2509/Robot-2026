@@ -296,7 +296,7 @@ public class RobotContainer {
         double vy = speeds.vyMetersPerSecond;
         double vOmega = speeds.omegaRadiansPerSecond;
         if (DriverStation.isAutonomous()) {
-            sDrivetrain.applyRequest(() -> drive.withVelocityX(vx).withVelocityY(vy).withRotationalRate(vOmega));
+            sDrivetrain.applyRequest(() -> drive.withVelocityX(vx).withVelocityY(vy).withRotationalRate(vOmega)).execute();
         }
     }
             
