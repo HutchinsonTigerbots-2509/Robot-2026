@@ -87,8 +87,8 @@ public class RobotContainer {
     private static SendableChooser<Command> autoSelect = new SendableChooser<Command>();
     private static final boolean isCompetition = false; // Change this to true when at a competition!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    private static SlewRateLimiter Slewer1 = new SlewRateLimiter(2.00);
-    private static SlewRateLimiter Slewer2 = new SlewRateLimiter(2.00);
+    private static SlewRateLimiter Slewer1 = new SlewRateLimiter(1.00);
+    private static SlewRateLimiter Slewer2 = new SlewRateLimiter(1.00);
 
     private static Field2d field2d = new Field2d();
     private static Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
@@ -159,6 +159,7 @@ public class RobotContainer {
         joystick.leftBumper().whileTrue(new RunCommand(() -> sIntake.intakeNumMethod())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
         joystick.leftTrigger().whileTrue(new RunCommand(() -> sShooter.shootNumMethod())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
         joystick.rightTrigger().whileTrue(new RunCommand(() -> sFeederHopper.feederNumMethod())).onFalse(new InstantCommand(() -> sFeederHopper.feedzero()));
+        joystick.rightBumper().whileTrue(sDrivetrain.applyRequest(() -> brake));
 
         joystick.b().whileTrue(new InstantCommand(() -> sIntake.liftZero()));
         joystick.y().whileTrue(new RunCommand(() -> sIntake.liftUp())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
@@ -170,8 +171,6 @@ public class RobotContainer {
         // joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.LiftOut()));
         // joystick.leftTrigger().onTrue(new InstantCommand(() -> sIntake.LiftIn()));
 
-        // B9.whileTrue(new RunCommand(() -> sIntake.intakeNumMethod())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
-        // B10.whileTrue(new RunCommand(() -> sIntake.intakenum())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
         // A1.whileTrue(new InstantCommand(() -> System.out.println("A1")));
         // A2.whileTrue(new InstantCommand(() -> System.out.println("A2")));
         // A3.whileTrue(new InstantCommand(() -> System.out.println("A3")));
@@ -190,7 +189,7 @@ public class RobotContainer {
 
         joystick.povDown().whileTrue(new RunCommand(() -> sShooter.shootWithPID())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
 
-        // sDrivetrain.registerTelemetry(logger::telemeterize); //TODO: Might also be the cause of the signal logger still going
+        // sDrivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public static void driveVision(double vx, double vy, double vOmega) {

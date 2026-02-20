@@ -18,8 +18,8 @@ public class Intake extends SubsystemBase {
     mLift.setNeutralMode(NeutralModeValue.Brake);
     // mLift.setPosition(0);
     // eLift.reset();
-
-    SmartDashboard.putNumber("intake setter", -0.8);
+    SmartDashboard.putNumber("lift setter", 0.1);
+    SmartDashboard.putNumber("intake setter", -1.0);
   }
 
   @Override
@@ -59,34 +59,12 @@ public class Intake extends SubsystemBase {
 
   // VVVVV Methods below are for testing VVVVV
 
-  // public void LiftOut() {
-  //   if (!wLiftMax.get()) {
-  //     mLift.set(0);
-  //     eLift.reset();
-  //   } else {
-  //     mLift.set(0.2);
-  //   }
-  // }
-
-  // public void LiftIn() {
-  //   if (eLift.get() > 700) {
-  //     mLift.set(0);
-  //   }
-  //   else {
-  //     mLift.set(-0.2);
-  //   }
-  // }
-
-  public void liftDown() {
-    mLift.set(0.05);
-  }
-
   public void liftUp() {
     if (eLift.get() > 700) {
       mLift.set(0);
     }
     else {
-      mLift.set(-0.1);
+      mLift.set(-1 * SmartDashboard.getNumber("lift setter", 0.0));
     }
   }
 
@@ -95,15 +73,11 @@ public class Intake extends SubsystemBase {
       mLift.set(0);
       eLift.reset();
     } else {
-      mLift.set(0.1);
+      mLift.set(SmartDashboard.getNumber("lift setter", 0.0));
     }
   }
 
-  // public void intakeNumMethod() {
-  //   mIntake.set(SmartDashboard.getNumber("intake setter", -0.0)); // Make it negative.
-  // }
-
   public void intakeNumMethod() {
-    mIntake.set(-0.8);
+    mIntake.set(SmartDashboard.getNumber("intake setter", 0.0));
   }
 }
