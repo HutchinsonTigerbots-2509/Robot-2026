@@ -30,7 +30,7 @@ public class Shooter extends SubsystemBase {
     // FOR TESTING PURPOSES
     ShooterConstants.shootPID.setSetpoint(0.9);
     kOffset = 0.6;
-    SmartDashboard.putNumber("shooter setter", 0.55);
+    SmartDashboard.putNumber("shooter setter", 0.6); // 0.6 0.55 0.5
   }
   
   @Override
@@ -56,6 +56,11 @@ public class Shooter extends SubsystemBase {
   public void shootNumMethod() {
     mShooterA.set(SmartDashboard.getNumber("shooter setter", 0.0));
     mShooterB.set(SmartDashboard.getNumber("shooter setter", 0.0));
+  }
+
+  public void shootUnload(FeederHopper sFeederHopper) {
+    shootNumMethod();
+    sFeederHopper.feederNumMethod();
   }
 
   // ^^^^^ The methods above are for testing ^^^^^

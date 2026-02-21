@@ -36,6 +36,8 @@ public class Vision extends SubsystemBase {
 
   private int[] climbTags;
 
+  private double dir;
+
   public Vision() {
     visionShootRotationPID.setTolerance(0.2/41.0);
     visionShootDistancePID.setTolerance(0.0);
@@ -46,42 +48,16 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("xvelo", velox());
-    // SmartDashboard.putNumber("yvelo", veloy);
-    SmartDashboard.putNumber("camera coords", Limelight.getBotPose2d(cameraShoot).getY());
-    // System.out.println(Limelight.getBotPose2d(cameraShoot).getY());
-    // System.out.println(Limelight.getBotPose(cameraIntake));
+    SmartDashboard.putNumber("getX", Limelight.getBotPose2d(cameraShoot).getX());
+    SmartDashboard.putNumber("getY", Limelight.getBotPose2d(cameraShoot).getY());
+    SmartDashboard.putNumber("getOmega", Limelight.getBotPose2d(cameraShoot).getRotation().getRadians());
+    SmartDashboard.putNumber("getDifferenceX", getDifferenceX());
+    SmartDashboard.putNumber("getDifferenceY", getDifferenceY());
+    SmartDashboard.putNumber("getDifferenceOmega", getDifferenceOmega());
+    SmartDashboard.putNumber("visionShootDistancePIDX", visionShootDistancePID.calculate(getPropX(getDifferenceX())));
+    SmartDashboard.putNumber("visionShootDistancePIDY", visionShootDistancePID.calculate(getPropY(getDifferenceY())));
+    SmartDashboard.putNumber("visionShootDistancePIDOmega", visionShootDistancePID.calculate(getPropOmega(getDifferenceOmega())));
   }
-
-  public double visionHP(double hp) { // This method returns the proportion of how far away we are from the April tag horizontally in degrees relative to the cameras field of view.
-    return hp/41.0;
-  }
-
-  public double visionVP(double vp) { // This method returns the proportion of how far away we are from the April tag vertically in degrees relative to the cameras field of view.
-    return vp/28.1;
-  }
-
-  public double velox() {
-    // return visionShootRotationPID.calculate(visionHP(Limelight.getTX(cameraShoot)));
-    return visionShootRotationPID.calculate(visionHP(Limelight.getTX(cameraShoot))) * RobotContainer.getMaxAngularRate();
-  }
-
-  public void turnToTag() {
-    if (Limelight.getTV(cameraShoot)) {
-      RobotContainer.driveVision(0.0, 0.0, visionShootRotationPID.calculate(visionHP(Limelight.getTX(cameraShoot))));
-    }
-  }
-
-  public void driveToTag() {
-    if (visionShootRotationPID.atSetpoint()) {
-      RobotContainer.driveVision(-1.0, 0.0, 0.0);
-    }
-    else {
-      turnToTag();
-    }
-  }
-
-  // VVVVV Comp vision methods below VVVVV
 
   public void visionClimb(Climber sClimber) {
     //TODO: This method should align the robot for climbing.
@@ -90,7 +66,7 @@ public class Vision extends SubsystemBase {
   public void visionShoot(FeederHopper sFeederHopper, Shooter sShooter) {
     if (correctShootPos()) {
       RobotContainer.driveBrake();
-      // sShooter.shootUnload(sFeeder); // Call actual shoot method
+      sShooter.shootUnload(sFeederHopper); // Call actual shoot method
     } else if (!correctShootPos()) {
       driveToShootPos();
     }
@@ -109,13 +85,17 @@ public class Vision extends SubsystemBase {
   }
   
   private void driveToShootPos() {
-    if (getShootingArea()) {
-      RobotContainer.driveVision(
-        visionShootDistancePID.calculate(getPropX(getDifferenceX())), 
-        visionShootDistancePID.calculate(getPropY(getDifferenceY())), 
-        visionShootDistancePID.calculate(getPropOmega(getDifferenceOmega())));
+    if (Limelight.getTV(cameraShoot)) {
+      if (getShootingArea()) {
+        dir = getDifferenceOmega();
+        RobotContainer.driveVision(
+            visionShootDistancePID.calculate(getPropX(getDifferenceX())),
+            visionShootDistancePID.calculate(getPropY(getDifferenceY())),
+            visionShootDistancePID.calculate(getPropOmega(getDifferenceOmega())));
+      }
+    } else if (!Limelight.getTV(cameraShoot)) {
+      RobotContainer.driveVision(0.0, 0.0, spinDir(dir));
     }
-    RobotContainer.driveVision(0.0, 0.0, RobotContainer.getMaxAngularRate());
   }
   
   private double getDifferenceX() {
@@ -191,5 +171,12 @@ public class Vision extends SubsystemBase {
 
   private double getPropOmega(double o) {
     return o / 41.0;
+  }
+
+  private double spinDir(double n) {
+    if (n > 0) {
+      return RobotContainer.getMaxAngularRate();
+    }
+    return 0 - RobotContainer.getMaxAngularRate();
   }
 }

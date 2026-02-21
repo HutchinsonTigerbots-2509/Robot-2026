@@ -84,13 +84,14 @@ public class RobotContainer {
     private static final Vision sVision = new Vision();
 
     public static SwerveDrivePoseEstimator eSwerveEstimator;
-    private static SendableChooser<Command> autoSelect = new SendableChooser<Command>();
+    // private static SendableChooser<Command> autoSelect = new SendableChooser<Command>();
     private static final boolean isCompetition = false; // Change this to true when at a competition!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    private static SlewRateLimiter Slewer1 = new SlewRateLimiter(1.00);
-    private static SlewRateLimiter Slewer2 = new SlewRateLimiter(1.00);
+    private static SlewRateLimiter Slewer1 = new SlewRateLimiter(2.0);
+    private static SlewRateLimiter Slewer2 = new SlewRateLimiter(2.0);
 
-    private static Field2d field2d = new Field2d();
+    public static Field2d field2d = new Field2d();
+    public static double fieldOffset = 0;
     private static Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
     public static boolean magicBool;
     public static double magicNum;
@@ -98,7 +99,9 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
+        // buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", AutoBuilder.buildAutoChooser());
+        // SmartDashboard.putData(autoSelect);
         SmartDashboard.putNumber("MaxSpeed", MaxSpeed);
         SmartDashboard.putNumber("MaxAngularRate", MaxAngularRate);
     }
@@ -115,9 +118,9 @@ public class RobotContainer {
 
         sDrivetrain.setDefaultCommand(
             sDrivetrain.applyRequest(() ->  
-                drive.withVelocityX((Slewer1.calculate(calculateFieldX(joystick)) * MaxSpeed) * 0.25)
-                    .withVelocityY((Slewer2.calculate(calculateFieldY(joystick)) * MaxSpeed) * 0.25)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * 0.5)
+                drive.withVelocityX((Slewer1.calculate(calculateFieldX(joystick)) * MaxSpeed) * 0.5)
+                    .withVelocityY((Slewer2.calculate(calculateFieldY(joystick)) * MaxSpeed) * 0.5)
+                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
             )
         );
 
@@ -133,8 +136,8 @@ public class RobotContainer {
         // // joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakeForward()));
         // joystick.rightBumper().onTrue(new InstantCommand(() -> sIntake.intakeZero()));
 
-        // joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakenum()));
-        joystick.povUp().onTrue(new InstantCommand(() -> sDrivetrain.getPigeon2().reset()));
+        // joystick.povUp().onTrue(new InstantCommand(() -> sDrivetrain.getPigeon2().reset()));
+        joystick.povUp().onTrue(new InstantCommand(() -> setGyro(0.0)));
         joystick.povUp().onTrue(new InstantCommand(() -> System.out.println("Yaw: " + sDrivetrain.getPigeon2().getYaw())));
         // // joystick.a().whileTrue(new RunCommand(() -> sVision.validtar())).onFalse(new RunCommand(() -> driveIdle()));
         // joystick.x().whileTrue(new RunCommand(() -> sVision.driveToTag())).onFalse(new RunCommand(() -> driveIdle()));
@@ -159,14 +162,20 @@ public class RobotContainer {
         joystick.leftBumper().whileTrue(new RunCommand(() -> sIntake.intakeNumMethod())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
         joystick.leftTrigger().whileTrue(new RunCommand(() -> sShooter.shootNumMethod())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
         joystick.rightTrigger().whileTrue(new RunCommand(() -> sFeederHopper.feederNumMethod())).onFalse(new InstantCommand(() -> sFeederHopper.feedzero()));
-        joystick.rightBumper().whileTrue(sDrivetrain.applyRequest(() -> brake));
 
-        joystick.b().whileTrue(new InstantCommand(() -> sIntake.liftZero()));
+        RunCommand intakeDrive = new RunCommand(() -> driveControllerCreep());
+        intakeDrive.addRequirements(sDrivetrain);
+        joystick.rightBumper().toggleOnTrue(intakeDrive);
+
+        // joystick.rightBumper().whileTrue(new RunCommand(() -> sVision.visionShoot(sFeederHopper, sShooter))).onFalse(new InstantCommand(() -> sVision.visionCancel(sClimber, sFeederHopper, sShooter)));
+
         joystick.y().whileTrue(new RunCommand(() -> sIntake.liftUp())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         // joystick.x().whileTrue(new RunCommand(() -> sIntake.liftDown())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         joystick.a().whileTrue(new RunCommand(() -> sIntake.liftDown1())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
-        joystick.x().onTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() > 200).andThen(new InstantCommand(() -> sIntake.liftZero())));
+        // joystick.x().onTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() > 200).andThen(new InstantCommand(() -> sIntake.liftZero())));
         // joystick.x().onTrue(new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())));
+        joystick.b().whileTrue(new RunCommand(() -> sClimber.climbUp())).onFalse(new InstantCommand(() -> sClimber.climbZero()));
+        joystick.x().whileTrue(new RunCommand(() -> sClimber.climbDown())).onFalse(new InstantCommand(() -> sClimber.climbZero()));
 
         // joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.LiftOut()));
         // joystick.leftTrigger().onTrue(new InstantCommand(() -> sIntake.LiftIn()));
@@ -187,7 +196,7 @@ public class RobotContainer {
         // B11.whileTrue(new InstantCommand(() -> System.out.println("B11")));
         // B12.whileTrue(new InstantCommand(() -> System.out.println("B12")));
 
-        joystick.povDown().whileTrue(new RunCommand(() -> sShooter.shootWithPID())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
+        // joystick.povDown().whileTrue(new RunCommand(() -> sShooter.shootWithPID())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
 
         // sDrivetrain.registerTelemetry(logger::telemeterize);
     }
@@ -225,7 +234,7 @@ public class RobotContainer {
     }
 
     public static double calculateFieldX(CommandXboxController controller) {
-        double gyro = Math.toRadians(sDrivetrain.getPigeon2().getYaw().getValueAsDouble() /*+ fieldOffset*/);
+        double gyro = Math.toRadians(sDrivetrain.getPigeon2().getYaw().getValueAsDouble() + fieldOffset);
         double cos = Math.cos(gyro);
         double sin = Math.sin(gyro);
         double tX = -controller.getLeftY();
@@ -235,13 +244,20 @@ public class RobotContainer {
     }
 
     public static double calculateFieldY(CommandXboxController controller) {
-        double gyro = Math.toRadians(sDrivetrain.getPigeon2().getYaw().getValueAsDouble() /*+ fieldOffset*/);
+        double gyro = Math.toRadians(sDrivetrain.getPigeon2().getYaw().getValueAsDouble() + fieldOffset);
         double cos = Math.cos(gyro);
         double sin = Math.sin(gyro);
         double tX = -controller.getLeftY();
         double tY = -controller.getLeftX();
         double fieldY = ((tY  * cos) - (tX * sin));
         return fieldY;
+    }
+
+    public void driveControllerCreep() {
+        sDrivetrain.applyRequest(() -> drive.withVelocityX(calculateFieldX(joystick) * MaxSpeed * 0.125)                                                                               
+                .withVelocityY(calculateFieldY(joystick) * MaxSpeed * 0.125)
+                .withRotationalRate((-joystick.getRightX() * MaxAngularRate) * 0.35))
+                .execute();
     }
 
     // VVVV Generated autonomous VVVV
@@ -269,9 +285,10 @@ public class RobotContainer {
     //     return autoChooser.getSelected();
     // }
     
-    public Command getAutonomousCommand() {
-        return new PathPlannerAuto("TestAuto");
-    }
+    // public Command getAutonomousCommand() {
+    //     // return new PathPlannerAuto("TestAuto");
+    //     return new PathPlannerAuto(autoSelect.getSelected());
+    // }
     
     public static Pose2d getPose() {
         Pose2d pos = eSwerveEstimator.getEstimatedPosition();
@@ -331,20 +348,35 @@ public class RobotContainer {
         return ModStates;
     }
 
-    public static void buildAutoChooser() {
-        autoSelect.setDefaultOption("Do Nothing", AutoBuilder.buildAuto("Do Nothing"));
-        List<String> options = AutoBuilder.getAllAutoNames();
-        if (isCompetition) {
-            for (String n : options) {
-                if(n.startsWith("c") && n != "Do Nothing")
-                autoSelect.addOption(n, AutoBuilder.buildAuto(n));
-            };
-        }
-        else {
-            for (String n : options) {
-                if(n != "Do Nothing")
-                autoSelect.addOption(n, AutoBuilder.buildAuto(n));
-            };
-        }
+    // public static void buildAutoChooser() {
+    //     autoSelect.setDefaultOption("Do Nothing", AutoBuilder.buildAuto("Do Nothing"));
+    //     List<String> options = AutoBuilder.getAllAutoNames();
+    //     if (isCompetition) {
+    //         for (String n : options) {
+    //             if(n.startsWith("c") && n != "Do Nothing")
+    //             autoSelect.addOption(n, AutoBuilder.buildAuto(n));
+    //         };
+    //     }
+    //     else {
+    //         for (String n : options) {
+    //             if(n != "Do Nothing")
+    //             autoSelect.addOption(n, AutoBuilder.buildAuto(n));
+    //         };
+    //     }
+    // }
+
+    // public static void ApplyStart() {
+    //     String autoName = autoSelect.getSelected().getName();
+    //     try {
+    //         AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get());
+    //         Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         Pathplanner.startPose2d = new Pose2d(0, 0, new Rotation2d(0));
+    //     }
+    // };
+
+    public Pathplanner getsPathplanner() {
+            return sPathPlanner;
     }
 }

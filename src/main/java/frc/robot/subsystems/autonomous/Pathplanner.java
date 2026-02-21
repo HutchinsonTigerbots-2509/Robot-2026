@@ -13,6 +13,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -22,13 +23,10 @@ public class Pathplanner extends SubsystemBase {
 
   Drivetrain sDrivetrain;
   static RobotConfig config;
-  static Pose2d startPose2d;
+  public static Pose2d startPose2d;
   String defaultAuto = "TestAuto";
 
   public Pathplanner(Drivetrain kDrivetrain) {
-
-    //TODO: Fix overrun error
-
     sDrivetrain = kDrivetrain;
     startPose2d = new Pose2d(0,0, new Rotation2d(0));
 
@@ -61,15 +59,21 @@ public class Pathplanner extends SubsystemBase {
         e.printStackTrace();
     }
     // RobotContainer.buildAutoChooser();
-    // ApplyStart();
-    // getAutonomousCommand();
     RobotContainer.eSwerveEstimator = new SwerveDrivePoseEstimator(sDrivetrain.getKinematics(), RobotContainer.getRotation2d(), RobotContainer.getModulePositions(), startPose2d);
+    // RobotContainer.ApplyStart();
     RobotContainer.eSwerveEstimator.resetPose(startPose2d);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (DriverStation.isDisabled() && SmartDashboard.getBoolean("ApplyStart", false)) {
+      // RobotContainer.ApplyStart();
+      RobotContainer.eSwerveEstimator.resetPose(startPose2d);
+      RobotContainer.setGyro(RobotContainer.eSwerveEstimator.getEstimatedPosition().getRotation().getDegrees());
+    }
     RobotContainer.eSwerveEstimator.update(RobotContainer.getRotation2d(), RobotContainer.getModulePositions());
+    SmartDashboard.putData("Field?", RobotContainer.field2d);
+    RobotContainer.field2d.setRobotPose(RobotContainer.eSwerveEstimator.getEstimatedPosition());
   }
 }

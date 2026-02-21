@@ -4,23 +4,28 @@
 
 package frc.robot.subsystems.climber;
 
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
-  public Climber() {}
+  public Climber() {
+    mClimber.setNeutralMode(NeutralMode.Brake);
+    SmartDashboard.putNumber("climber setter", 1.0);
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
 
-  public TalonFX mClimber = new TalonFX(ClimberConstants.kClimbMotorId);
+  public WPI_TalonSRX mClimber = new WPI_TalonSRX(ClimberConstants.kClimbMotorId);
 
   public void climbUp() {
-    mClimber.set(1);
+    mClimber.set(SmartDashboard.getNumber("climber setter", 0.0));
   }
 
   public void climbZero() {
@@ -28,6 +33,6 @@ public class Climber extends SubsystemBase {
   }
 
   public void climbDown() {
-    mClimber.set(-1);
+    mClimber.set(-1 * SmartDashboard.getNumber("climber setter", 0.0));
   }
 }

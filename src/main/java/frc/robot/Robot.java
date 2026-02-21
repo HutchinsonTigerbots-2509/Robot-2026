@@ -15,7 +15,7 @@ public class Robot extends TimedRobot {
 
     private final RobotContainer m_robotContainer;
 
-    /* log and replay timestamp and joystick data */   //TODO: This is probably the cause of the SignalLogger starting everytime
+    /* log and replay timestamp and joystick data */
     private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
         // .withTimestampReplay()
         .withJoystickReplay();
@@ -41,18 +41,20 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-        if (m_autonomousCommand != null) {
-            CommandScheduler.getInstance().schedule(m_autonomousCommand);
-        }
+        // if (m_autonomousCommand != null) {
+        //     CommandScheduler.getInstance().schedule(m_autonomousCommand);
+        // }
     }
 
     @Override
     public void autonomousPeriodic() {}
 
     @Override
-    public void autonomousExit() {}
+    public void autonomousExit() {
+        // m_robotContainer.fieldOffset = 0 - m_robotContainer.field2d.getRobotPose().getRotation().getDegrees();
+    }
 
     @Override
     public void teleopInit() {
