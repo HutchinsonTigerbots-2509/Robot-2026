@@ -170,8 +170,7 @@ public class RobotContainer {
         // joystick.rightBumper().whileTrue(new RunCommand(() -> sVision.visionShoot(sFeederHopper, sShooter))).onFalse(new InstantCommand(() -> sVision.visionCancel(sClimber, sFeederHopper, sShooter)));
 
         joystick.y().whileTrue(new RunCommand(() -> sIntake.liftUp())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
-        // joystick.x().whileTrue(new RunCommand(() -> sIntake.liftDown())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
-        joystick.a().whileTrue(new RunCommand(() -> sIntake.liftDown1())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
+        joystick.a().whileTrue(new RunCommand(() -> sIntake.liftDown())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         // joystick.x().onTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() > 200).andThen(new InstantCommand(() -> sIntake.liftZero())));
         // joystick.x().onTrue(new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())));
         joystick.b().whileTrue(new RunCommand(() -> sClimber.climbUp())).onFalse(new InstantCommand(() -> sClimber.climbZero()));

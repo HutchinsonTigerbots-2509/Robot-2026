@@ -47,6 +47,7 @@ public class Intake extends SubsystemBase {
 
   public void liftZero() {
     mLift.set(0);
+
   }
 
   public void liftOut() {
@@ -68,7 +69,7 @@ public class Intake extends SubsystemBase {
     }
   }
 
-  public void liftDown1() {
+  public void liftDown() {
     if (!wLiftMax.get()) {
       mLift.set(0);
       eLift.reset();
