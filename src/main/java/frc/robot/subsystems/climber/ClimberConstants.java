@@ -8,5 +8,6 @@ package frc.robot.subsystems.climber;
 public class ClimberConstants {
     
     public static final int kClimbMotorId = 9;
+    public static final int kClimbSwitchId = 5;
 
 }

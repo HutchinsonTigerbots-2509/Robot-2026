@@ -22,10 +22,13 @@ public class Intake extends SubsystemBase {
     SmartDashboard.putNumber("intake setter", -1.0);
   }
 
+  private boolean liftCycle = false;
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("LimitSwitch", !wLiftMax.get());
+    SmartDashboard.putBoolean("LiftCycle", liftCycle);
     SmartDashboard.putNumber("lift position", eLift.get());
     if (!wLiftMax.get()) {
       eLift.reset();
@@ -51,11 +54,17 @@ public class Intake extends SubsystemBase {
   }
 
   public void liftOut() {
-    mLift.set(0.2);
+    mLift.set(SmartDashboard.getNumber("lift setter", 0.0));
   }
 
   public void liftIn() {
-    mLift.set(-0.2);
+    if(liftCycle) {
+      mLift.set(-1 * SmartDashboard.getNumber("lift setter", 0.0));
+    }
+  }
+
+  public void modLiftCycle() {
+    liftCycle = true;
   }
 
   // VVVVV Methods below are for testing VVVVV

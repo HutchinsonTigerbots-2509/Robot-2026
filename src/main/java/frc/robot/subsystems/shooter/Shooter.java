@@ -16,7 +16,7 @@ public class Shooter extends SubsystemBase {
 
   private TalonFX mShooterA = new TalonFX(ShooterConstants.kShootAMotorId);
   private TalonFX mShooterB = new TalonFX(ShooterConstants.kShootBMotorId);
-  private Encoder eShooter = new Encoder(0, 1); //TODO: Put in actual encoder channels
+  public Encoder eShooter = new Encoder(0, 1); //TODO: Put in actual encoder channels
 
   private Double kOffset; //This should be the shooter speed target.
   private Double maxRPM = 120000.0; //This is an approximation.
