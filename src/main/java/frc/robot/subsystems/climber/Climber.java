@@ -7,6 +7,7 @@ package frc.robot.subsystems.climber;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -20,8 +21,10 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("ClimbSwitch", !wClimbMax.get());
   }
 
+  public DigitalInput wClimbMax = new DigitalInput(ClimberConstants.kClimbSwitchId);
   public WPI_TalonSRX mClimber = new WPI_TalonSRX(ClimberConstants.kClimbMotorId);
 
   public void climbUp() {
@@ -34,5 +37,21 @@ public class Climber extends SubsystemBase {
 
   public void climbDown() {
     mClimber.set(-1 * SmartDashboard.getNumber("climber setter", 0.0));
+  }
+
+  public void climb1() {
+    if (!wClimbMax.get()) {
+      mClimber.set(0);
+    } else {
+      mClimber.set(-1 * SmartDashboard.getNumber("climber setter", 0.0));
+    }
+  }
+
+  public void climb2() {
+    if (!wClimbMax.get()) {
+      mClimber.set(0);
+    } else {
+      mClimber.set(SmartDashboard.getNumber("climber setter", 0.0));
+    }
   }
 }

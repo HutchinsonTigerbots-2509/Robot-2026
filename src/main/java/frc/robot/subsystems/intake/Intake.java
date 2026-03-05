@@ -19,7 +19,7 @@ public class Intake extends SubsystemBase {
     // mLift.setPosition(0);
     // eLift.reset();
     SmartDashboard.putNumber("lift setter", 0.1);
-    SmartDashboard.putNumber("intake setter", -1.0);
+    SmartDashboard.putNumber("intake setter", 1.0);
   }
 
   private boolean liftCycle = false;
@@ -27,7 +27,7 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("LimitSwitch", !wLiftMax.get());
+    SmartDashboard.putBoolean("LiftSwitch", !wLiftMax.get());
     SmartDashboard.putBoolean("LiftCycle", liftCycle);
     SmartDashboard.putNumber("lift position", eLift.get());
     if (!wLiftMax.get()) {
@@ -88,6 +88,6 @@ public class Intake extends SubsystemBase {
   }
 
   public void intakeNumMethod() {
-    mIntake.set(SmartDashboard.getNumber("intake setter", 0.0));
+    mIntake.set(-1 * SmartDashboard.getNumber("intake setter", 0.0));
   }
 }

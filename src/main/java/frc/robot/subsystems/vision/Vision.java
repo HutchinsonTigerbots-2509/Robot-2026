@@ -23,16 +23,16 @@ public class Vision extends SubsystemBase {
   private final String cameraShoot = "limelight-shoot";
   private final String cameraIntake = "limelight-intake";
 
-  private final double kShootDistance = 0.0; //TODO: Find correct shooting distance.
+  private final double kShootDistance = 3.0; //TODO: Find correct shooting distance.
   private final double kShootDistanceTolerance = 0.0;
-  private final double kShootAngleTolerance = 0.0;
+  private final double kShootAngleTolerance = 0.2;
   private final double kShootHigher = kShootDistance + kShootDistanceTolerance;
   private final double kShootLower = kShootDistance - kShootDistanceTolerance;
 
-  private final double blueHubX = 182.11; //TODO: Find correct hub coordinates. These should be from the Welded Perimeter.
-  private final double blueHubY = 158.34;
-  private final double redHubX = 469.11;
-  private final double redHubY = 158.84;
+  private final double blueHubX = 4.625; //TODO: Find correct hub coordinates. These should be from the Welded Perimeter.
+  private final double blueHubY = 4.050;
+  private final double redHubX = 11.925;
+  private final double redHubY = 4.030;
 
   private int[] climbTags;
 
@@ -48,28 +48,40 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("getX", Limelight.getBotPose2d(cameraShoot).getX());
-    SmartDashboard.putNumber("getY", Limelight.getBotPose2d(cameraShoot).getY());
-    SmartDashboard.putNumber("getOmega", Limelight.getBotPose2d(cameraShoot).getRotation().getRadians());
+    SmartDashboard.putNumber("getX", Limelight.getBotPose2d_wpiBlue(cameraShoot).getX());
+    SmartDashboard.putNumber("getY", Limelight.getBotPose2d_wpiBlue(cameraShoot).getY());
+    SmartDashboard.putNumber("getOmega", getShooterAngle());
     SmartDashboard.putNumber("getDifferenceX", getDifferenceX());
     SmartDashboard.putNumber("getDifferenceY", getDifferenceY());
     SmartDashboard.putNumber("getDifferenceOmega", getDifferenceOmega());
     SmartDashboard.putNumber("visionShootDistancePIDX", visionShootDistancePID.calculate(getPropX(getDifferenceX())));
     SmartDashboard.putNumber("visionShootDistancePIDY", visionShootDistancePID.calculate(getPropY(getDifferenceY())));
     SmartDashboard.putNumber("visionShootDistancePIDOmega", visionShootDistancePID.calculate(getPropOmega(getDifferenceOmega())));
+
+    SmartDashboard.putNumber("getAngleShoot", getAngleShoot());
   }
 
   public void visionClimb(Climber sClimber) {
     //TODO: This method should align the robot for climbing.
   }
 
-  public void visionShoot(FeederHopper sFeederHopper, Shooter sShooter) {
+  // public void visionShoot(FeederHopper sFeederHopper, Shooter sShooter) {
+  //   if (correctShootPos()) {
+  //     RobotContainer.driveBrake();
+  //     sShooter.shootUnload(sFeederHopper); // Call actual shoot method
+  //   } else if (!correctShootPos()) {
+  //     driveToShootPos();
+  //   }
+  // }
+
+  public boolean visionShoot() {
     if (correctShootPos()) {
       RobotContainer.driveBrake();
-      sShooter.shootUnload(sFeederHopper); // Call actual shoot method
+      return true;
     } else if (!correctShootPos()) {
       driveToShootPos();
     }
+    return false;
   }
 
   public void visionCancel(Climber sClimber, FeederHopper sFeederHopper, Shooter sShooter) {
@@ -85,17 +97,19 @@ public class Vision extends SubsystemBase {
   }
   
   private void driveToShootPos() {
-    if (Limelight.getTV(cameraShoot)) {
+    // if (Limelight.getTV(cameraShoot)) {
       if (getShootingArea()) {
         dir = getDifferenceOmega();
-        RobotContainer.driveVision(
-            visionShootDistancePID.calculate(getPropX(getDifferenceX())),
-            visionShootDistancePID.calculate(getPropY(getDifferenceY())),
-            visionShootDistancePID.calculate(getPropOmega(getDifferenceOmega())));
+        // RobotContainer.driveVision(
+        //     visionShootDistancePID.calculate(getPropX(getDifferenceX())),
+        //     visionShootDistancePID.calculate(getPropY(getDifferenceY())),
+        //     visionShootDistancePID.calculate(getPropOmega(getDifferenceOmega())));
+        RobotContainer.driveVision(0.0, 0.0, 10 * getDifferenceOmega());
       }
-    } else if (!Limelight.getTV(cameraShoot)) {
-      RobotContainer.driveVision(0.0, 0.0, spinDir(dir));
-    }
+    // } else if (!Limelight.getTV(cameraShoot)) {
+    //   RobotContainer.driveVision(0.0, 0.0, spinDir(dir));
+    // }
+    // }
   }
   
   private double getDifferenceX() {
@@ -106,23 +120,38 @@ public class Vision extends SubsystemBase {
     return kShootDistance * Math.sin(getAngleShoot());
   }
 
+  // private double getDifferenceOmega() {
+  //   return Limelight.getBotPose2d_wpiBlue(cameraShoot).getRotation().getRadians() - getAngleShoot();
+  // }
+
   private double getDifferenceOmega() {
-    return Limelight.getBotPose2d(cameraShoot).getRotation().getRadians() - getAngleShoot();
+    return  getAngleShoot() - getShooterAngle();
   }
 
+  // private double getAngleShoot() {
+  //   return Math.atan(getDistanceToHubY() / getDistanceToHuBX());
+  // }
+
   private double getAngleShoot() {
-    return Math.atan(getDistanceToHubY() / getDistanceToHuBX());
+    return Math.atan(getDistanceToHubX() / getDistanceToHubY());
+  }
+
+  private double getShooterAngle() {
+    if (Limelight.getBotPose2d_wpiBlue(cameraShoot).getRotation().getRadians() < 0) {
+      return Limelight.getBotPose2d_wpiBlue(cameraShoot).getRotation().getRadians() + Math.PI;
+    }
+    return Limelight.getBotPose2d_wpiBlue(cameraShoot).getRotation().getRadians() - Math.PI;
   }
 
   private boolean getShootingArea() {
     if (RobotContainer.getAllianceBlue()) {
-      if (Limelight.getBotPose2d(cameraShoot).getX() < getHubX()) {
+      if (Limelight.getBotPose2d_wpiBlue(cameraShoot).getX() < getHubX()) {
         return true;
       } else {
         return false;
       }
     } else if (!RobotContainer.getAllianceBlue()){
-      if (Limelight.getBotPose2d(cameraShoot).getX() > getHubX()) {
+      if (Limelight.getBotPose2d_wpiBlue(cameraShoot).getX() > getHubX()) {
         return true;
       } else {
         return false;
@@ -132,15 +161,15 @@ public class Vision extends SubsystemBase {
   }
  
   private double getDistanceToHub() {
-    return Math.sqrt((getDistanceToHubY() * getDistanceToHubY()) / (getDistanceToHuBX() * getDistanceToHuBX()));
+    return Math.sqrt((getDistanceToHubY() * getDistanceToHubY()) + (getDistanceToHubX() * getDistanceToHubX()));
   }
 
-  private double getDistanceToHuBX() {
-    return Limelight.getBotPose2d(cameraShoot).getX() - getHubX();
+  private double getDistanceToHubX() {
+    return getHubX() - Limelight.getBotPose2d_wpiBlue(cameraShoot).getX();
   }
 
   private double getDistanceToHubY() {
-    return Limelight.getBotPose2d(cameraShoot).getY() - getHubY();
+    return getHubY() - Limelight.getBotPose2d_wpiBlue(cameraShoot).getY();
   }
 
   private double getHubX() {
@@ -170,7 +199,7 @@ public class Vision extends SubsystemBase {
   }
 
   private double getPropOmega(double o) {
-    return o / 41.0;
+    return o / (Math.PI/4);
   }
 
   private double spinDir(double n) {

@@ -13,7 +13,7 @@ import frc.robot.subsystems.shooter.Shooter;
 public class FeederHopper extends SubsystemBase {
   /** Creates a new Feeder. */
   public FeederHopper() {
-    SmartDashboard.putNumber("feeder setter", -0.8);
+    SmartDashboard.putNumber("feeder setter", 0.8);
   }
 
   @Override
@@ -29,7 +29,7 @@ public class FeederHopper extends SubsystemBase {
   }
 
   public void feederNumMethod() {
-    mFeeder.set(SmartDashboard.getNumber("feeder setter", 0.0));
+    mFeeder.set(-1 * SmartDashboard.getNumber("feeder setter", 0.0));
   }
 
   // VVVVV Comp methods below VVVVV
