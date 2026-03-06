@@ -18,7 +18,7 @@ public class Intake extends SubsystemBase {
     mLift.setNeutralMode(NeutralModeValue.Brake);
     // mLift.setPosition(0);
     // eLift.reset();
-    SmartDashboard.putNumber("lift setter", 0.1);
+    SmartDashboard.putNumber("lift setter", 0.15);
     SmartDashboard.putNumber("intake setter", 1.0);
   }
 
