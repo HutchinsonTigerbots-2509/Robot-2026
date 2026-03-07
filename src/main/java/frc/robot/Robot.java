@@ -5,8 +5,11 @@
 package frc.robot;
 
 import com.ctre.phoenix6.HootAutoReplay;
+import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -17,7 +20,7 @@ public class Robot extends TimedRobot {
 
     /* log and replay timestamp and joystick data */
     private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
-        // .withTimestampReplay()
+        .withTimestampReplay()
         .withJoystickReplay();
 
     public Robot() {
@@ -28,6 +31,9 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         m_timeAndJoystickReplay.update();
         CommandScheduler.getInstance().run(); 
+        SignalLogger.stop();
+        SmartDashboard.putNumber("pigeon", m_robotContainer.sDrivetrain.getPigeon2().getRotation2d().getRadians());
+        // SmartDashboard.putNumber("FrontLeft", m_robotContainer.sDrivetrain.);
     }
 
     @Override
@@ -41,11 +47,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-        if (m_autonomousCommand != null) {
-            CommandScheduler.getInstance().schedule(m_autonomousCommand);
-        }
+        // if (m_autonomousCommand != null) {
+        //     CommandScheduler.getInstance().schedule(m_autonomousCommand);
+        // }
     }
 
     @Override
@@ -53,7 +59,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousExit() {
-        m_robotContainer.fieldOffset = 0 - m_robotContainer.field2d.getRobotPose().getRotation().getDegrees();
+        // m_robotContainer.fieldOffset = 0 - m_robotContainer.field2d.getRobotPose().getRotation().getDegrees();
     }
 
     @Override

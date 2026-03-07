@@ -77,7 +77,7 @@ public class RobotContainer {
     private final JoystickButton B12 = new JoystickButton(ButtonBoardB, 12);
 
 
-    private static final Drivetrain sDrivetrain = DrivetrainConstants.createDrivetrain();
+    public static final Drivetrain sDrivetrain = DrivetrainConstants.createDrivetrain();
     private static final Pathplanner sPathPlanner = new Pathplanner(sDrivetrain);
     private static final Climber sClimber = new Climber();
     private static final FeederHopper sFeederHopper = new FeederHopper();
@@ -86,7 +86,8 @@ public class RobotContainer {
     private static final Vision sVision = new Vision();
 
     public static SwerveDrivePoseEstimator eSwerveEstimator;
-    private static SendableChooser<Command> autoSelect = new SendableChooser<Command>();
+    public static Pose2d eVisionPose2d;
+    // private static SendableChooser<Command> autoSelect = new SendableChooser<Command>();
     private static final boolean isCompetition = false; // Change this to true when at a competition!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     private static SlewRateLimiter Slewer1 = new SlewRateLimiter(2.0);
@@ -101,9 +102,9 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
-        buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", AutoBuilder.buildAutoChooser());
-        SmartDashboard.putData(autoSelect);
+        // buildAutoChooser();
+        // SmartDashboard.putData("Auto Chooser", AutoBuilder.buildAutoChooser());
+        // SmartDashboard.putData(autoSelect);
         SmartDashboard.putNumber("MaxSpeed", MaxSpeed);
         SmartDashboard.putNumber("MaxAngularRate", MaxAngularRate);
     }
@@ -164,15 +165,17 @@ public class RobotContainer {
         // joystick.leftBumper().whileTrue(new RunCommand(() -> sIntake.intakeNumMethod())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
         // joystick.leftTrigger().whileTrue(new RunCommand(() -> sShooter.shootNumMethod())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
         // joystick.rightTrigger().whileTrue(new RunCommand(() -> sFeederHopper.feederNumMethod())).onFalse(new InstantCommand(() -> sFeederHopper.feedzero()));
-        joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod()))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
-        
+        joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sClimber.climb2()), new RunCommand(() -> sVision.visionTurnShoot()), new RunCommand(() -> sShooter.shootNumMethod()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod()))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sClimber.climbZero()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
+        // joystick.leftTrigger().whileTrue(new RunCommand(() -> sVision.visionTurnShoot()).unless(() -> sVision.correctAnglePos()).andThen(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod())))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
+        // joystick.rightTrigger().whileTrue(new RunCommand(() -> sVision.visionShoot()).unless(() -> sVision.correctShootPos()).andThen(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod())))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
+        A1.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sClimber.climb2()), new RunCommand(() -> sShooter.shootNumMethod()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod()))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sClimber.climbZero()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
+
         RunCommand creepDrive = new RunCommand(() -> driveControllerCreep());
         creepDrive.addRequirements(sDrivetrain);
         joystick.leftBumper().toggleOnTrue(creepDrive);
 
         RunCommand intakeDrive = new RunCommand(() -> driveControllerCreep());
         intakeDrive.addRequirements(sDrivetrain);
-        A8.whileTrue(new RunCommand(() -> sVision.visionShoot()).until(() -> sVision.correctShootPos()).andThen(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod())))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
         // A8.toggleOnTrue(new ParallelCommandGroup(intakeDrive, new RunCommand(() -> sIntake.intakeNumMethod()))).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
         // A9.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod()), new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -90000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod())))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
         joystick.rightBumper().toggleOnTrue(new ParallelCommandGroup(intakeDrive, new RunCommand(() -> sIntake.intakeNumMethod()))).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
@@ -186,7 +189,7 @@ public class RobotContainer {
         // joystick.a().whileTrue(new RunCommand(() -> sIntake.liftDown())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         // joystick.y().onTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < 200).andThen(new InstantCommand(() -> sIntake.liftZero())));
         // joystick.a().onTrue(new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle())));
-        joystick.y().whileTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -700).andThen(new InstantCommand(() -> sIntake.liftZero()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
+        joystick.y().whileTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -750).andThen(new InstantCommand(() -> sIntake.liftZero()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         joystick.a().whileTrue(new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         joystick.b().whileTrue(new RunCommand(() -> sClimber.climb2())).onFalse(new InstantCommand(() -> sClimber.climbZero()));
         joystick.x().whileTrue(new RunCommand(() -> sClimber.climbDown())).onFalse(new InstantCommand(() -> sClimber.climbZero()));
@@ -295,14 +298,14 @@ public class RobotContainer {
     //     );
     // }       
     
-    public Command getAutonomousCommand() {
-        return autoSelect.getSelected();
-    }
-    
     // public Command getAutonomousCommand() {
-    //     // return new PathPlannerAuto("TestAuto");
-    //     return new PathPlannerAuto(autoSelect.getSelected());
+    //     return autoSelect.getSelected();
     // }
+    
+    public Command getAutonomousCommand() {
+        return new PathPlannerAuto("TestAuto");
+        // return new PathPlannerAuto(autoSelect.getSelected());
+    }
     
     public static Pose2d getPose() {
         Pose2d pos = eSwerveEstimator.getEstimatedPosition();
@@ -343,6 +346,10 @@ public class RobotContainer {
         Rotation2d pos3 = sDrivetrain.getPigeon2().getRotation2d();
         return pos3;
     }
+
+    // public static SendableChooser<Command> getSelection() {
+    //     return autoSelect;
+    // }
         
     public static SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition FL = sDrivetrain.getModule(0).getPosition(false);
@@ -362,35 +369,35 @@ public class RobotContainer {
         return ModStates;
     }
 
-    public static void buildAutoChooser() {
-        autoSelect.setDefaultOption("Do Nothing", AutoBuilder.buildAuto("Do Nothing"));
-        List<String> options = AutoBuilder.getAllAutoNames();
-        if (isCompetition) {
-            for (String n : options) {
-                if(n.startsWith("c") && n != "Do Nothing")
-                autoSelect.addOption(n, AutoBuilder.buildAuto(n));
-            };
-        }
-        else {
-            for (String n : options) {
-                if(n != "Do Nothing")
-                autoSelect.addOption(n, AutoBuilder.buildAuto(n));
-            };
-        }
-    }
+    // public static void buildAutoChooser() {
+    //     autoSelect.setDefaultOption("Do Nothing", AutoBuilder.buildAuto("Do Nothing"));
+    //     List<String> options = AutoBuilder.getAllAutoNames();
+    //     if (isCompetition) {
+    //         for (String n : options) {
+    //             if(n.startsWith("c") && n != "Do Nothing")
+    //             autoSelect.addOption(n, AutoBuilder.buildAuto(n));
+    //         };
+    //     }
+    //     else {
+    //         for (String n : options) {
+    //             if(n != "Do Nothing")
+    //             autoSelect.addOption(n, AutoBuilder.buildAuto(n));
+    //         };
+    //     }
+    // }
 
-    public static void ApplyStart() {
-        String autoName = autoSelect.getSelected().getName();
-        try {
-            AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get());
-            Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Pathplanner.startPose2d = new Pose2d(0, 0, new Rotation2d(0));
-        }
-    };
+    // public static void ApplyStart() {
+    //     String autoName = autoSelect.getSelected().getName();
+    //     try {
+    //         AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get());
+    //         // Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         // Pathplanner.startPose2d = new Pose2d(0, 0, new Rotation2d(0));
+    //     }
+    // };
 
-    public Pathplanner getsPathplanner() {
-            return sPathPlanner;
-    }
+    // // public Pathplanner getsPathplanner() {
+    // //         return sPathPlanner;
+    // // }
 }

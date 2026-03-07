@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.shooter;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.Encoder;
@@ -21,16 +23,28 @@ public class Shooter extends SubsystemBase {
   private Double kOffset; //This should be the shooter speed target.
   private Double maxRPM = 120000.0; //This is an approximation.
   private Double max2RPM = 0.0;
+
+  final VelocityVoltage kRequest = new VelocityVoltage(0).withSlot(0);
   
   public Shooter() {
     // ShooterConstants.shootPID.setTolerance(0.0);
     // ShooterConstants.shootPID.setSetpoint(0.0); //TODO: Find acceptable setpoint.
     kOffset = 0.0; // Find an acceptable offset.
 
+    var slot0Configs = new Slot0Configs();
+    slot0Configs.kS = 0.1;
+    slot0Configs.kV = 0.12;
+    slot0Configs.kP = 0.11;
+    slot0Configs.kI = 0.0;
+    slot0Configs.kD = 0.0;
+
+    mShooterA.getConfigurator().apply(slot0Configs);
+    mShooterB.getConfigurator().apply(slot0Configs);
+
     // FOR TESTING PURPOSES
     ShooterConstants.shootPID.setSetpoint(0.9);
     kOffset = 0.6;
-    SmartDashboard.putNumber("shooter setter", 0.6); // 0.6 0.55 0.5
+    SmartDashboard.putNumber("shooter setter", 45);
   }
   
   @Override
@@ -54,8 +68,10 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shootNumMethod() {
-    mShooterA.set(SmartDashboard.getNumber("shooter setter", 0.0));
-    mShooterB.set(SmartDashboard.getNumber("shooter setter", 0.0));
+    // mShooterA.set(SmartDashboard.getNumber("shooter setter", 0.0));
+    // mShooterB.set(SmartDashboard.getNumber("shooter setter", 0.0));
+    mShooterA.setControl(kRequest.withVelocity(SmartDashboard.getNumber("shooter setter", 0.0)).withSlot(0));
+    mShooterB.setControl(kRequest.withVelocity(SmartDashboard.getNumber("shooter setter", 0.0)).withSlot(0));
   }
 
   public void shootUnload(FeederHopper sFeederHopper) {

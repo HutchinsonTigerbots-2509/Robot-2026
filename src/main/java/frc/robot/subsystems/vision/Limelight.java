@@ -703,7 +703,7 @@ public class Limelight {
         return inData[position];
     }
 
-    private static PoseEstimate getBotPoseEstimate(String limelightName, String entryName, boolean isMegaTag2) {
+    public static PoseEstimate getBotPoseEstimate(String limelightName, String entryName, boolean isMegaTag2) { // Changed from private to public. Hope this works
         DoubleArrayEntry poseEntry = Limelight.getLimelightDoubleArrayEntry(limelightName, entryName);
         
         TimestampedDoubleArray tsValue = poseEntry.getAtomic();
