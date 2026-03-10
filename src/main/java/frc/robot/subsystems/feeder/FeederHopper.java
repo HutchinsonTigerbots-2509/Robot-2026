@@ -33,15 +33,11 @@ public class FeederHopper extends SubsystemBase {
   }
 
   // VVVVV Comp methods below VVVVV
-  public void feedToShoot() {
-    mFeeder.set(0.1);
+  public void feedToReverse() {
+    mFeeder.set(0.2);
   }
 
   public void feedZero() {
     mFeeder.set(0);
-  }
-
-  public void feednegative() {
-    mFeeder.set(-0.1);
   }
 }

@@ -23,16 +23,18 @@ public class Vision extends SubsystemBase {
   private PIDController visionClimbDistancePID = new PIDController(5.0,0.0,0.0);
 
   private final String cameraShoot = "limelight-shoot";
-  private final String cameraIntake = "limelight-intake";
+  private final String cameraIntake = "limelight-intake"; 
 
-  private double timestamp;
+  private double timestamp = 0; 
+
+  private double kSinFactor = 3.54307644 * Math.pow(10, 11);
 
   private final double kShootDistance = 3.0; //TODO: Find correct shooting distance.
   private final double kShootDistanceTolerance = 0.5;
-  private final double kShootAngleTolerance = 0.00001;
+  private final double kShootAngleTolerance = 0.000001;
 
-  private final double blueHubX = 4.625; //TODO: Find correct hub coordinates. These should be from the Welded Perimeter.
-  private final double blueHubY = 4.050;
+  private final double blueHubX = 4.572; //4.625;
+  private final double blueHubY = 4.08; //4.050;
   private final double redHubX = 11.925;
   private final double redHubY = 4.030;
 
@@ -67,8 +69,23 @@ public class Vision extends SubsystemBase {
     SmartDashboard.putNumber("getPropX", getPropX(getDifferenceX()));
     SmartDashboard.putNumber("getPropY", getPropY(getDifferenceY()));
     SmartDashboard.putNumber("timestamp", timestamp);
+    SmartDashboard.putNumber("shootingSpeed", distanceToShootingSpeed());
     RobotContainer.eSwerveEstimator.addVisionMeasurement(RobotContainer.eVisionPose2d, timestamp);
     visionPose2dEstimator();
+    RobotContainer.turn1 = turnToShootPos1();
+  }
+
+  public double distanceToShootingSpeed() {
+    // return Math.pow(((getDistanceToHub() * 39.701 - 9) / 31), 2) + 40;
+    // return ((getDistanceToHub() * 39.701) + kSinFactor - 1.57) / (kSinFactor * Math.sin(5.0469822681 * Math.pow(10, -7))); 
+    // return ((Math.log((182.84605 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244;
+    // double v = (((Math.log((182.84605 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.98;
+    double v = (((Math.log((183.75 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.98;
+    if (v < 63) {
+      return v;
+    } else {
+      return 63;
+    }
   }
 
   public void visionClimb(Climber sClimber) {
@@ -96,7 +113,7 @@ public class Vision extends SubsystemBase {
 
   public boolean visionTurnShoot() {
     if (correctAnglePos()) {
-      RobotContainer.driveBrake();
+      // RobotContainer.driveBrake();
       return true;
     } else if (!correctAnglePos()) {
       turnToShootPos();
@@ -143,6 +160,10 @@ public class Vision extends SubsystemBase {
   //     RobotContainer.driveVision(0.0, 0.0, spinDir(dir));
   //   }
   // }
+
+  private double turnToShootPos1() {
+    return (-2.5 * visionShootRotationPID.calculate(getPropOmega(getDifferenceOmega())));
+  }
 
   private void driveToShootPos() {
     RobotContainer.driveVision(

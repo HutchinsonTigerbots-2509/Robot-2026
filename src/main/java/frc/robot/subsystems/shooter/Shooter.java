@@ -44,7 +44,7 @@ public class Shooter extends SubsystemBase {
     // FOR TESTING PURPOSES
     ShooterConstants.shootPID.setSetpoint(0.9);
     kOffset = 0.6;
-    SmartDashboard.putNumber("shooter setter", 45);
+    SmartDashboard.putNumber("shooter setter", 55);
   }
   
   @Override
@@ -58,6 +58,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Motor Ouput", maxSpeed(ShooterConstants.shootPID.calculate(eShooter.getRate()) + kOffset));
     SmartDashboard.putNumber("Proportion Ouput", propSpeed());
     SmartDashboard.putNumber("PID2 Ouput", ShooterConstants.shootPID.calculate(propSpeed()));
+    SmartDashboard.putNumber("shooterCount", eShooter.get());
   }
 
   private Double rpm = eShooter.getRate();
@@ -72,6 +73,11 @@ public class Shooter extends SubsystemBase {
     // mShooterB.set(SmartDashboard.getNumber("shooter setter", 0.0));
     mShooterA.setControl(kRequest.withVelocity(SmartDashboard.getNumber("shooter setter", 0.0)).withSlot(0));
     mShooterB.setControl(kRequest.withVelocity(SmartDashboard.getNumber("shooter setter", 0.0)).withSlot(0));
+  }
+
+  public void shootNumMethod(double n) {
+    mShooterA.setControl(kRequest.withVelocity(n).withSlot(0));
+    mShooterB.setControl(kRequest.withVelocity(n).withSlot(0));
   }
 
   public void shootUnload(FeederHopper sFeederHopper) {
