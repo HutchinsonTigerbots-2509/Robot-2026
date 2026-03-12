@@ -108,6 +108,7 @@ public class RobotContainer {
         // SmartDashboard.putData(autoSelect);
         SmartDashboard.putNumber("MaxSpeed", MaxSpeed);
         SmartDashboard.putNumber("MaxAngularRate", MaxAngularRate);
+        SmartDashboard.putNumber("joystickStrafeY", calculateFieldY(joystick) * MaxSpeed * 0.1);
     }
 
     private void configureBindings() {
@@ -122,8 +123,8 @@ public class RobotContainer {
 
         sDrivetrain.setDefaultCommand(
             sDrivetrain.applyRequest(() ->  
-                drive.withVelocityX((Slewer1.calculate(calculateFieldX(joystick)) * MaxSpeed) * 0.5)
-                    .withVelocityY((Slewer2.calculate(calculateFieldY(joystick)) * MaxSpeed) * 0.5)
+                drive.withVelocityX((Slewer1.calculate(calculateFieldX(joystick)) * MaxSpeed))
+                    .withVelocityY((Slewer2.calculate(calculateFieldY(joystick)) * MaxSpeed))
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
             )
         );
@@ -166,11 +167,11 @@ public class RobotContainer {
         // joystick.rightTrigger().whileTrue(new RunCommand(() -> sFeederHopper.feederNumMethod())).onFalse(new InstantCommand(() -> sFeederHopper.feedzero()));
         // joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sClimber.climb2()), new RunCommand(() -> sVision.visionTurnShoot()), new RunCommand(() -> sShooter.shootNumMethod()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -200000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod()))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sClimber.climbZero()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
         // joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sClimber.climb2()), new RunCommand(() -> sVision.visionTurnShoot()), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -200000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod()))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sClimber.climbZero()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
-        joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sClimber.climb2()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -200000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod()))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sClimber.climbZero()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
+        joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sClimber.climb2()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -70000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod()))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sClimber.climbZero()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
         // joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sClimber.climb2()), new RunCommand(() -> sVision.visionTurnShoot()), new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootNumMethod(-20)), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new InstantCommand(() -> sFeederHopper.feedToReverse()))).until(() -> sShooter.eShooter.get() > 100).andThen(new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -200000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod())))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sClimber.climbZero()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
         // joystick.leftTrigger().whileTrue(new RunCommand(() -> sVision.visionTurnShoot()).unless(() -> sVision.correctAnglePos()).andThen(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod())))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
         // joystick.rightTrigger().whileTrue(new RunCommand(() -> sVision.visionShoot()).unless(() -> sVision.correctShootPos()).andThen(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod())))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
-        A1.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sClimber.climb2()), new RunCommand(() -> sShooter.shootNumMethod()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod()))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sClimber.climbZero()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
+        // A1.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sClimber.climb2()), new RunCommand(() -> sShooter.shootNumMethod()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod()))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sClimber.climbZero()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
 
         RunCommand creepDrive = new RunCommand(() -> driveControllerCreep());
         creepDrive.addRequirements(sDrivetrain);
@@ -224,7 +225,18 @@ public class RobotContainer {
 
     public void strafeVision() {
         turn2 = turn1;
-        sDrivetrain.applyRequest(() -> drive.withVelocityX(calculateFieldX(joystick) * MaxSpeed * 0.1).withVelocityY(calculateFieldY(joystick) * MaxSpeed * 0.1).withRotationalRate(turn2)).execute();
+        sDrivetrain.applyRequest(() -> drive.withVelocityX(calculateFieldX(joystick) * MaxSpeed * 0.1).withVelocityY(calculateFieldY(joystick) * MaxSpeed * 0.1).withRotationalRate(strafeVisionOffset())).execute();
+        SmartDashboard.putNumber("joystickStrafeY", calculateFieldY(joystick) * MaxSpeed * 0.1);
+    }
+
+    public double strafeVisionOffset() {
+        if ((calculateFieldY(joystick) * MaxSpeed * 0.1) < -0.25) {
+            return turn2 - 1.5;
+        } else if ((calculateFieldY(joystick) * MaxSpeed * 0.1) > 0.25) {
+            return turn2 + 1.5;
+        } else {
+            return turn2;
+        }
     }
 
     public static void driveIdle() {
@@ -276,8 +288,8 @@ public class RobotContainer {
     }
 
     public void driveControllerCreep() {
-        sDrivetrain.applyRequest(() -> drive.withVelocityX(calculateFieldX(joystick) * MaxSpeed * 0.15)                                                                               
-                .withVelocityY(calculateFieldY(joystick) * MaxSpeed * 0.15)
+        sDrivetrain.applyRequest(() -> drive.withVelocityX(calculateFieldX(joystick) * MaxSpeed * 0.2)                                                                               
+                .withVelocityY(calculateFieldY(joystick) * MaxSpeed * 0.2)
                 .withRotationalRate((-joystick.getRightX() * MaxAngularRate) * 0.8))
                 .execute();
     }

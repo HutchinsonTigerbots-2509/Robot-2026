@@ -8,7 +8,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.shooter.Shooter;
 
 public class FeederHopper extends SubsystemBase {
   /** Creates a new Feeder. */
@@ -32,7 +31,6 @@ public class FeederHopper extends SubsystemBase {
     mFeeder.set(-1 * SmartDashboard.getNumber("feeder setter", 0.0));
   }
 
-  // VVVVV Comp methods below VVVVV
   public void feedToReverse() {
     mFeeder.set(0.2);
   }

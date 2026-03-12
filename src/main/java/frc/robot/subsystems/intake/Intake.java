@@ -40,17 +40,12 @@ public class Intake extends SubsystemBase {
   public DigitalInput wLiftMax = new DigitalInput(IntakeConstants.kLiftSwitchId);
   public Encoder eLift = new Encoder(2, 3);
 
-  public void intakeForward() {
-    mIntake.set(-0.2); //TODO: Find optimal intake speed.
-  }
-
   public void intakeZero() {
     mIntake.set(0.0);
   }
 
   public void liftZero() {
     mLift.set(0);
-
   }
 
   public void liftOut() {
@@ -66,8 +61,6 @@ public class Intake extends SubsystemBase {
   public void modLiftCycle() {
     liftCycle = true;
   }
-
-  // VVVVV Methods below are for testing VVVVV
 
   public void liftUp() {
     if (eLift.get() > 700) {

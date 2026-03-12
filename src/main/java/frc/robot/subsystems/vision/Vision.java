@@ -5,42 +5,32 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.feeder.FeederHopper;
-import frc.robot.subsystems.shooter.Shooter;
 
 public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
 
   private PIDController visionShootRotationPID = new PIDController(5.0,0.0,0.0);
   private PIDController visionShootDistancePID = new PIDController(5.0,0.0,0.0);
-  private PIDController visionClimbRotationPID = new PIDController(5.0,0.0,0.0);
-  private PIDController visionClimbDistancePID = new PIDController(5.0,0.0,0.0);
 
   private final String cameraShoot = "limelight-shoot";
   private final String cameraIntake = "limelight-intake"; 
 
   private double timestamp = 0; 
 
-  private double kSinFactor = 3.54307644 * Math.pow(10, 11);
+  // private double kSinFactor = 3.54307644 * Math.pow(10, 11);
 
   private final double kShootDistance = 3.0; //TODO: Find correct shooting distance.
   private final double kShootDistanceTolerance = 0.5;
   private final double kShootAngleTolerance = 0.000001;
 
-  private final double blueHubX = 4.572; //4.625;
-  private final double blueHubY = 4.08; //4.050;
+  private final double blueHubX = 4.625; //4.572;
+  private final double blueHubY = 4.050; //4.08;
   private final double redHubX = 11.925;
   private final double redHubY = 4.030;
-
-  private int[] climbTags;
-
-  private double dir;
 
   public Vision() {
     visionShootRotationPID.setTolerance(0.2/41.0);
@@ -121,11 +111,6 @@ public class Vision extends SubsystemBase {
     return false;
   }
 
-  public void visionCancel(Climber sClimber, FeederHopper sFeederHopper, Shooter sShooter) {
-    RobotContainer.driveIdle();
-    sShooter.shootCancel(sFeederHopper);
-  }
-
   public boolean correctShootPos() {
     if (Math.abs(getDistanceToHub() - kShootDistance) < kShootDistanceTolerance && Math.abs(getDifferenceOmega()) < kShootAngleTolerance) {
       return true;
@@ -162,7 +147,7 @@ public class Vision extends SubsystemBase {
   // }
 
   private double turnToShootPos1() {
-    return (-2.5 * visionShootRotationPID.calculate(getPropOmega(getDifferenceOmega())));
+    return (-1.0 * visionShootRotationPID.calculate(getPropOmega(getDifferenceOmega())));
   }
 
   private void driveToShootPos() {
