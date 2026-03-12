@@ -112,15 +112,6 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // sDrivetrain.setDefaultCommand(
-        //     // Drivetrain will execute this command periodically
-        //     sDrivetrain.applyRequest(() ->
-        //         drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-        //             .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-        //             .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        //     )
-        // );
-
         sDrivetrain.setDefaultCommand(
             sDrivetrain.applyRequest(() ->  
                 drive.withVelocityX((Slewer1.calculate(calculateFieldX(joystick)) * MaxSpeed))
@@ -136,35 +127,8 @@ public class RobotContainer {
             sDrivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        // joystick.leftTrigger().onTrue(new InstantCommand(() -> sVision.visionShoot(sFeeder, sShooter)));
-        // // joystick.leftBumper().onTrue(new InstantCommand(() -> sShooter.shootCancel(sFeeder)));
-        // // joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.intakeForward()));
-        // joystick.rightBumper().onTrue(new InstantCommand(() -> sIntake.intakeZero()));
+        joystick.povUp().onTrue(new InstantCommand(() -> setGyro(0.0)).andThen(new InstantCommand(() -> System.out.println("Yaw: " + sDrivetrain.getPigeon2().getYaw()))));
 
-        // joystick.povUp().onTrue(new InstantCommand(() -> sDrivetrain.getPigeon2().reset()));
-        joystick.povUp().onTrue(new InstantCommand(() -> setGyro(0.0)));
-        joystick.povUp().onTrue(new InstantCommand(() -> System.out.println("Yaw: " + sDrivetrain.getPigeon2().getYaw())));
-
-        // VVVV Generated bindings VVVV
-
-        // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        // joystick.b().whileTrue(drivetrain.applyRequest(() ->
-        //     point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
-        // ));
-
-        // Run SysId routines when holding back/start and X/Y.
-        // Note that each routine should be run exactly once in a single log.
-        // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
-        // // Reset the field-centric heading on left bumper press.
-        // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
-        // joystick.leftBumper().whileTrue(new RunCommand(() -> sIntake.intakeNumMethod())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
-        // joystick.leftTrigger().whileTrue(new RunCommand(() -> sShooter.shootNumMethod())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
-        // joystick.rightTrigger().whileTrue(new RunCommand(() -> sFeederHopper.feederNumMethod())).onFalse(new InstantCommand(() -> sFeederHopper.feedzero()));
         // joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sClimber.climb2()), new RunCommand(() -> sVision.visionTurnShoot()), new RunCommand(() -> sShooter.shootNumMethod()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -200000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod()))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sClimber.climbZero()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
         // joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sClimber.climb2()), new RunCommand(() -> sVision.visionTurnShoot()), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -200000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod()))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sClimber.climbZero()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
         joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sClimber.climb2()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -70000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod()))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sClimber.climbZero()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
@@ -179,26 +143,12 @@ public class RobotContainer {
 
         RunCommand intakeDrive = new RunCommand(() -> driveControllerCreep());
         intakeDrive.addRequirements(sDrivetrain);
-        // A8.toggleOnTrue(new ParallelCommandGroup(intakeDrive, new RunCommand(() -> sIntake.intakeNumMethod()))).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
-        // A9.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod()), new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -90000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod())))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
         joystick.rightBumper().toggleOnTrue(new ParallelCommandGroup(intakeDrive, new RunCommand(() -> sIntake.intakeNumMethod()))).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
 
-        // joystick.leftBumper().toggleOnTrue(intakeDrive);
-        // joystick.leftBumper().toggleOnTrue(new RunCommand(() -> sIntake.intakeNumMethod())).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
-
-        // joystick.rightBumper().whileTrue(new RunCommand(() -> sVision.visionShoot(sFeederHopper, sShooter))).onFalse(new InstantCommand(() -> sVision.visionCancel(sClimber, sFeederHopper, sShooter)));
-
-        // joystick.y().whileTrue(new RunCommand(() -> sIntake.liftUp())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
-        // joystick.a().whileTrue(new RunCommand(() -> sIntake.liftDown())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
-        // joystick.y().onTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < 200).andThen(new InstantCommand(() -> sIntake.liftZero())));
-        // joystick.a().onTrue(new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle())));
         joystick.y().whileTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -750).andThen(new InstantCommand(() -> sIntake.liftZero()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         joystick.a().whileTrue(new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         joystick.b().whileTrue(new RunCommand(() -> sClimber.climb2())).onFalse(new InstantCommand(() -> sClimber.climbZero()));
         joystick.x().whileTrue(new RunCommand(() -> sClimber.climbDown())).onFalse(new InstantCommand(() -> sClimber.climbZero()));
-
-        // joystick.rightTrigger().onTrue(new InstantCommand(() -> sIntake.LiftOut()));
-        // joystick.leftTrigger().onTrue(new InstantCommand(() -> sIntake.LiftIn()));
 
         A1.whileTrue(new InstantCommand(() -> System.out.println("A1")));
         A2.whileTrue(new InstantCommand(() -> System.out.println("A2")));
