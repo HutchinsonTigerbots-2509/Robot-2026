@@ -29,6 +29,7 @@ public class Pathplanner extends SubsystemBase {
   public Pathplanner(Drivetrain kDrivetrain) {
     sDrivetrain = kDrivetrain;
     startPose2d = new Pose2d(0,0, new Rotation2d(0));
+    RobotContainer.namedCommands();
 
     try{
       AutoBuilder.configure(
@@ -58,18 +59,18 @@ public class Pathplanner extends SubsystemBase {
         // Handle exception as needed
         e.printStackTrace();
     }
-    // SmartDashboard.putData(RobotContainer.getSelection());
-    // RobotContainer.buildAutoChooser();
+    SmartDashboard.putData(RobotContainer.getSelection());    
     RobotContainer.eSwerveEstimator = new SwerveDrivePoseEstimator(sDrivetrain.getKinematics(), RobotContainer.getRotation2d(), RobotContainer.getModulePositions(), startPose2d);
-    // RobotContainer.ApplyStart();
     RobotContainer.eSwerveEstimator.resetPose(startPose2d);
+    // RobotContainer.buildAutoChooser();
+    // RobotContainer.ApplyStart();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     if (DriverStation.isDisabled() && SmartDashboard.getBoolean("ApplyStart", false)) {
-      // RobotContainer.ApplyStart();
+      RobotContainer.ApplyStart();
       RobotContainer.eSwerveEstimator.resetPose(startPose2d);
       RobotContainer.setGyro(RobotContainer.eSwerveEstimator.getEstimatedPosition().getRotation().getDegrees());
     }

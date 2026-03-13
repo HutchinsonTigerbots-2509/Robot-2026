@@ -42,8 +42,8 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("getX", Limelight.getBotPose2d_wpiBlue(cameraShoot).getX());
-    SmartDashboard.putNumber("getY", Limelight.getBotPose2d_wpiBlue(cameraShoot).getY());
+    SmartDashboard.putNumber("getX", RobotContainer.getPose().getX());
+    SmartDashboard.putNumber("getY", RobotContainer.getPose().getY());
     SmartDashboard.putNumber("getOmega", getShooterAngle());
     SmartDashboard.putNumber("getDifferenceX", getDifferenceX());
     SmartDashboard.putNumber("getDifferenceY", getDifferenceY());
@@ -180,11 +180,23 @@ public class Vision extends SubsystemBase {
     return Math.atan(getDistanceToHubY() / getDistanceToHubX());
   }
 
+  // private double getShooterAngle() {
+  //   if (RobotContainer.getPose().getRotation().getRadians() < 0) {
+  //     return RobotContainer.getPose().getRotation().getRadians() + Math.PI;
+  //   }
+  //   return RobotContainer.getPose().getRotation().getRadians() - Math.PI;
+  // }
+
   private double getShooterAngle() {
-    if (RobotContainer.getPose().getRotation().getRadians() < 0) {
-      return RobotContainer.getPose().getRotation().getRadians() + Math.PI;
+    if (RobotContainer.getAllianceBlue()) {
+      if (RobotContainer.getPose().getRotation().getRadians() < 0) {
+        return RobotContainer.getPose().getRotation().getRadians() + Math.PI;
+      }
+      return RobotContainer.getPose().getRotation().getRadians() - Math.PI;
+    } else if (!RobotContainer.getAllianceBlue()) {
+      return RobotContainer.getPose().getRotation().getRadians();
     }
-    return RobotContainer.getPose().getRotation().getRadians() - Math.PI;
+    return RobotContainer.magicNum;
   }
  
   private double getDistanceToHub() {

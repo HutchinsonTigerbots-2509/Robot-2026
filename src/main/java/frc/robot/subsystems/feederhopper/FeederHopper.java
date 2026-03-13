@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.feeder;
+package frc.robot.subsystems.feederhopper;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -37,5 +37,13 @@ public class FeederHopper extends SubsystemBase {
 
   public void feedZero() {
     mFeeder.set(0);
+  }
+
+  public void hopperOn() {
+    mHopper.set(1);
+  }
+
+  public void hopperOff() {
+    mHopper.set(0);
   }
 }
