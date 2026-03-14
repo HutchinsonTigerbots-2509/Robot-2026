@@ -11,7 +11,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "IntakeOut"
+                  "name": "Print"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "BackUp2"
                 }
               },
               {
@@ -19,15 +25,27 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "named",
                       "data": {
-                        "pathName": "StartPath"
+                        "name": "Print"
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "named",
                       "data": {
-                        "pathName": "NextPath"
+                        "name": "LiftOut"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeRun1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ShootStationary"
                       }
                     }
                   ]

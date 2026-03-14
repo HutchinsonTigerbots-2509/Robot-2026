@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems.feederhopper;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,6 +17,14 @@ public class FeederHopper extends SubsystemBase {
   /** Creates a new Feeder. */
   public FeederHopper() {
     SmartDashboard.putNumber("feeder setter", 0.8);
+    var slot0Configs = new Slot0Configs();
+    slot0Configs.kS = 0.1;
+    slot0Configs.kV = 0.12;
+    slot0Configs.kP = 0.11;
+    slot0Configs.kI = 0.0;
+    slot0Configs.kD = 0.0;
+
+    mFeeder.getConfigurator().apply(slot0Configs);
   }
 
   @Override
@@ -21,7 +33,9 @@ public class FeederHopper extends SubsystemBase {
   }
 
   private TalonFX mFeeder = new TalonFX(FeederHopperConstants.kFeederMotorId);
-  private TalonFX mHopper = new TalonFX(FeederHopperConstants.kHopperMotorId);
+  private WPI_TalonSRX mHopper = new WPI_TalonSRX(FeederHopperConstants.kHopperMotorId);
+
+  final VelocityVoltage kRequest = new VelocityVoltage(0).withSlot(0);
 
   public void feedzero() {
     mFeeder.set(0.0);
@@ -31,8 +45,8 @@ public class FeederHopper extends SubsystemBase {
     mFeeder.set(-1 * SmartDashboard.getNumber("feeder setter", 0.0));
   }
 
-  public void feedToReverse() {
-    mFeeder.set(0.2);
+  public void feedReverse() {
+    mFeeder.set(0.3);
   }
 
   public void feedZero() {
@@ -45,5 +59,9 @@ public class FeederHopper extends SubsystemBase {
 
   public void hopperOff() {
     mHopper.set(0);
+  }
+
+  public void feedNumMethod(double n) {
+    mFeeder.setControl(kRequest.withVelocity(n).withSlot(0));
   }
 }
