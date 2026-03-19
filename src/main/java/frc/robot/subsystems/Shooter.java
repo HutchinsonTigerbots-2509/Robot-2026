@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.shooter;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
 
-  private TalonFX mShooterA = new TalonFX(ShooterConstants.kShootAMotorId);
-  private TalonFX mShooterB = new TalonFX(ShooterConstants.kShootBMotorId);
+  private TalonFX mShooterA = new TalonFX(11);
+  private TalonFX mShooterB = new TalonFX(12);
   public Encoder eShooter = new Encoder(0, 1);
 
   final VelocityVoltage kRequest = new VelocityVoltage(0).withSlot(0);
@@ -32,8 +32,6 @@ public class Shooter extends SubsystemBase {
 
     mShooterA.getConfigurator().apply(slot0Configs);
     mShooterB.getConfigurator().apply(slot0Configs);
-
-    SmartDashboard.putNumber("shooter setter", 55);
   }
   
   @Override
@@ -42,17 +40,12 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("shooterCount", eShooter.get());
   }
 
-  public void shootzero() {
-    mShooterA.set(0.0);
-    mShooterB.set(0.0);
+  public void shootSet() {
+    mShooterA.setControl(kRequest.withVelocity(55).withSlot(0));
+    mShooterB.setControl(kRequest.withVelocity(55).withSlot(0));
   }
 
-  public void shootNumMethod() {
-    mShooterA.setControl(kRequest.withVelocity(SmartDashboard.getNumber("shooter setter", 0.0)).withSlot(0));
-    mShooterB.setControl(kRequest.withVelocity(SmartDashboard.getNumber("shooter setter", 0.0)).withSlot(0));
-  }
-
-  public void shootNumMethod(double n) {
+  public void shootVariable(double n) {
     mShooterA.setControl(kRequest.withVelocity(n).withSlot(0));
     mShooterB.setControl(kRequest.withVelocity(n).withSlot(0));
   }

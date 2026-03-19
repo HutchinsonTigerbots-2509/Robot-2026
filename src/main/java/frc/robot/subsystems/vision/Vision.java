@@ -8,7 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.Climber;
 
 public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
@@ -60,7 +60,7 @@ public class Vision extends SubsystemBase {
     SmartDashboard.putNumber("getPropY", getPropY(getDifferenceY()));
     SmartDashboard.putNumber("timestamp", timestamp);
     SmartDashboard.putNumber("shootingSpeed", distanceToShootingSpeed());
-    RobotContainer.eSwerveEstimator.addVisionMeasurement(RobotContainer.eVisionPose2d, timestamp);
+    // RobotContainer.eSwerveEstimator.addVisionMeasurement(RobotContainer.eVisionPose2d, timestamp);
     visionPose2dEstimator();
     RobotContainer.turn1 = turnToShootPos1();
   }
@@ -245,9 +245,11 @@ public class Vision extends SubsystemBase {
     if (Limelight.getTV(cameraShoot)) {
       RobotContainer.eVisionPose2d = Limelight.getBotPose2d_wpiBlue(cameraShoot);
       timestamp = Limelight.getBotPoseEstimate(cameraShoot, "botpose_wpiblue", false).timestampSeconds;
+      RobotContainer.eSwerveEstimator.addVisionMeasurement(RobotContainer.eVisionPose2d, timestamp);
     } else if (Limelight.getTV(cameraIntake)) {
       RobotContainer.eVisionPose2d = Limelight.getBotPose2d_wpiBlue(cameraIntake);
       timestamp = Limelight.getBotPoseEstimate(cameraIntake, "botpose_wpiblue", false).timestampSeconds;
+      RobotContainer.eSwerveEstimator.addVisionMeasurement(RobotContainer.eVisionPose2d, timestamp);
     }
   }
 }

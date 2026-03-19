@@ -36,16 +36,10 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "IntakeRun"
+                  "name": "IntakeRun8"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeStop"
           }
         },
         {
@@ -68,6 +62,25 @@
                 "type": "named",
                 "data": {
                   "name": "Shoot10"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "C4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "LiftOut"
                 }
               }
             ]

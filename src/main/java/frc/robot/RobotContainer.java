@@ -36,13 +36,13 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.FeederHopper;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.autonomous.Pathplanner;
-import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants;
-import frc.robot.subsystems.feederhopper.FeederHopper;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.Vision;
 
 public class RobotContainer {
@@ -59,35 +59,35 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
-    private final Joystick ButtonBoardA = new Joystick(1);
-    private final Joystick ButtonBoardB = new Joystick(2);
-    private final JoystickButton A1 = new JoystickButton(ButtonBoardA, 1);
-    private final JoystickButton A2 = new JoystickButton(ButtonBoardA, 2);
-    private final JoystickButton A3 = new JoystickButton(ButtonBoardA, 3);
-    private final JoystickButton A4 = new JoystickButton(ButtonBoardA, 4);
-    private final JoystickButton A5 = new JoystickButton(ButtonBoardA, 5);
-    private final JoystickButton A6 = new JoystickButton(ButtonBoardA, 6);
-    private final JoystickButton A7 = new JoystickButton(ButtonBoardA, 7);
-    private final JoystickButton A8 = new JoystickButton(ButtonBoardA, 8);
-    private final JoystickButton A9 = new JoystickButton(ButtonBoardA, 9);
-    private final JoystickButton A10 = new JoystickButton(ButtonBoardA, 10);
-    private final JoystickButton A11 = new JoystickButton(ButtonBoardA, 11);
-    private final JoystickButton A12 = new JoystickButton(ButtonBoardA, 12);
-    private final JoystickButton B10 = new JoystickButton(ButtonBoardB, 10);
-    private final JoystickButton B11 = new JoystickButton(ButtonBoardB, 11);
-    private final JoystickButton B12 = new JoystickButton(ButtonBoardB, 12);
+    // private final Joystick ButtonBoardA = new Joystick(1);
+    // private final Joystick ButtonBoardB = new Joystick(2);
+    // private final JoystickButton A1 = new JoystickButton(ButtonBoardA, 1);
+    // private final JoystickButton A2 = new JoystickButton(ButtonBoardA, 2);
+    // private final JoystickButton A3 = new JoystickButton(ButtonBoardA, 3);
+    // private final JoystickButton A4 = new JoystickButton(ButtonBoardA, 4);
+    // private final JoystickButton A5 = new JoystickButton(ButtonBoardA, 5);
+    // private final JoystickButton A6 = new JoystickButton(ButtonBoardA, 6);
+    // private final JoystickButton A7 = new JoystickButton(ButtonBoardA, 7);
+    // private final JoystickButton A8 = new JoystickButton(ButtonBoardA, 8);
+    // private final JoystickButton A9 = new JoystickButton(ButtonBoardA, 9);
+    // private final JoystickButton A10 = new JoystickButton(ButtonBoardA, 10);
+    // private final JoystickButton A11 = new JoystickButton(ButtonBoardA, 11);
+    // private final JoystickButton A12 = new JoystickButton(ButtonBoardA, 12);
+    // private final JoystickButton B10 = new JoystickButton(ButtonBoardB, 10);
+    // private final JoystickButton B11 = new JoystickButton(ButtonBoardB, 11);
+    // private final JoystickButton B12 = new JoystickButton(ButtonBoardB, 12);
 
     public static final Drivetrain sDrivetrain = DrivetrainConstants.createDrivetrain();
-    private static final Climber sClimber = new Climber();
-    private static final FeederHopper sFeederHopper = new FeederHopper();
-    private static final Intake sIntake = new Intake();
-    private static final Shooter sShooter = new Shooter();
-    private static final Vision sVision = new Vision();
-    private static final Pathplanner sPathPlanner = new Pathplanner(sDrivetrain);
+    public static final Climber sClimber = new Climber();
+    public static final FeederHopper sFeederHopper = new FeederHopper();
+    public static final Intake sIntake = new Intake();
+    public static final Shooter sShooter = new Shooter();
+    public static final Vision sVision = new Vision();
+    public static final Pathplanner sPathPlanner = new Pathplanner(sDrivetrain);
 
     public static SwerveDrivePoseEstimator eSwerveEstimator;
     public static Pose2d eVisionPose2d;
-    private static SendableChooser<Command> autoSelect = new SendableChooser<Command>();
+    public static SendableChooser<Command> autoSelect = new SendableChooser<Command>();
     private static final boolean isCompetition = false; // Change this to true when at a competition!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     private static SlewRateLimiter Slewer1 = new SlewRateLimiter(2.0);
@@ -104,8 +104,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
-        buildAutoChooser();
-        ApplyStart();
+        // buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", AutoBuilder.buildAutoChooser());
         SmartDashboard.putData(autoSelect);
         SmartDashboard.putNumber("MaxSpeed", MaxSpeed);
@@ -131,46 +130,47 @@ public class RobotContainer {
 
         joystick.povUp().onTrue(new InstantCommand(() -> setGyro(0.0)).andThen(new InstantCommand(() -> System.out.println("Yaw: " + sDrivetrain.getPigeon2().getYaw()))));
 
-        // joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).onlyWhile(() -> sShooter.eShooter.get() < -70000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod()))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
-        // joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod(-63)), new RunCommand(() -> sFeederHopper.feedToReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feederNumMethod())))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
-        // A1.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod(-63)), new RunCommand(() -> sFeederHopper.feedToReverse()))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
-        joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod(-63)), new RunCommand(() -> sFeederHopper.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedNumMethod(-80))))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
-        // joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod(-63)), new RunCommand(() -> sFeederHopper.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedNumMethod(-80))))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
+        joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootVariable(-63)), new RunCommand(() -> sFeederHopper.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedVariable(-80))))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
 
         RunCommand creepDrive = new RunCommand(() -> driveControllerCreep());
         creepDrive.addRequirements(sDrivetrain);
-        joystick.leftBumper().toggleOnTrue(creepDrive);
+        // joystick.leftBumper().toggleOnTrue(creepDrive);
 
         RunCommand intakeDrive = new RunCommand(() -> driveControllerCreep());
         intakeDrive.addRequirements(sDrivetrain);
-        joystick.rightBumper().toggleOnTrue(new ParallelCommandGroup(intakeDrive, new RunCommand(() -> sIntake.intakeNumMethod()))).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
+        joystick.rightBumper().toggleOnTrue(new ParallelCommandGroup(intakeDrive, new RunCommand(() -> sIntake.intakeForward()))).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
+        joystick.leftBumper().whileTrue(new RunCommand(() -> driveJolt(0.0, MaxSpeed)).withTimeout(0.125).andThen(new RunCommand(() -> driveJolt(0.0, -MaxSpeed)).withTimeout(0.125)));
 
         joystick.y().whileTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -750).andThen(new InstantCommand(() -> sIntake.liftZero()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         joystick.a().whileTrue(new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         joystick.b().whileTrue(new RunCommand(() -> sClimber.climb2())).onFalse(new InstantCommand(() -> sClimber.climbZero()));
         joystick.x().whileTrue(new RunCommand(() -> sClimber.climbDown())).onFalse(new InstantCommand(() -> sClimber.climbZero()));
 
-        A1.whileTrue(new InstantCommand(() -> System.out.println("A1")));
-        A2.whileTrue(new InstantCommand(() -> System.out.println("A2")));
-        A3.whileTrue(new InstantCommand(() -> System.out.println("A3")));
-        A4.whileTrue(new InstantCommand(() -> System.out.println("A4")));
-        A5.whileTrue(new InstantCommand(() -> System.out.println("A5")));
-        A6.whileTrue(new InstantCommand(() -> System.out.println("A6")));
-        A7.whileTrue(new InstantCommand(() -> System.out.println("A7")));
-        A8.whileTrue(new InstantCommand(() -> System.out.println("A8")));
-        A9.whileTrue(new InstantCommand(() -> System.out.println("A9")));
-        A10.whileTrue(new InstantCommand(() -> System.out.println("A10")));
-        A11.whileTrue(new InstantCommand(() -> System.out.println("A11")));
-        A12.whileTrue(new InstantCommand(() -> System.out.println("A12")));
-        B10.whileTrue(new InstantCommand(() -> System.out.println("B10")));
-        B11.whileTrue(new InstantCommand(() -> System.out.println("B11")));
-        B12.whileTrue(new InstantCommand(() -> System.out.println("B12")));
+        // A1.whileTrue(new InstantCommand(() -> System.out.println("A1")));
+        // A2.whileTrue(new InstantCommand(() -> System.out.println("A2")));
+        // A3.whileTrue(new InstantCommand(() -> System.out.println("A3")));
+        // A4.whileTrue(new InstantCommand(() -> System.out.println("A4")));
+        // A5.whileTrue(new InstantCommand(() -> System.out.println("A5")));
+        // A6.whileTrue(new InstantCommand(() -> System.out.println("A6")));
+        // A7.whileTrue(new InstantCommand(() -> System.out.println("A7")));
+        // A8.whileTrue(new InstantCommand(() -> System.out.println("A8")));
+        // A9.whileTrue(new InstantCommand(() -> System.out.println("A9")));
+        // A10.whileTrue(new InstantCommand(() -> System.out.println("A10")));
+        // A11.whileTrue(new InstantCommand(() -> System.out.println("A11")));
+        // A12.whileTrue(new InstantCommand(() -> System.out.println("A12")));
+        // B10.whileTrue(new InstantCommand(() -> System.out.println("B10")));
+        // B11.whileTrue(new InstantCommand(() -> System.out.println("B11")));
+        // B12.whileTrue(new InstantCommand(() -> System.out.println("B12")));
 
         sDrivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public static void driveVision(double vx, double vy, double vOmega) {
         sDrivetrain.applyRequest(() -> drive.withVelocityX(vx).withVelocityY(vy).withRotationalRate(vOmega)).execute();
+    }
+
+    public static void driveJolt(double vx, double vy) {
+        sDrivetrain.applyRequest(() -> drive.withVelocityX(vx).withVelocityY(vy).withRotationalRate(0.0)).execute();
     }
 
     public void strafeVision() {
@@ -266,7 +266,7 @@ public class RobotContainer {
     // }       
     
     public Command getAutonomousCommand() {
-        return new PathPlannerAuto("A");
+        return new PathPlannerAuto("B");
     }
 
     // public Command getAutonomousCommand() {
@@ -317,7 +317,7 @@ public class RobotContainer {
     public static SendableChooser<Command> getSelection() {
         return autoSelect;
     }
-        
+
     public static SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition FL = sDrivetrain.getModule(0).getPosition(false);
         SwerveModulePosition FR = sDrivetrain.getModule(1).getPosition(false);
@@ -326,7 +326,7 @@ public class RobotContainer {
         SwerveModulePosition[] ModPositions = new SwerveModulePosition[] {FL, FR, RL, RR};
         return ModPositions;
     }
-        
+
     public static SwerveModuleState[] getModuleStates() {
         SwerveModuleState FL = sDrivetrain.getModule(0).getCurrentState();
         SwerveModuleState FR = sDrivetrain.getModule(1).getCurrentState();
@@ -337,30 +337,31 @@ public class RobotContainer {
     }
 
     public static void buildAutoChooser() {
-        autoSelect.setDefaultOption("Do Nothing", AutoBuilder.buildAuto("Do Nothing"));
+        autoSelect.setDefaultOption("A", AutoBuilder.buildAuto("A"));
         List<String> options = AutoBuilder.getAllAutoNames();
         if (isCompetition) {
             for (String n : options) {
-                if(n.startsWith("c") && n != "Do Nothing")
+                if(n.startsWith("c") && n != "A")
                 autoSelect.addOption(n, AutoBuilder.buildAuto(n));
             };
         }
         else {
             for (String n : options) {
-                if(n != "Do Nothing")
+                if(n != "A")
                 autoSelect.addOption(n, AutoBuilder.buildAuto(n));
             };
         }
     }
 
     public static void ApplyStart() {
-        String autoName = autoSelect.getSelected().getName();
+        // String autoName = autoSelect.getSelected().getName();
+        String autoName = "B";
         try {
             AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get());
-            // Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
+            Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
         } catch (Exception e) {
             e.printStackTrace();
-            // Pathplanner.startPose2d = new Pose2d(0, 0, new Rotation2d(0));
+            Pathplanner.startPose2d = new Pose2d(0, 0, new Rotation2d(0));
         }
     };
 
@@ -369,13 +370,15 @@ public class RobotContainer {
     }
 
     public static void namedCommands() {
-        NamedCommands.registerCommand("LiftOut", new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle())));
-        NamedCommands.registerCommand("LiftIn450", new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -450).andThen(new InstantCommand(() -> sIntake.liftZero())));
-        NamedCommands.registerCommand("ShootStart", new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod(-63)), new RunCommand(() -> sFeederHopper.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> driveVision(0.0, 0.0, turn1)), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedNumMethod(-80)))))));
-        NamedCommands.registerCommand("Shoot10", new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod(-63)), new RunCommand(() -> sFeederHopper.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> driveVision(0.0, 0.0, turn1)), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedNumMethod(-80)))))).withTimeout(10).andThen(new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero()))));
+        NamedCommands.registerCommand("LiftOut", new RunCommand(() -> sIntake.liftOut4()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle())));
+        NamedCommands.registerCommand("LiftIn450", new RunCommand(() -> sIntake.liftZero()).withTimeout(2).andThen(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -450)).andThen(new InstantCommand(() -> sIntake.liftZero())));
+        NamedCommands.registerCommand("ShootStart", new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(-63)), new RunCommand(() -> sFeederHopper.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> driveVision(0.0, 0.0, turn1)), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedVariable(-80)))))));
+        NamedCommands.registerCommand("Shoot10", new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(-63)), new RunCommand(() -> sFeederHopper.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> driveVision(0.0, 0.0, turn1)), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedVariable(-80)))))).withTimeout(4).andThen(new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero()))));
         NamedCommands.registerCommand("ShootStop", new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
-        NamedCommands.registerCommand("IntakeRun1", new RunCommand(() -> sIntake.intakeNumMethod()).withTimeout(1).andThen(new InstantCommand(() -> sIntake.intakeZero())));
-        NamedCommands.registerCommand("IntakeRun", new RunCommand(() -> sIntake.intakeNumMethod()));
+        NamedCommands.registerCommand("IntakeRun1", new RunCommand(() -> sIntake.intakeForward()).withTimeout(1).andThen(new InstantCommand(() -> sIntake.intakeZero())));
+        NamedCommands.registerCommand("IntakeRun8", new RunCommand(() -> sIntake.intakeForward()).withTimeout(5).andThen(new InstantCommand(() -> sIntake.intakeZero())));
+        NamedCommands.registerCommand("IntakeRun5", new RunCommand(() -> sIntake.intakeForward()).withTimeout(7).andThen(new InstantCommand(() -> sIntake.intakeZero())));
+        NamedCommands.registerCommand("IntakeRun", new RunCommand(() -> sIntake.intakeForward()));
         NamedCommands.registerCommand("IntakeStop", new InstantCommand(() -> sIntake.intakeZero()));
     }
 

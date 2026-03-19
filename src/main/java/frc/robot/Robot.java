@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -39,16 +41,24 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        // CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.sIntake.intakeZero()), new InstantCommand(() -> m_robotContainer.sIntake.liftZero()), new InstantCommand(() -> m_robotContainer.sClimber.climbZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.hopperOff()), new InstantCommand(() -> m_robotContainer.sShooter.shootZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.feedzero())));
+    }
 
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.sIntake.intakeZero()), new InstantCommand(() -> m_robotContainer.sIntake.liftZero()), new InstantCommand(() -> m_robotContainer.sClimber.climbZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.hopperOff()), new InstantCommand(() -> m_robotContainer.sShooter.shootZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.feedzero())));
+    }
 
     @Override
-    public void disabledExit() {}
+    public void disabledExit() {
+        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.sIntake.intakeZero()), new InstantCommand(() -> m_robotContainer.sIntake.liftZero()), new InstantCommand(() -> m_robotContainer.sClimber.climbZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.hopperOff()), new InstantCommand(() -> m_robotContainer.sShooter.shootZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.feedzero())));
+    }
 
     @Override
     public void autonomousInit() {
+        m_robotContainer.ApplyStart();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         if (m_autonomousCommand != null) {

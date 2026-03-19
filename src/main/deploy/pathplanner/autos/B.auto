@@ -36,22 +36,16 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "IntakeRun"
+                  "name": "IntakeRun5"
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "IntakeStop"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "B3"
+            "pathName": "B3b"
           }
         },
         {

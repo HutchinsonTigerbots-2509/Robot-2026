@@ -2,21 +2,18 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.feederhopper;
+package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class FeederHopper extends SubsystemBase {
   /** Creates a new Feeder. */
   public FeederHopper() {
-    SmartDashboard.putNumber("feeder setter", 0.8);
     var slot0Configs = new Slot0Configs();
     slot0Configs.kS = 0.1;
     slot0Configs.kV = 0.12;
@@ -32,8 +29,8 @@ public class FeederHopper extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  private TalonFX mFeeder = new TalonFX(FeederHopperConstants.kFeederMotorId);
-  private WPI_TalonSRX mHopper = new WPI_TalonSRX(FeederHopperConstants.kHopperMotorId);
+  private TalonFX mFeeder = new TalonFX(13);
+  private WPI_TalonSRX mHopper = new WPI_TalonSRX(14);
 
   final VelocityVoltage kRequest = new VelocityVoltage(0).withSlot(0);
 
@@ -41,8 +38,8 @@ public class FeederHopper extends SubsystemBase {
     mFeeder.set(0.0);
   }
 
-  public void feederNumMethod() {
-    mFeeder.set(-1 * SmartDashboard.getNumber("feeder setter", 0.0));
+  public void feedPower() {
+    mFeeder.set(-0.8);
   }
 
   public void feedReverse() {
@@ -61,7 +58,7 @@ public class FeederHopper extends SubsystemBase {
     mHopper.set(0);
   }
 
-  public void feedNumMethod(double n) {
+  public void feedVariable(double n) {
     mFeeder.setControl(kRequest.withVelocity(n).withSlot(0));
   }
 }

@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -18,8 +18,6 @@ public class Intake extends SubsystemBase {
     mLift.setNeutralMode(NeutralModeValue.Brake);
     // mLift.setPosition(0);
     // eLift.reset();
-    SmartDashboard.putNumber("lift setter", 0.15);
-    SmartDashboard.putNumber("intake setter", 1.0);
   }
 
   private boolean liftCycle = false;
@@ -35,13 +33,21 @@ public class Intake extends SubsystemBase {
     }
   }
 
-  private TalonFX mIntake = new TalonFX(IntakeConstants.kIntakeMotorId);
-  private TalonFX mLift = new TalonFX(IntakeConstants.kLiftMotorId);
-  public DigitalInput wLiftMax = new DigitalInput(IntakeConstants.kLiftSwitchId);
+  private TalonFX mIntake = new TalonFX(10);
+  private TalonFX mLift = new TalonFX(15);
+  public DigitalInput wLiftMax = new DigitalInput(4);
   public Encoder eLift = new Encoder(2, 3);
 
   public void intakeZero() {
     mIntake.set(0.0);
+  }
+
+  public void intakeForward() {
+    mIntake.set(-1.0);
+  }
+
+  public void intakeReverse() {
+    mIntake.set(1.0);
   }
 
   public void liftZero() {
@@ -49,38 +55,20 @@ public class Intake extends SubsystemBase {
   }
 
   public void liftOut() {
-    mLift.set(SmartDashboard.getNumber("lift setter", 0.0));
+    mLift.set(0.15);
+  }
+
+  public void liftOut4() {
+    mLift.set(0.4);
   }
 
   public void liftIn() {
     if(liftCycle) {
-      mLift.set(-1 * SmartDashboard.getNumber("lift setter", 0.0));
+      mLift.set(-0.15);
     }
   }
 
   public void modLiftCycle() {
     liftCycle = true;
-  }
-
-  public void liftUp() {
-    if (eLift.get() > 700) {
-      mLift.set(0);
-    }
-    else {
-      mLift.set(-1 * SmartDashboard.getNumber("lift setter", 0.0));
-    }
-  }
-
-  public void liftDown() {
-    if (!wLiftMax.get()) {
-      mLift.set(0);
-      eLift.reset();
-    } else {
-      mLift.set(SmartDashboard.getNumber("lift setter", 0.0));
-    }
-  }
-
-  public void intakeNumMethod() {
-    mIntake.set(-1 * SmartDashboard.getNumber("intake setter", 0.0));
   }
 }

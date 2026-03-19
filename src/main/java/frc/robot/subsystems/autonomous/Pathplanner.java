@@ -24,7 +24,6 @@ public class Pathplanner extends SubsystemBase {
   Drivetrain sDrivetrain;
   static RobotConfig config;
   public static Pose2d startPose2d;
-  String defaultAuto = "TestAuto";
 
   public Pathplanner(Drivetrain kDrivetrain) {
     sDrivetrain = kDrivetrain;
@@ -60,10 +59,11 @@ public class Pathplanner extends SubsystemBase {
         e.printStackTrace();
     }
     SmartDashboard.putData(RobotContainer.getSelection());    
-    RobotContainer.eSwerveEstimator = new SwerveDrivePoseEstimator(sDrivetrain.getKinematics(), RobotContainer.getRotation2d(), RobotContainer.getModulePositions(), startPose2d);
-    // RobotContainer.eSwerveEstimator.resetPose(startPose2d);
-    // RobotContainer.buildAutoChooser();
     // RobotContainer.ApplyStart();
+    RobotContainer.eSwerveEstimator = new SwerveDrivePoseEstimator(sDrivetrain.getKinematics(), RobotContainer.getRotation2d(), RobotContainer.getModulePositions(), startPose2d);
+    RobotContainer.eSwerveEstimator.resetPose(startPose2d);
+    // RobotContainer.buildAutoChooser();
+    // SmartDashboard.putData("Auto Chooser", RobotContainer.autoSelect);
   }
 
   @Override

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.800108433734941,
-        "y": 4.712518072289157
+        "x": 8.25,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.093001652548393,
-        "y": 5.419624853475705
+        "x": 8.324638554216868,
+        "y": 5.138698795180724
       },
       "isLocked": false,
       "linkedName": "B2E"
@@ -28,7 +28,12 @@
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5770491803278663,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
