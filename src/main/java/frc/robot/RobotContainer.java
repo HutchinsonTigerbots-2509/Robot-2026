@@ -36,7 +36,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.subsystems.ConfigureCommands;
 import frc.robot.subsystems.autonomous.Pathplanner;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -85,7 +84,6 @@ public class RobotContainer {
     private static final Shooter sShooter = new Shooter();
     private static final Vision sVision = new Vision();
     private static final Pathplanner sPathPlanner = new Pathplanner(sDrivetrain);
-    private static final ConfigureCommands sConfigureCommands = new ConfigureCommands(sClimber, sFeederHopper, sIntake, sShooter, sVision);
 
     public static SwerveDrivePoseEstimator eSwerveEstimator;
     public static Pose2d eVisionPose2d;
@@ -105,7 +103,6 @@ public class RobotContainer {
     public double turn2;
 
     public RobotContainer() {
-        ConfigureCommands.createCommands();
         configureBindings();
         buildAutoChooser();
         ApplyStart();
@@ -269,7 +266,7 @@ public class RobotContainer {
     // }       
     
     public Command getAutonomousCommand() {
-        return new PathPlannerAuto("CenterGrab");
+        return new PathPlannerAuto("A");
     }
 
     // public Command getAutonomousCommand() {
@@ -372,18 +369,14 @@ public class RobotContainer {
     }
 
     public static void namedCommands() {
-
         NamedCommands.registerCommand("LiftOut", new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle())));
-        // NamedCommands.registerCommand("IntakeRun", new RunCommand(() -> sIntake.intakeNumMethod()));
-        NamedCommands.registerCommand("IntakeZero", new InstantCommand(() -> sIntake.intakeZero()));
-        NamedCommands.registerCommand("IntakeRun5", new RunCommand(() -> sIntake.intakeNumMethod()).withTimeout(5).andThen(new InstantCommand(() -> sIntake.intakeZero())));
+        NamedCommands.registerCommand("LiftIn450", new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -450).andThen(new InstantCommand(() -> sIntake.liftZero())));
+        NamedCommands.registerCommand("ShootStart", new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod(-63)), new RunCommand(() -> sFeederHopper.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> driveVision(0.0, 0.0, turn1)), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedNumMethod(-80)))))));
+        NamedCommands.registerCommand("Shoot10", new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod(-63)), new RunCommand(() -> sFeederHopper.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> driveVision(0.0, 0.0, turn1)), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedNumMethod(-80)))))).withTimeout(10).andThen(new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero()))));
+        NamedCommands.registerCommand("ShootStop", new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
         NamedCommands.registerCommand("IntakeRun1", new RunCommand(() -> sIntake.intakeNumMethod()).withTimeout(1).andThen(new InstantCommand(() -> sIntake.intakeZero())));
         NamedCommands.registerCommand("IntakeRun", new RunCommand(() -> sIntake.intakeNumMethod()));
-        NamedCommands.registerCommand("ShootA", new RunCommand(() -> sShooter.shootNumMethod()).withTimeout(5));
-        NamedCommands.registerCommand("Print", new InstantCommand(() -> System.out.println("Command REACHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")).withTimeout(5));
-        NamedCommands.registerCommand("ShootStationary", new ParallelCommandGroup(new RunCommand(() -> sShooter.shootNumMethod(-63)), new RunCommand(() -> sFeederHopper.feedReverse()), new InstantCommand(() -> System.out.print("Shooooooooot!!!!!!!!!!!"))).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> driveVision(0, 0, turn1)), new RunCommand(() -> sShooter.shootNumMethod(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedNumMethod(-80)))))).withTimeout(5).andThen(new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero()))));
-        // NamedCommands.registerCommand("ShootStop", new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
-        // NamedCommands.registerCommand("ShootStationary", new RunCommand(() -> sShooter.shootNumMethod(-63)).withTimeout(1));
+        NamedCommands.registerCommand("IntakeStop", new InstantCommand(() -> sIntake.intakeZero()));
     }
 
     public static double autonomousThrottle(double v) {

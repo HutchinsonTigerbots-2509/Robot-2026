@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightForwardMove"
+                  "pathName": "B1"
                 }
               },
               {
@@ -28,9 +28,46 @@
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "B2"
+                }
+              },
+              {
                 "type": "named",
                 "data": {
                   "name": "IntakeRun"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeStop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "B3"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot10"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "LiftIn450"
                 }
               }
             ]

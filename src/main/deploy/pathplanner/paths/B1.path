@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.204662650602408,
-        "y": 5.674156626506024
+        "x": 3.5710843373493972,
+        "y": 2.8329518072289157
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.204662650602408,
-        "y": 5.674156626506024
+        "x": 4.571084337349401,
+        "y": 2.8329518072289157
       },
       "isLocked": false,
-      "linkedName": "RCR2WP1"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.2816144578313255,
-        "y": 5.674156626506024
+        "x": 7.800108433734941,
+        "y": 0.6364819277108438
       },
       "prevControl": {
-        "x": 3.2816144578313238,
-        "y": 5.674156626506024
+        "x": 6.716114766672474,
+        "y": 1.7204755947733108
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "B1E"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.65,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 0.48,
+      "rotationDegrees": 59.99999999999999
     }
   ],
   "constraintZones": [],
@@ -47,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 142.43140797117252
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

@@ -9,15 +9,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "RCR1"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "LiftOut"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "C1"
                 }
               }
             ]
@@ -30,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RCR2"
+                  "pathName": "C2"
                 }
               },
               {
@@ -45,19 +45,32 @@
         {
           "type": "named",
           "data": {
-            "name": "IntakeZero"
+            "name": "IntakeStop"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RCR3"
+            "pathName": "C3"
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "ShootStationary"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "LiftIn450"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot10"
+                }
+              }
+            ]
           }
         }
       ]
