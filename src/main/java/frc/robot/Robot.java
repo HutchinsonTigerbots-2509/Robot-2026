@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.HootAutoReplay;
+import com.ctre.phoenix6.HootReplay;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
@@ -20,12 +21,10 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private final RobotContainer m_robotContainer;
-
     /* log and replay timestamp and joystick data */
     private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
         .withTimestampReplay()
         .withJoystickReplay();
-
     public Robot() {
         m_robotContainer = new RobotContainer();
         RobotController.setBrownoutVoltage(5);
@@ -33,9 +32,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
+        SignalLogger.enableAutoLogging(false);
         m_timeAndJoystickReplay.update();
         CommandScheduler.getInstance().run(); 
-        SignalLogger.stop();
+        //SignalLogger.stop();
         SmartDashboard.putNumber("pigeon", m_robotContainer.sDrivetrain.getPigeon2().getRotation2d().getRadians());
         // SmartDashboard.putNumber("FrontLeft", m_robotContainer.sDrivetrain.);
     }
@@ -53,6 +53,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledExit() {
+        m_robotContainer.setFieldOffset();
         CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.sIntake.intakeZero()), new InstantCommand(() -> m_robotContainer.sIntake.liftZero()), new InstantCommand(() -> m_robotContainer.sClimber.climbZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.hopperOff()), new InstantCommand(() -> m_robotContainer.sShooter.shootZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.feedzero())));
     }
 
@@ -72,6 +73,8 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousExit() {
         // m_robotContainer.fieldOffset = 0 - m_robotContainer.field2d.getRobotPose().getRotation().getDegrees();
+        // m_robotContainer.setGyro(0.0);
+        m_robotContainer.setFieldOffset();
     }
 
     @Override
@@ -79,6 +82,7 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().cancel(m_autonomousCommand);
         }
+        m_robotContainer.setFieldOffset();
     }
 
     @Override

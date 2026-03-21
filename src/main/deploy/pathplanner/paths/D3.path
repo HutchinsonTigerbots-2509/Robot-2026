@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.25,
-        "y": 4.0
+        "x": 7.767325301204821,
+        "y": 5.193337349397591
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.215590361445784,
-        "y": 2.87666265060241
+        "x": 6.313939759036145,
+        "y": 5.706939759036146
       },
       "isLocked": false,
-      "linkedName": "B2E"
+      "linkedName": "D2E"
     },
     {
       "anchor": {
-        "x": 2.500168674698795,
-        "y": 2.7455301204819285
+        "x": 2.226975903614458,
+        "y": 5.051277108433735
       },
       "prevControl": {
-        "x": 3.9426265060240944,
-        "y": 2.516048192771084
+        "x": 3.0137710843373497,
+        "y": 5.597662650602409
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,8 +30,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.48852459016393407,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 0.40248962655601456,
+      "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [],
@@ -47,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 145.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

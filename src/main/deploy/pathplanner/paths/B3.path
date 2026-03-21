@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.25,
-        "y": 4.0
+        "x": 7.756397590361445,
+        "y": 2.898518072289156
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.324638554216868,
-        "y": 5.138698795180724
+        "x": 5.721987951807229,
+        "y": 1.7751807228915664
       },
       "isLocked": false,
       "linkedName": "B2E"
     },
     {
       "anchor": {
-        "x": 2.532951807228916,
-        "y": 5.696012048192772
+        "x": 2.500168674698795,
+        "y": 2.7455301204819285
       },
       "prevControl": {
-        "x": 3.532951807228916,
-        "y": 5.696012048192772
+        "x": 3.9426265060240944,
+        "y": 2.516048192771084
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,8 +30,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5770491803278663,
-      "rotationDegrees": 90.0
+      "waypointRelativePos": 0.48852459016393407,
+      "rotationDegrees": -90.0
     }
   ],
   "constraintZones": [],
@@ -47,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 145.0
+    "rotation": -137.79270236571318
   },
   "reversed": false,
   "folder": null,

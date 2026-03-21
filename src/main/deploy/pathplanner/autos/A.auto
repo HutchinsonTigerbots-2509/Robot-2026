@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Delay"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -24,12 +30,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "IntakeRun1"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -40,9 +40,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "LiftIn450"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "LiftIn450"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeRun1"
+                      }
+                    }
+                  ]
                 }
               }
             ]

@@ -25,6 +25,8 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Intake frequency", mIntake.getPosition().getAppliedUpdateFrequency());
+    SmartDashboard.putNumber("Lift frequency", mLift.getPosition().getAppliedUpdateFrequency());
     SmartDashboard.putBoolean("LiftSwitch", !wLiftMax.get());
     SmartDashboard.putBoolean("LiftCycle", liftCycle);
     SmartDashboard.putNumber("lift position", eLift.get());
@@ -55,7 +57,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void liftOut() {
-    mLift.set(0.15);
+    mLift.set(0.25);
   }
 
   public void liftOut4() {
@@ -64,7 +66,7 @@ public class Intake extends SubsystemBase {
 
   public void liftIn() {
     if(liftCycle) {
-      mLift.set(-0.15);
+      mLift.set(-0.25);
     }
   }
 
