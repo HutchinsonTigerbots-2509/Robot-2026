@@ -60,8 +60,8 @@ public class Intake extends SubsystemBase {
     mLift.set(0.25);
   }
 
-  public void liftOut4() {
-    mLift.set(0.4);
+  public void liftOutFast() {
+    mLift.set(0.5);
   }
 
   public void liftIn() {

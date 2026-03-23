@@ -354,8 +354,8 @@ public class RobotContainer {
     }
 
     public static void ApplyStart() {
-        // String autoName = autoSelect.getSelected().getName();
-        String autoName = "B";
+        String autoName = autoSelect.getSelected().getName();
+        // String autoName = "B";
         try {
             // AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get());
             // Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
@@ -377,10 +377,10 @@ public class RobotContainer {
     }
 
     public static void namedCommands() {
-        NamedCommands.registerCommand("LiftOut", new RunCommand(() -> sIntake.liftOut4()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle())));
+        NamedCommands.registerCommand("LiftOut", new RunCommand(() -> sIntake.liftOutFast()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle())));
         NamedCommands.registerCommand("LiftIn450", new RunCommand(() -> sIntake.liftZero()).withTimeout(2).andThen(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -400)).andThen(new InstantCommand(() -> sIntake.liftZero())));
         NamedCommands.registerCommand("ShootStart", new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(-63)), new RunCommand(() -> sFeederHopper.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> driveVision(0.0, 0.0, turn1)), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedVariable(-80)))))));
-        NamedCommands.registerCommand("Shoot10", new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(-63)), new RunCommand(() -> sFeederHopper.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> driveVision(0.0, 0.0, turn1)), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedVariable(-80)))))).withTimeout(6).andThen(new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero()))));
+        NamedCommands.registerCommand("Shoot10", new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> driveVision(0.0, 0.0, turn1)), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedVariable(-80))))).withTimeout(6).andThen(new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero()))));
         NamedCommands.registerCommand("ShootStop", new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
         NamedCommands.registerCommand("IntakeRun1", new RunCommand(() -> sIntake.intakeForward()).withTimeout(1).andThen(new InstantCommand(() -> sIntake.intakeZero())));
         NamedCommands.registerCommand("IntakeRun8", new RunCommand(() -> sIntake.intakeForward()).withTimeout(6).andThen(new InstantCommand(() -> sIntake.intakeZero())));
