@@ -103,9 +103,9 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
-        // buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", AutoBuilder.buildAutoChooser());
-        SmartDashboard.putData(autoSelect);
+        buildAutoChooser();
+        // SmartDashboard.putData("Auto Chooser", AutoBuilder.buildAutoChooser());
+        SmartDashboard.putData("AutoChooser", autoSelect);
         SmartDashboard.putNumber("MaxSpeed", MaxSpeed);
         SmartDashboard.putNumber("MaxAngularRate", MaxAngularRate);
         SmartDashboard.putNumber("joystickStrafeY", calculateFieldY(joystick) * MaxSpeed * 0.1);
@@ -141,8 +141,8 @@ public class RobotContainer {
         joystick.rightBumper().toggleOnTrue(new ParallelCommandGroup(intakeDrive, new RunCommand(() -> sIntake.intakeForward()))).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
         // joystick.leftBumper().whileTrue(new RunCommand(() -> driveJolt(0.0, MaxSpeed)).withTimeout(0.125).andThen(new RunCommand(() -> driveJolt(0.0, -MaxSpeed)).withTimeout(0.125)));
 
-        // joystick.y().whileTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -750).andThen(new InstantCommand(() -> sIntake.liftZero()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
-        // joystick.a().whileTrue(new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
+        joystick.y().whileTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -750).andThen(new InstantCommand(() -> sIntake.liftZero()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
+        joystick.a().whileTrue(new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         // joystick.b().whileTrue(new RunCommand(() -> sClimber.climb2())).onFalse(new InstantCommand(() -> sClimber.climbZero()));
         // joystick.x().whileTrue(new RunCommand(() -> sClimber.climbDown())).onFalse(new InstantCommand(() -> sClimber.climbZero()));
 
@@ -210,7 +210,8 @@ public class RobotContainer {
         if (alliance.isPresent()) {
             if (alliance.get() == DriverStation.Alliance.Blue) {
                 return true;
-            } else if (alliance.get() == DriverStation.Alliance.Red) {
+            } else// if (alliance.get() == DriverStation.Alliance.Red) {
+            {
                 return false;
             }
         }
@@ -265,13 +266,13 @@ public class RobotContainer {
     //     );
     // }       
     
-    public Command getAutonomousCommand() {
-        return new PathPlannerAuto("B");
-    }
-
     // public Command getAutonomousCommand() {
-    //     return autoSelect.getSelected();
+    //     return new PathPlannerAuto("Aa");
     // }
+
+    public Command getAutonomousCommand() {
+        return autoSelect.getSelected();
+    }
     
     public static Pose2d getPose() {
         Pose2d pos = eSwerveEstimator.getEstimatedPosition();
@@ -355,17 +356,23 @@ public class RobotContainer {
 
     public static void ApplyStart() {
         String autoName = autoSelect.getSelected().getName();
-        // String autoName = "B";
+        // String autoName = "Aa";
         try {
-            // AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get());
-            // Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
-            if (getAllianceBlue()) {
-                AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get());
-                Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
-            } else if (!getAllianceBlue()) {
-                AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).flipPath().mirrorPath().getStartingHolonomicPose().get());
-                Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).flipPath().mirrorPath().getStartingHolonomicPose().get();
-            }
+            AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get());
+            Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
+            System.out.println("Alliance Blue? = " + getAllianceBlue() + " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            // if (getAllianceBlue()) {
+            //     AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get());
+            //     Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
+            // } else //if (!getAllianceBlue()) {
+            // {
+            //     AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).flipPath().mirrorPath().getStartingHolonomicPose().get());
+            //     Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).flipPath().mirrorPath().getStartingHolonomicPose().get();
+                // System.out.println(Pathplanner.startPose2d);
+                // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            // }
+            System.out.println(Pathplanner.startPose2d);
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         } catch (Exception e) {
             e.printStackTrace();
             Pathplanner.startPose2d = new Pose2d(0, 0, new Rotation2d(0));
@@ -387,7 +394,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("IntakeRun5", new RunCommand(() -> sIntake.intakeForward()).withTimeout(5).andThen(new InstantCommand(() -> sIntake.intakeZero())));
         NamedCommands.registerCommand("IntakeRun", new RunCommand(() -> sIntake.intakeForward()));
         NamedCommands.registerCommand("IntakeStop", new InstantCommand(() -> sIntake.intakeZero()));
-        NamedCommands.registerCommand("Delay", new RunCommand(() -> sIntake.intakeZero()).withTimeout(5).andThen(new InstantCommand(() -> sIntake.intakeZero())));
+        NamedCommands.registerCommand("Print", new InstantCommand(() -> System.out.println("Works!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")));
+        NamedCommands.registerCommand("Delay", new RunCommand(() -> sIntake.intakeZero()).withTimeout(2).andThen(new InstantCommand(() -> sIntake.intakeZero())));
     }
 
     public static double autonomousThrottle(double v) {
@@ -407,9 +415,9 @@ public class RobotContainer {
     private double fieldOff() {
         if (getAllianceBlue()) {
             return 0;
-        } else if (!getAllianceBlue()) {
-            return 180;
+        } else// if (!getAllianceBlue()) {
+        {
+            return -180;
         }
-        return magicNum;
     }
 }

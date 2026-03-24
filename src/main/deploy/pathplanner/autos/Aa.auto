@@ -5,22 +5,34 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Delay"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "E1"
-                }
-              },
               {
                 "type": "named",
                 "data": {
                   "name": "LiftOut"
                 }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "A1"
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A2"
           }
         },
         {
@@ -37,25 +49,6 @@
                 "type": "named",
                 "data": {
                   "name": "LiftIn450"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "E2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "LiftOut"
                 }
               }
             ]
