@@ -27,6 +27,7 @@ public class Robot extends TimedRobot {
         .withJoystickReplay();
     public Robot() {
         m_robotContainer = new RobotContainer();
+        // RobotContainer.autoSelect.initSendable(null);
         RobotController.setBrownoutVoltage(5);
     }
 
@@ -53,7 +54,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledExit() {
-        m_robotContainer.setFieldOffset();
+        // m_robotContainer.setFieldOffset();
         CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.sIntake.intakeZero()), new InstantCommand(() -> m_robotContainer.sIntake.liftZero()), new InstantCommand(() -> m_robotContainer.sClimber.climbZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.hopperOff()), new InstantCommand(() -> m_robotContainer.sShooter.shootZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.feedzero())));
     }
 
@@ -74,7 +75,7 @@ public class Robot extends TimedRobot {
     public void autonomousExit() {
         // m_robotContainer.fieldOffset = 0 - m_robotContainer.field2d.getRobotPose().getRotation().getDegrees();
         // m_robotContainer.setGyro(0.0);
-        m_robotContainer.setFieldOffset();
+        // m_robotContainer.setFieldOffset();
     }
 
     @Override
@@ -82,7 +83,7 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().cancel(m_autonomousCommand);
         }
-        m_robotContainer.setFieldOffset();
+        // m_robotContainer.setFieldOffset();
     }
 
     @Override

@@ -42,25 +42,9 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("getX", RobotContainer.getPose().getX());
-    SmartDashboard.putNumber("getY", RobotContainer.getPose().getY());
-    SmartDashboard.putNumber("getOmega", getShooterAngle());
-    SmartDashboard.putNumber("getDifferenceX", getDifferenceX());
-    SmartDashboard.putNumber("getDifferenceY", getDifferenceY());
-    SmartDashboard.putNumber("getDifferenceOmega", getDifferenceOmega());
-    SmartDashboard.putNumber("visionShootDistancePIDX", 10 * visionShootDistancePID.calculate(getPropX(getDifferenceX())));
-    SmartDashboard.putNumber("visionShootDistancePIDY", 10 * visionShootDistancePID.calculate(getPropY(getDifferenceY())));
-    SmartDashboard.putNumber("visionShootDistancePIDOmega", -1 * visionShootDistancePID.calculate(getPropOmega(getDifferenceOmega())));
-    SmartDashboard.putBoolean("shootingAnglebool", correctShootPos());
-    SmartDashboard.putNumber("getAngleShoot", getAngleShoot());
-    SmartDashboard.putNumber("getDistanceDifference", Math.abs(getDistanceToHub() - kShootDistance));
-    SmartDashboard.putNumber("getDistanceToHub", getDistanceToHub());
-    SmartDashboard.putBoolean("getCorrectAnglePos", correctAnglePos());
-    SmartDashboard.putNumber("getPropX", getPropX(getDifferenceX()));
-    SmartDashboard.putNumber("getPropY", getPropY(getDifferenceY()));
-    SmartDashboard.putNumber("timestamp", timestamp);
-    SmartDashboard.putNumber("shootingSpeed", distanceToShootingSpeed());
     // RobotContainer.eSwerveEstimator.addVisionMeasurement(RobotContainer.eVisionPose2d, timestamp);
+    SmartDashboard.putNumber("ShooterSpeed", distanceToShootingSpeed());
+    SmartDashboard.putNumber("DistanceToHub", getDistanceToHub());
     visionPose2dEstimator();
     RobotContainer.turn1 = turnToShootPos1();
   }

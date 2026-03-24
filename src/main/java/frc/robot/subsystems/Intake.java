@@ -16,8 +16,6 @@ public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
   public Intake() {
     mLift.setNeutralMode(NeutralModeValue.Brake);
-    // mLift.setPosition(0);
-    // eLift.reset();
   }
 
   private boolean liftCycle = false;
@@ -25,11 +23,9 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Intake frequency", mIntake.getPosition().getAppliedUpdateFrequency());
-    SmartDashboard.putNumber("Lift frequency", mLift.getPosition().getAppliedUpdateFrequency());
     SmartDashboard.putBoolean("LiftSwitch", !wLiftMax.get());
     SmartDashboard.putBoolean("LiftCycle", liftCycle);
-    SmartDashboard.putNumber("lift position", eLift.get());
+    SmartDashboard.putNumber("LiftPos", eLift.get());
     if (!wLiftMax.get()) {
       eLift.reset();
     }
