@@ -5,6 +5,7 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
@@ -32,6 +33,7 @@ public class Vision extends SubsystemBase {
   private final double redHubX = 11.925;
   private final double redHubY = 4.030;
 
+
   public Vision() {
     visionShootRotationPID.setTolerance(0.2/41.0);
     visionShootDistancePID.setTolerance(0.0);
@@ -44,9 +46,16 @@ public class Vision extends SubsystemBase {
     // This method will be called once per scheduler run
     // RobotContainer.eSwerveEstimator.addVisionMeasurement(RobotContainer.eVisionPose2d, timestamp);
     SmartDashboard.putNumber("ShooterSpeed", distanceToShootingSpeed());
-    SmartDashboard.putNumber("DistanceToHub", getDistanceToHub());
+    SmartDashboard.putNumber("DistanceToHub", getDistanceToHub ());
     visionPose2dEstimator();
     RobotContainer.turn1 = turnToShootPos1();
+  }
+
+  public boolean allianceCool() {
+    if (DriverStation.getAlliance().isPresent()) {
+      return DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
+    }
+    return true;
   }
 
   public double distanceToShootingSpeed() {
@@ -164,6 +173,7 @@ public class Vision extends SubsystemBase {
     return Math.atan(getDistanceToHubY() / getDistanceToHubX());
   }
 
+  
   // private double getShooterAngle() {
   //   if (RobotContainer.getPose().getRotation().getRadians() < 0) {
   //     return RobotContainer.getPose().getRotation().getRadians() + Math.PI;
@@ -172,12 +182,12 @@ public class Vision extends SubsystemBase {
   // }
 
   private double getShooterAngle() {
-    if (RobotContainer.getAllianceBlue()) {
+    if (allianceCool()) {
       if (RobotContainer.getPose().getRotation().getRadians() < 0) {
         return RobotContainer.getPose().getRotation().getRadians() + Math.PI;
       }
       return RobotContainer.getPose().getRotation().getRadians() - Math.PI;
-    } else if (!RobotContainer.getAllianceBlue()) {
+    } else if (!allianceCool()) {
       return RobotContainer.getPose().getRotation().getRadians();
     }
     return RobotContainer.magicNum;
@@ -196,18 +206,18 @@ public class Vision extends SubsystemBase {
   }
 
   private double getHubX() {
-    if (RobotContainer.getAllianceBlue()) {
+    if (allianceCool()) {
       return blueHubX;
-    } else if (!RobotContainer.getAllianceBlue()){
+    } else if (!allianceCool()){
       return redHubX;
     }
     return RobotContainer.magicNum;
   }
 
   private double getHubY() {
-    if (RobotContainer.getAllianceBlue()) {
+    if (allianceCool()) {
       return blueHubY;
-    } else if (!RobotContainer.getAllianceBlue()){
+    } else if (!allianceCool()){
       return redHubY;
     }
     return RobotContainer.magicNum;

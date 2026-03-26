@@ -154,7 +154,7 @@ public class RobotContainer {
         A6.whileTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -760).andThen(new InstantCommand(() -> sIntake.liftZero()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         A7.whileTrue(new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         A8.toggleOnTrue(new RunCommand(() -> sIntake.intakeForward())).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
-        B1.whileTrue(new InstantCommand(() -> System.out.println("B1")));
+        B1.whileTrue(new RunCommand(() -> sIntake.liftInEmergency())).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         B2.whileTrue(new InstantCommand(() -> System.out.println("B2")));
         B3.whileTrue(new InstantCommand(() -> System.out.println("B3")));
         B4.whileTrue(new InstantCommand(() -> System.out.println("B4")));
@@ -206,7 +206,7 @@ public class RobotContainer {
         return MaxAngularRate;
     }
 
-    public static boolean getAllianceBlue() {
+    public boolean getAllianceBlue() { //NOT STATIC 
         if (alliance.isPresent()) {
             if (alliance.get() == DriverStation.Alliance.Blue) {
                 return true;
@@ -238,8 +238,8 @@ public class RobotContainer {
     }
 
     public void driveControllerCreep() {
-        sDrivetrain.applyRequest(() -> drive.withVelocityX(calculateFieldX(joystick) * MaxSpeed * 0.2)                                                                               
-                .withVelocityY(calculateFieldY(joystick) * MaxSpeed * 0.2)
+        sDrivetrain.applyRequest(() -> drive.withVelocityX(calculateFieldX(joystick) * MaxSpeed * 0.25)                                                                               
+                .withVelocityY(calculateFieldY(joystick) * MaxSpeed * 0.25)
                 .withRotationalRate((-joystick.getRightX() * MaxAngularRate) * 0.8))
                 .execute();
     }      
@@ -328,6 +328,8 @@ public class RobotContainer {
         autoSelect.addOption("Right", AutoBuilder.buildAuto("Right"));
         autoSelect.addOption("Left", AutoBuilder.buildAuto("Left"));
         autoSelect.addOption("Potato", AutoBuilder.buildAuto("Potato"));
+        autoSelect.addOption("RightR", AutoBuilder.buildAuto("RightR"));
+        autoSelect.addOption("LeftR", AutoBuilder.buildAuto("LeftR"));
     }
 
     // public static SendableBuilder chooserBuilder() {
@@ -355,7 +357,7 @@ public class RobotContainer {
         try {
             AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get());
             Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
-            System.out.println("Alliance Blue? = " + getAllianceBlue() + " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            System.out.println("Alliance Blue? = " + sVision.allianceCool() + " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             // if (getAllianceBlue()) {
             //     AutoBuilder.resetOdom(PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get());
             //     Pathplanner.startPose2d = PathPlannerAuto.getPathGroupFromAutoFile(autoName).get(0).getStartingHolonomicPose().get();
@@ -392,6 +394,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Print", new InstantCommand(() -> System.out.println("Works!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")));
         NamedCommands.registerCommand("Delay", new RunCommand(() -> sIntake.intakeZero()).withTimeout(2).andThen(new InstantCommand(() -> sIntake.intakeZero())));
         NamedCommands.registerCommand("DelayI", new RunCommand(() -> sIntake.intakeZero()).withTimeout(20.1).andThen(new InstantCommand(() -> sIntake.intakeZero())));
+        NamedCommands.registerCommand("Delay10", new RunCommand(() -> sIntake.intakeZero()).withTimeout(0.1).andThen(new InstantCommand(() -> sIntake.intakeZero())));
     }
 
     public static double autonomousThrottle(double v) {

@@ -66,6 +66,10 @@ public class Intake extends SubsystemBase {
     }
   }
 
+  public void liftInEmergency() {
+    mLift.set(-0.1);
+  }
+
   public void modLiftCycle() {
     liftCycle = true;
   }
