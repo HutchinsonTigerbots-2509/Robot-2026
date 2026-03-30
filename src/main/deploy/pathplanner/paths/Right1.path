@@ -122,17 +122,6 @@
           "name": "IntakeRun"
         }
       }
-    },
-    {
-      "name": "IntakeStop",
-      "waypointRelativePos": 2.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "IntakeStop"
-        }
-      }
     }
   ],
   "globalConstraints": {

@@ -103,6 +103,8 @@ public class RobotContainer {
     public static double turn1;
     public double turn2;
 
+    public static boolean orientationSource = true;
+
     public RobotContainer() {
         configureBindings();
         buildAutoChooser();
@@ -129,12 +131,14 @@ public class RobotContainer {
             sDrivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        joystick.povUp().onTrue(new InstantCommand(() -> setGyro(0.0)).andThen(new InstantCommand(() -> System.out.println("Yaw: " + sDrivetrain.getPigeon2().getYaw()))));
+        // joystick.povUp().onTrue(new InstantCommand(() -> setGyro(0.0)).andThen(new InstantCommand(() -> System.out.println("Yaw: " + sDrivetrain.getPigeon2().getYaw()))));
+        joystick.povUp().onTrue(new InstantCommand(() -> setOrientationSource()));
 
         joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sHopper.hopperOn()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedzero())));
-        // joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sHopper.hopperOn()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))), new RunCommand(() -> sLift.liftZero()).withTimeout(2).andThen(new RunCommand(() -> sLift.liftIn()).until(() -> sLift.eLift.get() < -400)).andThen(new InstantCommand(() -> sLift.liftZero())))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedzero()), new RunCommand(() -> sLift.liftOutFast()).until(() -> !sLift.wLiftMax.get()).andThen(new InstantCommand(() -> sLift.liftZero())).andThen(new InstantCommand(() -> sLift.eLift.reset())).andThen(new InstantCommand(() -> sLift.modLiftCycle()))));
         // joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootVariable(-63)), new RunCommand(() -> sFeederHopper.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sFeederHopper.hopperOn()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeederHopper.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeederHopper.feedVariable(-80))))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sFeederHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeederHopper.feedzero())));
-        joystick.rightTrigger().whileTrue(new RunCommand(() -> sLift.liftIn()).until(() -> sLift.eLift.get() < -400).andThen(new InstantCommand(() -> sLift.liftZero()))).onFalse(new RunCommand(() -> sLift.liftOutFast()).until(() -> !sLift.wLiftMax.get()).andThen(new InstantCommand(() -> sLift.liftZero())).andThen(new InstantCommand(() -> sLift.eLift.reset())).andThen(new InstantCommand(() -> sLift.modLiftCycle())));
+
+        // joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sHopper.hopperOn()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))), new RunCommand(() -> sLift.liftZero()).withTimeout(2).andThen(new RunCommand(() -> sLift.liftIn()).until(() -> sLift.eLift.get() < -400)).andThen(new InstantCommand(() -> sLift.liftZero())))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedzero()), new RunCommand(() -> sLift.liftOutFast()).until(() -> !sLift.wLiftMax.get()).andThen(new InstantCommand(() -> sLift.liftZero())).andThen(new InstantCommand(() -> sLift.eLift.reset())).andThen(new InstantCommand(() -> sLift.modLiftCycle()))));
+        // joystick.rightTrigger().whileTrue(new RunCommand(() -> sLift.liftIn()).until(() -> sLift.eLift.get() < -400).andThen(new InstantCommand(() -> sLift.liftZero()))).onFalse(new RunCommand(() -> sLift.liftOutFast()).until(() -> !sLift.wLiftMax.get()).andThen(new InstantCommand(() -> sLift.liftZero())).andThen(new InstantCommand(() -> sLift.eLift.reset())).andThen(new InstantCommand(() -> sLift.modLiftCycle())));
 
         RunCommand creepDrive = new RunCommand(() -> driveControllerCreep());
         creepDrive.addRequirements(sDrivetrain);
@@ -156,11 +160,12 @@ public class RobotContainer {
         A5.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(-63)), new RunCommand(() -> sHopper.hopperOn()), new RunCommand(() -> sFeeder.feedReverse()))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
         A6.whileTrue(new RunCommand(() -> sLift.liftIn()).until(() -> sLift.eLift.get() < -760).andThen(new InstantCommand(() -> sLift.liftZero()))).onFalse(new InstantCommand(() -> sLift.liftZero()));
         A7.whileTrue(new RunCommand(() -> sLift.liftOut()).until(() -> !sLift.wLiftMax.get()).andThen(new InstantCommand(() -> sLift.liftZero())).andThen(new InstantCommand(() -> sLift.eLift.reset())).andThen(new InstantCommand(() -> sLift.modLiftCycle()))).onFalse(new InstantCommand(() -> sLift.liftZero()));
-        A8.whileTrue(new RunCommand(() -> sIntake.intakeForward())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
+        // A8.whileTrue(new RunCommand(() -> sIntake.intakeForward())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
+        A8.toggleOnTrue(new RunCommand(() -> sIntake.intakeForward())).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
         B1.whileTrue(new RunCommand(() -> sLift.liftInEmergency())).onFalse(new InstantCommand(() -> sLift.liftZero()));
         B2.whileTrue(new InstantCommand(() -> System.out.println("B2")));
         B3.whileTrue(new InstantCommand(() -> System.out.println("B3")));
-        B4.whileTrue(new InstantCommand(() -> System.out.println("B4")));
+        B4.whileTrue(new ParallelCommandGroup(new InstantCommand(() -> sClimber.climbZero()), new InstantCommand(() -> sFeeder.feedzero()), new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sIntake.intakeZero()), new InstantCommand(() -> sLift.liftZero()), new InstantCommand(() -> sShooter.shootZero())));
         B5.whileTrue(new RunCommand(() -> sIntake.intakeReverse())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
         // B6.whileTrue(new RunCommand(() -> sClimber.climb2())).onFalse(new InstantCommand(() -> sClimber.climbZero()));
         // B7.whileTrue(new RunCommand(() -> sClimber.climbDown())).onFalse(new InstantCommand(() -> sClimber.climbZero()));
@@ -233,7 +238,8 @@ public class RobotContainer {
     }
 
     public static double calculateFieldX(CommandXboxController controller) {
-        double gyro = Math.toRadians(sDrivetrain.getPigeon2().getYaw().getValueAsDouble());
+        // double gyro = Math.toRadians(sDrivetrain.getPigeon2().getYaw().getValueAsDouble());
+        double gyro = getOrientationSource();
         double cos = Math.cos(gyro);
         double sin = Math.sin(gyro);
         double tX = -controller.getLeftY();
@@ -243,7 +249,8 @@ public class RobotContainer {
     }
 
     public static double calculateFieldY(CommandXboxController controller) {
-        double gyro = Math.toRadians(sDrivetrain.getPigeon2().getYaw().getValueAsDouble());
+        // double gyro = Math.toRadians(sDrivetrain.getPigeon2().getYaw().getValueAsDouble());
+        double gyro = getOrientationSource();
         double cos = Math.cos(gyro);
         double sin = Math.sin(gyro);
         double tX = -controller.getLeftY();
@@ -252,8 +259,8 @@ public class RobotContainer {
         return fieldY;
     }
 
-    public static double orientationSource() {
-        if () {
+    public static double getOrientationSource() {
+        if (orientationSource) {
             if (sVision.allianceCool()) {
                 return getPose().getRotation().getRadians();
             } else {
@@ -262,6 +269,12 @@ public class RobotContainer {
         } else {
             return Math.toRadians(sDrivetrain.getPigeon2().getYaw().getValueAsDouble());
         }
+    }
+
+    public static void setOrientationSource() {
+        orientationSource = false;
+        setGyro(0.0);
+        System.out.println("Yaw: " + sDrivetrain.getPigeon2().getYaw());
     }
 
     public void driveControllerCreep() {
@@ -355,8 +368,6 @@ public class RobotContainer {
         autoSelect.addOption("Right", AutoBuilder.buildAuto("Right"));
         autoSelect.addOption("Left", AutoBuilder.buildAuto("Left"));
         autoSelect.addOption("Potato", AutoBuilder.buildAuto("Potato"));
-        autoSelect.addOption("RightR", AutoBuilder.buildAuto("RightR"));
-        autoSelect.addOption("LeftR", AutoBuilder.buildAuto("LeftR"));
     }
 
     public void buildMirror(String autoEmpty, String autoFull) {
@@ -430,8 +441,6 @@ public class RobotContainer {
         NamedCommands.registerCommand("IntakeStop", new InstantCommand(() -> sIntake.intakeZero()));
         NamedCommands.registerCommand("Print", new InstantCommand(() -> System.out.println("Works!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")));
         NamedCommands.registerCommand("Delay", new RunCommand(() -> sIntake.intakeZero()).withTimeout(2).andThen(new InstantCommand(() -> sIntake.intakeZero())));
-        NamedCommands.registerCommand("DelayI", new RunCommand(() -> sIntake.intakeZero()).withTimeout(20.1).andThen(new InstantCommand(() -> sIntake.intakeZero())));
-        NamedCommands.registerCommand("Delay10", new RunCommand(() -> sIntake.intakeZero()).withTimeout(0.1).andThen(new InstantCommand(() -> sIntake.intakeZero())));
     }
 
     public static double autonomousThrottle(double v) {

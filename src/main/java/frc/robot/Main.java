@@ -21,9 +21,9 @@ public final class Main {
      * 
      * Improve autos
      * Integrate the feeder into correctAnglePos() which should be called during shooting
-     * Integrate eSwerveEstimator into the fieldoriented driving instead of using pigeon
      * Clean up and comment code
      * Remove climber
+     * Torque readings from intake and lift motors for jams and overdrive
      * 
      */
 
