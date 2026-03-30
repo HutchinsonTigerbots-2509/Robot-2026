@@ -17,6 +17,16 @@ public final class Main {
     //     w - Switch        //
     //     j - Joystick      //
 
+    /* TODO:
+     * 
+     * Improve autos
+     * Integrate the feeder into correctAnglePos() which should be called during shooting
+     * Integrate eSwerveEstimator into the fieldoriented driving instead of using pigeon
+     * Clean up and comment code
+     * Remove climber
+     * 
+     */
+
   }
 
   public static void main(String... args) {

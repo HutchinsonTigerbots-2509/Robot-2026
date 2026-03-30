@@ -7,7 +7,6 @@ package frc.robot;
 import com.ctre.phoenix6.HootAutoReplay;
 import com.ctre.phoenix6.HootReplay;
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -37,25 +36,23 @@ public class Robot extends TimedRobot {
         m_timeAndJoystickReplay.update();
         CommandScheduler.getInstance().run(); 
         //SignalLogger.stop();
-        SmartDashboard.putNumber("pigeon", m_robotContainer.sDrivetrain.getPigeon2().getRotation2d().getRadians());
-        // SmartDashboard.putNumber("FrontLeft", m_robotContainer.sDrivetrain.);
+        SmartDashboard.putNumber("pigeon", m_robotContainer.getDrivetrain().getPigeon2().getRotation2d().getRadians());
     }
 
     @Override
     public void disabledInit() {
-        // CommandScheduler.getInstance().cancelAll();
-        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.sIntake.intakeZero()), new InstantCommand(() -> m_robotContainer.sIntake.liftZero()), new InstantCommand(() -> m_robotContainer.sClimber.climbZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.hopperOff()), new InstantCommand(() -> m_robotContainer.sShooter.shootZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.feedzero())));
+        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getClimber().climbZero()), new InstantCommand(() -> m_robotContainer.getFeeder().feedzero()), new InstantCommand(() -> m_robotContainer.getHopper().hopperOff()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
     }
 
     @Override
     public void disabledPeriodic() {
-        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.sIntake.intakeZero()), new InstantCommand(() -> m_robotContainer.sIntake.liftZero()), new InstantCommand(() -> m_robotContainer.sClimber.climbZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.hopperOff()), new InstantCommand(() -> m_robotContainer.sShooter.shootZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.feedzero())));
+        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getClimber().climbZero()), new InstantCommand(() -> m_robotContainer.getFeeder().feedzero()), new InstantCommand(() -> m_robotContainer.getHopper().hopperOff()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
     }
 
     @Override
     public void disabledExit() {
+        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getClimber().climbZero()), new InstantCommand(() -> m_robotContainer.getFeeder().feedzero()), new InstantCommand(() -> m_robotContainer.getHopper().hopperOff()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
         // m_robotContainer.setFieldOffset();
-        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.sIntake.intakeZero()), new InstantCommand(() -> m_robotContainer.sIntake.liftZero()), new InstantCommand(() -> m_robotContainer.sClimber.climbZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.hopperOff()), new InstantCommand(() -> m_robotContainer.sShooter.shootZero()), new InstantCommand(() -> m_robotContainer.sFeederHopper.feedzero())));
     }
 
     @Override
@@ -73,7 +70,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousExit() {
-        // m_robotContainer.fieldOffset = 0 - m_robotContainer.field2d.getRobotPose().getRotation().getDegrees();
         // m_robotContainer.setGyro(0.0);
         // m_robotContainer.setFieldOffset();
     }

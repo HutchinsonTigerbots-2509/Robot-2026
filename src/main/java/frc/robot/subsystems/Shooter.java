@@ -38,11 +38,6 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void shootSet() {
-    mShooterA.setControl(kRequest.withVelocity(55).withSlot(0));
-    mShooterB.setControl(kRequest.withVelocity(55).withSlot(0));
-  }
-
   public void shootVariable(double n) {
     mShooterA.setControl(kRequest.withVelocity(n).withSlot(0));
     mShooterB.setControl(kRequest.withVelocity(n).withSlot(0));

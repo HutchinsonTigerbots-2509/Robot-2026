@@ -4,29 +4,27 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Intake extends SubsystemBase {
-  /** Creates a new Intake. */
-  public Intake() {}
+public class Hopper extends SubsystemBase {
+  /** Creates a new Hopper. */
+  public Hopper() {}
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
 
-  private TalonFX mIntake = new TalonFX(10);
+  private WPI_TalonSRX mHopper = new WPI_TalonSRX(14);
 
-  public void intakeZero() {
-    mIntake.set(0.0);
+  public void hopperOn() {
+    mHopper.set(1);
   }
 
-  public void intakeForward() {
-    mIntake.set(-1.0);
+  public void hopperOff() {
+    mHopper.set(0);
   }
 
-  public void intakeReverse() {
-    mIntake.set(1.0);
-  }
 }

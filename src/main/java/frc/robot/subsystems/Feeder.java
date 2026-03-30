@@ -4,16 +4,15 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class FeederHopper extends SubsystemBase {
+public class Feeder extends SubsystemBase {
   /** Creates a new Feeder. */
-  public FeederHopper() {
+  public Feeder() {
     var slot0Configs = new Slot0Configs();
     slot0Configs.kS = 0.1;
     slot0Configs.kV = 0.12;
@@ -30,7 +29,6 @@ public class FeederHopper extends SubsystemBase {
   }
 
   private TalonFX mFeeder = new TalonFX(13);
-  private WPI_TalonSRX mHopper = new WPI_TalonSRX(14);
 
   final VelocityVoltage kRequest = new VelocityVoltage(0).withSlot(0);
 
@@ -48,14 +46,6 @@ public class FeederHopper extends SubsystemBase {
 
   public void feedZero() {
     mFeeder.set(0);
-  }
-
-  public void hopperOn() {
-    mHopper.set(1);
-  }
-
-  public void hopperOff() {
-    mHopper.set(0);
   }
 
   public void feedVariable(double n) {

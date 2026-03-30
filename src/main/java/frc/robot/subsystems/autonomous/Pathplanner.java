@@ -58,12 +58,9 @@ public class Pathplanner extends SubsystemBase {
         // Handle exception as needed
         e.printStackTrace();
     }
-    SmartDashboard.putData(RobotContainer.getSelection());    
-    // RobotContainer.ApplyStart();
+    SmartDashboard.putData(RobotContainer.getSelection());
     RobotContainer.eSwerveEstimator = new SwerveDrivePoseEstimator(sDrivetrain.getKinematics(), RobotContainer.getRotation2d(), RobotContainer.getModulePositions(), startPose2d);
     RobotContainer.eSwerveEstimator.resetPose(startPose2d);
-    // RobotContainer.buildAutoChooser();
-    // SmartDashboard.putData("Auto Chooser", RobotContainer.autoSelect);
   }
 
   @Override
