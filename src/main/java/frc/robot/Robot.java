@@ -41,17 +41,17 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getClimber().climbZero()), new InstantCommand(() -> m_robotContainer.getFeeder().feedzero()), new InstantCommand(() -> m_robotContainer.getHopper().hopperOff()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
+        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getFeeder().feedzero()), new InstantCommand(() -> m_robotContainer.getHopper().hopperOff()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
     }
 
     @Override
     public void disabledPeriodic() {
-        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getClimber().climbZero()), new InstantCommand(() -> m_robotContainer.getFeeder().feedzero()), new InstantCommand(() -> m_robotContainer.getHopper().hopperOff()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
+        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getFeeder().feedzero()), new InstantCommand(() -> m_robotContainer.getHopper().hopperOff()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
     }
 
     @Override
     public void disabledExit() {
-        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getClimber().climbZero()), new InstantCommand(() -> m_robotContainer.getFeeder().feedzero()), new InstantCommand(() -> m_robotContainer.getHopper().hopperOff()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
+        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getFeeder().feedzero()), new InstantCommand(() -> m_robotContainer.getHopper().hopperOff()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
         // m_robotContainer.setFieldOffset();
     }
 

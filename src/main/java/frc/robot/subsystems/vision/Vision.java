@@ -20,7 +20,7 @@ public class Vision extends SubsystemBase {
 
   private double timestamp = 0; 
 
-  private final double kShootAngleTolerance = 0.000001;
+  private final double kShootAngleTolerance = 0.01;
 
   private final double blueHubX = 4.625;
   private final double blueHubY = 4.050;
@@ -63,6 +63,13 @@ public class Vision extends SubsystemBase {
 
   public boolean correctAnglePos() {
     if (Math.abs(getDifferenceOmega()) < kShootAngleTolerance) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean getRotatedCheck() {
+    if (Math.abs(RobotContainer.turn1) < -1) { //TODO: replace -1 with correct value for turning
       return true;
     }
     return false;
