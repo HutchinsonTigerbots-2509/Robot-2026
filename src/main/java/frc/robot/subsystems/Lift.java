@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Lift extends SubsystemBase {
   /** Creates a new Lift. */
   public Lift() {
-    mLift.setNeutralMode(NeutralModeValue.Brake);
+    mLiftA.setNeutralMode(NeutralModeValue.Brake);
   }
 
   @Override
@@ -29,32 +29,32 @@ public class Lift extends SubsystemBase {
     }
   }
 
-  private TalonFX mLift = new TalonFX(15);
+  private TalonFX mLiftA = new TalonFX(15);
   public DigitalInput wLiftMax = new DigitalInput(4);
   public Encoder eLift = new Encoder(2, 3);
 
   private boolean liftCycle = false;
 
   public void liftZero() {
-    mLift.set(0);
+    mLiftA.set(0);
   }
 
   public void liftOut() {
-    mLift.set(0.25);
+    mLiftA.set(0.25);
   }
 
   public void liftOutFast() {
-    mLift.set(0.5);
+    mLiftA.set(0.5);
   }
 
   public void liftIn() {
     if(liftCycle) {
-      mLift.set(-0.25);
+      mLiftA.set(-0.25);
     }
   }
 
   public void liftInEmergency() {
-    mLift.set(-0.1);
+    mLiftA.set(-0.1);
   }
 
   public void modLiftCycle() {

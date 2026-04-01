@@ -107,7 +107,7 @@ public class RobotContainer {
         configureBindings();
         buildAutoChooser();
         SmartDashboard.clearPersistent("Auto Chooser");
-        SmartDashboard.updateValues();
+        // SmartDashboard.updateValues();
         SmartDashboard.putData("Auto Chooser", autoSelect);
         SmartDashboard.putNumber("MaxSpeed", MaxSpeed);
         SmartDashboard.putNumber("MaxAngularRate", MaxAngularRate);
@@ -146,6 +146,7 @@ public class RobotContainer {
         RunCommand intakeDrive = new RunCommand(() -> driveControllerCreep());
         intakeDrive.addRequirements(sDrivetrain);
         joystick.rightBumper().toggleOnTrue(new ParallelCommandGroup(intakeDrive, new RunCommand(() -> sIntake.intakeForward()))).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
+        // joystick.rightBumper().toggleOnTrue(new RunCommand(() -> sIntake.intakeForward())).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
 
         // joystick.y().whileTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -750).andThen(new InstantCommand(() -> sIntake.liftZero()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         // joystick.a().whileTrue(new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
@@ -271,8 +272,8 @@ public class RobotContainer {
     }
 
     public void driveControllerCreep() {
-        sDrivetrain.applyRequest(() -> drive.withVelocityX(calculateFieldX(joystick) * MaxSpeed * 0.3)                                                                               
-                .withVelocityY(calculateFieldY(joystick) * MaxSpeed * 0.3)
+        sDrivetrain.applyRequest(() -> drive.withVelocityX(calculateFieldX(joystick) * MaxSpeed * 0.5)
+                .withVelocityY(calculateFieldY(joystick) * MaxSpeed * 0.5)
                 .withRotationalRate((-joystick.getRightX() * MaxAngularRate) * 0.8))
                 .execute();
     }      
@@ -415,7 +416,7 @@ public class RobotContainer {
             Pathplanner.startPose2d = new Pose2d(0, 0, new Rotation2d(0));
         }
     };
-    
+
     public static void namedCommands() {
         NamedCommands.registerCommand("LiftOut", new RunCommand(() -> sLift.liftOutFast()).until(() -> !sLift.wLiftMax.get()).andThen(new InstantCommand(() -> sLift.liftZero())).andThen(new InstantCommand(() -> sLift.eLift.reset())).andThen(new InstantCommand(() -> sLift.modLiftCycle())));
         NamedCommands.registerCommand("LiftIn450", new RunCommand(() -> sLift.liftZero()).withTimeout(2).andThen(new RunCommand(() -> sLift.liftIn()).until(() -> sLift.eLift.get() < -400)).andThen(new InstantCommand(() -> sLift.liftZero())));

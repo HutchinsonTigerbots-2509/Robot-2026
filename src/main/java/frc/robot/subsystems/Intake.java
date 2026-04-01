@@ -16,17 +16,21 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  private TalonFX mIntake = new TalonFX(10);
+  private TalonFX mIntakeA = new TalonFX(13);
+  private TalonFX mIntakeB = new TalonFX(14);
 
   public void intakeZero() {
-    mIntake.set(0.0);
+    mIntakeA.set(0.0);
+    mIntakeB.set(0.0);
   }
 
   public void intakeForward() {
-    mIntake.set(-1.0);
+    mIntakeA.set(1.0);
+    mIntakeB.set(-1.0);
   }
 
   public void intakeReverse() {
-    mIntake.set(1.0);
+    mIntakeA.set(-1.0);
+    mIntakeB.set(1.0);
   }
 }

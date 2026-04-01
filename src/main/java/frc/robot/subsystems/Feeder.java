@@ -28,7 +28,7 @@ public class Feeder extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  private TalonFX mFeeder = new TalonFX(13);
+  private TalonFX mFeeder = new TalonFX(11);
 
   final VelocityVoltage kRequest = new VelocityVoltage(0).withSlot(0);
 

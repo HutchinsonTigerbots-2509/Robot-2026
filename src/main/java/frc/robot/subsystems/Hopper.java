@@ -17,7 +17,7 @@ public class Hopper extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  private WPI_TalonSRX mHopper = new WPI_TalonSRX(14);
+  private WPI_TalonSRX mHopper = new WPI_TalonSRX(12);
 
   public void hopperOn() {
     mHopper.set(1);

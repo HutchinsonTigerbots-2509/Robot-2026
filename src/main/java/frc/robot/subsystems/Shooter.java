@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
 
-  private TalonFX mShooterA = new TalonFX(11);
-  private TalonFX mShooterB = new TalonFX(12);
+  private TalonFX mShooterA = new TalonFX(9);
+  private TalonFX mShooterB = new TalonFX(10);
   public Encoder eShooter = new Encoder(0, 1);
 
   final VelocityVoltage kRequest = new VelocityVoltage(0).withSlot(0);
