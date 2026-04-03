@@ -104,7 +104,7 @@ public class RobotContainer {
 
     public static boolean orientationSource = true;
 
-    public static double kLiftShootPos = 400;
+    public static double kLiftShootPos = 350;
     public static double kLiftMaxPos = 600;
 
     public RobotContainer() {
@@ -146,6 +146,7 @@ public class RobotContainer {
         intakeDrive.addRequirements(sDrivetrain);
         joystick.rightBumper().toggleOnTrue(new ParallelCommandGroup(intakeDrive, new RunCommand(() -> sIntake.intakeForward()))).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
 
+        joystick.y().onTrue(new InstantCommand(() -> sLift.liftZero()).andThen(new InstantCommand(() -> sLift.liftSpeedSetter())));
         // joystick.y().whileTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -750).andThen(new InstantCommand(() -> sIntake.liftZero()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         // joystick.a().whileTrue(new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
 
@@ -156,8 +157,8 @@ public class RobotContainer {
         A5.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(-63)), new RunCommand(() -> sHopper.hopperOn()), new RunCommand(() -> sFeeder.feedReverse()))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
         A6.whileTrue(new RunCommand(() -> sLift.liftIn()).until(() -> sLift.eLift.get() > kLiftMaxPos).andThen(new InstantCommand(() -> sLift.liftZero()))).onFalse(new InstantCommand(() -> sLift.liftZero()));
         A7.whileTrue(new RunCommand(() -> sLift.liftOut()).until(() -> !sLift.wLiftMax.get()).andThen(new InstantCommand(() -> sLift.liftZero())).andThen(new InstantCommand(() -> sLift.eLift.reset())).andThen(new InstantCommand(() -> sLift.modLiftCycle()))).onFalse(new InstantCommand(() -> sLift.liftZero()));
-        // A8.whileTrue(new RunCommand(() -> sIntake.intakeForward())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
-        A8.toggleOnTrue(new RunCommand(() -> sIntake.intakeForward())).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
+        A8.whileTrue(new RunCommand(() -> sIntake.intakeForward())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
+        // A8.toggleOnTrue(new RunCommand(() -> sIntake.intakeForward())).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
         B1.whileTrue(new RunCommand(() -> sLift.liftInEmergency())).onFalse(new InstantCommand(() -> sLift.liftZero()));
         B2.whileTrue(new InstantCommand(() -> System.out.println("B2")));
         B3.whileTrue(new InstantCommand(() -> System.out.println("B3")));
@@ -216,7 +217,7 @@ public class RobotContainer {
         if ((calculateFieldY(joystick) * MaxSpeed * 0.1) < -0.25) {
             return turn2 - 1.25; //1.5
         } else if ((calculateFieldY(joystick) * MaxSpeed * 0.1) > 0.25) {
-            return turn2 + 1.25; //1.5
+            return turn2 + 1.35; //1.5
         } else {
             return turn2;
         }
@@ -361,20 +362,6 @@ public class RobotContainer {
         autoSelect.addOption("Right", AutoBuilder.buildAuto("Right"));
         autoSelect.addOption("Left", AutoBuilder.buildAuto("Left"));
         autoSelect.addOption("Potato", AutoBuilder.buildAuto("Potato"));
-        buildMirror("Possibility", "Right");
-        autoSelect.addOption("Possibility", AutoBuilder.buildAuto("Possibility"));
-    }
-
-    public void buildMirror(String autoEmpty, String autoFull) {
-        try {
-            for (int i = 0; i < PathPlannerAuto.getPathGroupFromAutoFile(autoFull).size(); i++) {
-                PathPlannerAuto.getPathGroupFromAutoFile(autoEmpty).set(i, PathPlannerAuto.getPathGroupFromAutoFile(autoFull).get(i).mirrorPath());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
     }
 
     // public static SendableBuilder chooserBuilder() {

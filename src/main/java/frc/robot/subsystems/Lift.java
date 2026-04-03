@@ -14,9 +14,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Lift extends SubsystemBase {
   /** Creates a new Lift. */
+
+  private double kLiftTorqueMax = 200;
+  private double kLiftOutSpeed;
+  private double kLiftOutFastSpeed;
+  private double kLiftInSpeed;
+  private double kLiftInFastSpeed;
+  private boolean kTorqueLimit;
+
   public Lift() {
     mLiftA.setNeutralMode(NeutralModeValue.Brake);
     mLiftB.setNeutralMode(NeutralModeValue.Brake);
+    liftSpeedSetter();
   }
 
   @Override
@@ -30,6 +39,7 @@ public class Lift extends SubsystemBase {
     }
     SmartDashboard.putNumber("mLiftATorque", mLiftA.getTorqueCurrent().getValueAsDouble()); //Max 
     SmartDashboard.putNumber("mLiftBTorque", mLiftB.getTorqueCurrent().getValueAsDouble());
+    liftTorqueChecker();
   }
 
   private TalonFX mLiftA = new TalonFX(15);
@@ -45,26 +55,26 @@ public class Lift extends SubsystemBase {
   }
 
   public void liftOut() {
-    mLiftA.set(0.25);
-    mLiftB.set(-0.25);
+    mLiftA.set(kLiftOutSpeed);
+    mLiftB.set(-kLiftOutSpeed);
   }
 
   public void liftOutFast() {
-    mLiftA.set(0.8);
-    mLiftB.set(-0.8);
+    mLiftA.set(kLiftOutFastSpeed);
+    mLiftB.set(-kLiftOutFastSpeed);
   }
 
   public void liftIn() {
     if(liftCycle) {
-      mLiftA.set(-0.25);
-      mLiftB.set(0.25);
+      mLiftA.set(-kLiftInSpeed);
+      mLiftB.set(kLiftInSpeed);
     }
   }
 
   public void liftInFast() {
     if(liftCycle) {
-      mLiftA.set(-0.4);
-      mLiftB.set(0.4);
+      mLiftA.set(-kLiftInFastSpeed);
+      mLiftB.set(kLiftInFastSpeed);
     }
   }
 
@@ -75,5 +85,35 @@ public class Lift extends SubsystemBase {
 
   public void modLiftCycle() {
     liftCycle = true;
+  }
+
+  public void liftTorqueChecker() {
+    if (Math.abs(mLiftA.getTorqueCurrent().getValueAsDouble()) > kLiftTorqueMax || Math.abs(mLiftB.getTorqueCurrent().getValueAsDouble()) > kLiftTorqueMax) {
+      kLiftOutSpeed = 0;
+      kLiftOutFastSpeed = 0;
+      kLiftInSpeed = 0;
+      kLiftInFastSpeed = 0;
+      kTorqueLimit = true;
+    }
+    torqueOutputMessage();
+  }
+
+  public void liftSpeedSetter() {
+    kLiftOutSpeed = 0.25;
+    kLiftOutFastSpeed = 0.8;
+    kLiftInSpeed = 0.25;
+    kLiftInFastSpeed = 0.4;
+    kTorqueLimit = false;
+    System.out.println("Lift motors' output values have been set to defaults");
+  }
+
+  public void torqueOutputMessage() {
+    if (kTorqueLimit) {
+      System.out.println(" ");
+      System.out.println("Torque produced by Lift motors exceeded the max torque limit of: " + kLiftTorqueMax);
+      System.out.println(" ");
+      System.out.println("To reset the Lift motors' output values, please press 'y' on your controller");
+      System.out.println(" ");
+    }
   }
 }
