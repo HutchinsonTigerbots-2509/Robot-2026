@@ -22,7 +22,6 @@ public final class Main {
      * Improve autos
      * Integrate the feeder into correctAnglePos() which should be called during shooting
      * Clean up and comment code
-     * Torque readings from intake and lift motors for jams and overdrive
      * 
      */
 

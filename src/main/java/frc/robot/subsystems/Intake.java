@@ -5,15 +5,23 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
-  public Intake() {}
+  public Intake() {
+    mIntakeA.setNeutralMode(NeutralModeValue.Brake);
+    mIntakeB.setNeutralMode(NeutralModeValue.Brake);
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("mIntakeATorque", mIntakeA.getTorqueCurrent().getValueAsDouble());//
+    SmartDashboard.putNumber("mIntakeBTorque", mIntakeB.getTorqueCurrent().getValueAsDouble());
   }
 
   private TalonFX mIntakeA = new TalonFX(13);
@@ -27,6 +35,11 @@ public class Intake extends SubsystemBase {
   public void intakeForward() {
     mIntakeA.set(1.0);
     mIntakeB.set(-1.0);
+  }
+
+  public void intakeShoot() {
+    mIntakeA.set(0.25);
+    mIntakeB.set(-0.25);
   }
 
   public void intakeReverse() {

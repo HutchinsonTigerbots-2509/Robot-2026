@@ -8,7 +8,9 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 
 public class Feeder extends SubsystemBase {
   /** Creates a new Feeder. */
@@ -26,6 +28,7 @@ public class Feeder extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("feederSpeed", mFeeder.getVelocity().getValueAsDouble());
   }
 
   private TalonFX mFeeder = new TalonFX(11);
@@ -49,6 +52,10 @@ public class Feeder extends SubsystemBase {
   }
 
   public void feedVariable(double n) {
-    mFeeder.setControl(kRequest.withVelocity(n).withSlot(0));
+    if (RobotContainer.sVision.getRotatedCheck()) {
+      mFeeder.setControl(kRequest.withVelocity(n).withSlot(0));
+    } else {
+      mFeeder.setControl(kRequest.withVelocity(0).withSlot(0));
+    }
   }
 }

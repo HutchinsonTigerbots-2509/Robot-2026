@@ -22,10 +22,10 @@ public class Vision extends SubsystemBase {
 
   private final double kShootAngleTolerance = 0.01;
 
-  private final double blueHubX = 4.625;
-  private final double blueHubY = 4.050;
-  private final double redHubX = 11.925;
-  private final double redHubY = 4.030;
+  private final double blueHubX = 4.625594;
+  private final double blueHubY = 4.034536;
+  private final double redHubX = 11.915394;
+  private final double redHubY = 4.034536;
 
 
   public Vision() {
@@ -39,6 +39,9 @@ public class Vision extends SubsystemBase {
     SmartDashboard.putNumber("ShooterSpeed", distanceToShootingSpeed());
     visionPose2dEstimator();
     RobotContainer.turn1 = getRotationOutput();
+    SmartDashboard.putNumber("correctAnglePos", Math.abs(getDifferenceOmega()));
+    SmartDashboard.putBoolean("RotatedCheck", getRotatedCheck());
+    SmartDashboard.putNumber("turn1", RobotContainer.turn1);
   }
 
   public boolean allianceCool() {
@@ -53,7 +56,8 @@ public class Vision extends SubsystemBase {
     // return ((getDistanceToHub() * 39.701) + 3.54307644 * Math.pow(10, 11) - 1.57) / (3.54307644 * Math.pow(10, 11) * Math.sin(5.0469822681 * Math.pow(10, -7))); 
     // return ((Math.log((182.84605 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244;
     // double v = (((Math.log((182.84605 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.98;
-    double v = (((Math.log((183.75 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.98;
+    // double v = (((Math.log((183.75 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.98;
+    double v = (((Math.log((183.75 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.90;
     if (v < 63) {
       return v;
     } else {
@@ -61,18 +65,26 @@ public class Vision extends SubsystemBase {
     }
   }
 
-  public boolean correctAnglePos() {
-    if (Math.abs(getDifferenceOmega()) < kShootAngleTolerance) {
-      return true;
-    }
-    return false;
-  }
-
   public boolean getRotatedCheck() {
-    if (Math.abs(RobotContainer.turn1) < -1) { //TODO: replace -1 with correct value for turning
-      return true;
+    if ((RobotContainer.calculateFieldY(RobotContainer.joystick1) * RobotContainer.getMaxSpeed() * 0.1) < -0.225) {
+      if (Math.abs(getDifferenceOmega()) < 0.3) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if ((RobotContainer.calculateFieldY(RobotContainer.joystick1) * RobotContainer.getMaxSpeed() * 0.1) > 0.225) {
+      if (Math.abs(getDifferenceOmega()) < 0.3) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      if (Math.abs(getDifferenceOmega()) < 0.1) {
+        return true;
+      } else {
+        return false;
+      }
     }
-    return false;
   }
 
   private double getRotationOutput() {
