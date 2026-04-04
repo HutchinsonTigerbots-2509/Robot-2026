@@ -52,8 +52,8 @@ public class Intake extends SubsystemBase {
   }
 
   public void intakeShoot() {
-    mIntakeA.set(0.25);
-    mIntakeB.set(-0.25);
+    mIntakeA.set(0.1);
+    mIntakeB.set(-0.1);
   }
 
   public void intakeReverse() {

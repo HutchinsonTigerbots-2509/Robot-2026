@@ -53,10 +53,10 @@ public class Pathplanner extends SubsystemBase {
             return false;
         },
         sDrivetrain // Reference to this subsystem to set requirements
-      );    
+      );
     } catch (Exception e) {
-        // Handle exception as needed
-        e.printStackTrace();
+      // Handle exception as needed
+      e.printStackTrace();
     }
     SmartDashboard.putData(RobotContainer.getSelection());
     RobotContainer.eSwerveEstimator = new SwerveDrivePoseEstimator(sDrivetrain.getKinematics(), RobotContainer.getRotation2d(), RobotContainer.getModulePositions(), startPose2d);

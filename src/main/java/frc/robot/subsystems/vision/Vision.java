@@ -41,7 +41,7 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("ShooterSpeed", distanceToShootingSpeed());
+    SmartDashboard.putNumber("ShooterSpeed", shootingSpeed());
     visionPose2dEstimator();
     RobotContainer.turn1 = getRotationOutput();
     SmartDashboard.putNumber("correctAnglePos", Math.abs(getDifferenceOmega()));
@@ -49,6 +49,7 @@ public class Vision extends SubsystemBase {
     SmartDashboard.putNumber("turn1", RobotContainer.turn1);
     SmartDashboard.putNumber("case?", caseSetter());
     SmartDashboard.putNumber("Integral", visionShootRotationPID.getAccumulatedError());
+    SmartDashboard.putNumber("TurningJoystick", RobotContainer.joystick1.getRightX());
   }
 
   public boolean allianceCool() {
@@ -58,12 +59,12 @@ public class Vision extends SubsystemBase {
     return true;
   }
 
-  public double distanceToShootingSpeed() {
+  public double shootingSpeed() {
     // // return Math.pow(((getDistanceToHub() * 39.701 - 9) / 31), 2) + 40;
     // // return ((getDistanceToHub() * 39.701) + 3.54307644 * Math.pow(10, 11) - 1.57) / (3.54307644 * Math.pow(10, 11) * Math.sin(5.0469822681 * Math.pow(10, -7))); 
     // // return ((Math.log((182.84605 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244;
     // // double v = (((Math.log((182.84605 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.98;
-    // // double v = (((Math.log((183.75 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.98;
+    //double v = (((Math.log((183.75 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.98;
     // double v = (((Math.log((183.75 / (getDistanceToTarget() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.90;
     // if (v < 63) {
     //   return v;
@@ -92,6 +93,8 @@ public class Vision extends SubsystemBase {
     return v < kMaxShootVelocity ? v : kMaxShootVelocity;
   }
 
+  // private double support
+
   public boolean getRotatedCheck() {
     if ((RobotContainer.calculateFieldY(RobotContainer.joystick1) * RobotContainer.getMaxSpeed() * 0.1) < -0.225) {
       if (Math.abs(getDifferenceOmega()) < 0.3) {
@@ -106,7 +109,7 @@ public class Vision extends SubsystemBase {
         return false;
       }
     } else {
-      if (Math.abs(getDifferenceOmega()) < 0.1) {
+      if (Math.abs(getDifferenceOmega()) < 0.125) {
         return true;
       } else {
         return false;
@@ -233,14 +236,19 @@ public class Vision extends SubsystemBase {
   }
 
   private void visionPose2dEstimator() {
-    if (Limelight.getTV(cameraShoot)) {
-      RobotContainer.eVisionPose2d = Limelight.getBotPose2d_wpiBlue(cameraShoot);
-      timestamp = Limelight.getBotPoseEstimate(cameraShoot, "botpose_wpiblue", false).timestampSeconds;
-      RobotContainer.eSwerveEstimator.addVisionMeasurement(RobotContainer.eVisionPose2d, timestamp);
-    } else if (Limelight.getTV(cameraRight)) {
-      RobotContainer.eVisionPose2d = Limelight.getBotPose2d_wpiBlue(cameraRight);
-      timestamp = Limelight.getBotPoseEstimate(cameraRight, "botpose_wpiblue", false).timestampSeconds;
-      RobotContainer.eSwerveEstimator.addVisionMeasurement(RobotContainer.eVisionPose2d, timestamp);
+    try {
+      if (Limelight.getTV(cameraShoot)) {
+        RobotContainer.eVisionPose2d = Limelight.getBotPose2d_wpiBlue(cameraShoot);
+        timestamp = Limelight.getBotPoseEstimate(cameraShoot, "botpose_wpiblue", false).timestampSeconds;
+        RobotContainer.eSwerveEstimator.addVisionMeasurement(RobotContainer.eVisionPose2d, timestamp);
+      } else if (Limelight.getTV(cameraRight)) {
+        RobotContainer.eVisionPose2d = Limelight.getBotPose2d_wpiBlue(cameraRight);
+        timestamp = Limelight.getBotPoseEstimate(cameraRight, "botpose_wpiblue", false).timestampSeconds;
+        RobotContainer.eSwerveEstimator.addVisionMeasurement(RobotContainer.eVisionPose2d, timestamp);
+      }
+    } catch (Exception e) {
+      // Handle exception as needed
+      e.printStackTrace();
     }
   }
 

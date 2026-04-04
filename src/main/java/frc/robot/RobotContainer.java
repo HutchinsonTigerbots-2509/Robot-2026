@@ -135,7 +135,9 @@ public class RobotContainer {
 
         joystick.povUp().onTrue(new InstantCommand(() -> setOrientationSource()));
 
-        joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sHopper.hopperOn()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedzero())));
+        // joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sHopper.hopperOn()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedzero())));
+
+        joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sHopper.hopperOn()), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootVariable(sVision.shootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedzero())));
         joystick.rightTrigger().whileTrue(new RunCommand(() -> sLift.liftInFast()).until(() -> sLift.eLift.get() > kLiftShootPos).andThen(new InstantCommand(() -> sLift.liftZero()))).onFalse(new RunCommand(() -> sLift.liftOutFast()).until(() -> !sLift.wLiftMax.get()).andThen(new InstantCommand(() -> sLift.liftZero())).andThen(new InstantCommand(() -> sLift.eLift.reset())).andThen(new InstantCommand(() -> sLift.modLiftCycle())));
 
         RunCommand creepDrive = new RunCommand(() -> driveControllerCreep());
@@ -150,10 +152,10 @@ public class RobotContainer {
         // joystick.y().whileTrue(new RunCommand(() -> sIntake.liftIn()).until(() -> sIntake.eLift.get() < -750).andThen(new InstantCommand(() -> sIntake.liftZero()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
         // joystick.a().whileTrue(new RunCommand(() -> sIntake.liftOut()).until(() -> !sIntake.wLiftMax.get()).andThen(new InstantCommand(() -> sIntake.liftZero())).andThen(new InstantCommand(() -> sIntake.eLift.reset())).andThen(new InstantCommand(() -> sIntake.modLiftCycle()))).onFalse(new InstantCommand(() -> sIntake.liftZero()));
 
-        A1.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(53)), new RunCommand(() -> sHopper.hopperOn()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
+        A1.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(53)), new RunCommand(() -> sHopper.hopperOn()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable1(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
         // A2.whileTrue(new RunCommand(() -> sShooter.shootVariable())).onFalse(new InstantCommand(() -> sShooter.shootZero()));
-        A3.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(45)), new RunCommand(() -> sHopper.hopperOn()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
-        A4.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(51)), new RunCommand(() -> sHopper.hopperOn()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
+        A3.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(45)), new RunCommand(() -> sHopper.hopperOn()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable1(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
+        A4.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(51)), new RunCommand(() -> sHopper.hopperOn()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable1(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
         A5.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(-63)), new RunCommand(() -> sHopper.hopperOn()), new RunCommand(() -> sFeeder.feedReverse()))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
         A6.whileTrue(new RunCommand(() -> sLift.liftIn()).until(() -> sLift.eLift.get() > kLiftMaxPos).andThen(new InstantCommand(() -> sLift.liftZero()))).onFalse(new InstantCommand(() -> sLift.liftZero()));
         A7.whileTrue(new RunCommand(() -> sLift.liftOut()).until(() -> !sLift.wLiftMax.get()).andThen(new InstantCommand(() -> sLift.liftZero())).andThen(new InstantCommand(() -> sLift.eLift.reset())).andThen(new InstantCommand(() -> sLift.modLiftCycle()))).onFalse(new InstantCommand(() -> sLift.liftZero()));
@@ -166,7 +168,7 @@ public class RobotContainer {
         B5.whileTrue(new RunCommand(() -> sIntake.intakeReverse())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
         // B6.whileTrue();
         // B7.whileTrue();
-        B7.toggleOnTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(SmartDashboard.getNumber("ShooterSetter", 0))), new RunCommand(() -> sHopper.hopperOn()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))))).toggleOnFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
+        B7.toggleOnTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(SmartDashboard.getNumber("ShooterSetter", 0))), new RunCommand(() -> sHopper.hopperOn()), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable1(-80)))))).toggleOnFalse(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
 
         sDrivetrain.registerTelemetry(logger::telemeterize);
     }
@@ -214,12 +216,24 @@ public class RobotContainer {
     }
 
     public double strafeVisionOffset() {
-        if ((calculateFieldY(joystick) * MaxSpeed * 0.1) < -0.25) {
-            return turn2 - 1.25; //1.5
-        } else if ((calculateFieldY(joystick) * MaxSpeed * 0.1) > 0.25) {
-            return turn2 + 1.35; //1.5
+        // if ((calculateFieldY(joystick) * MaxSpeed * 0.1) < -0.25) {
+        //     return turn2 - 1.25; //1.5
+        // } else if ((calculateFieldY(joystick) * MaxSpeed * 0.1) > 0.25) {
+        //     return turn2 + 1.35; //1.5
+        // } else {
+        //     return turn2;
+        // }
+
+        if (Math.abs(joystick.getRightX()) > 0.25) {
+            return -joystick.getRightX() * MaxAngularRate;
         } else {
-            return turn2;
+            if ((calculateFieldY(joystick) * MaxSpeed * 0.1) < -0.25) {
+                return turn2 - 1.25;
+            } else if ((calculateFieldY(joystick) * MaxSpeed * 0.1) > 0.25) {
+                return turn2 + 1.35;
+            } else {
+                return turn2;
+            }
         }
     }
 
@@ -362,6 +376,7 @@ public class RobotContainer {
         autoSelect.addOption("Right", AutoBuilder.buildAuto("Right"));
         autoSelect.addOption("Left", AutoBuilder.buildAuto("Left"));
         autoSelect.addOption("Potato", AutoBuilder.buildAuto("Potato"));
+        autoSelect.addOption("IntakeTest", AutoBuilder.buildAuto("IntakeTest"));
     }
 
     // public static SendableBuilder chooserBuilder() {
@@ -399,8 +414,8 @@ public class RobotContainer {
     public static void namedCommands() {
         NamedCommands.registerCommand("LiftOut", new RunCommand(() -> sLift.liftOutFast()).until(() -> !sLift.wLiftMax.get()).andThen(new InstantCommand(() -> sLift.liftZero())).andThen(new InstantCommand(() -> sLift.eLift.reset())).andThen(new InstantCommand(() -> sLift.modLiftCycle())));
         NamedCommands.registerCommand("LiftIn450", new RunCommand(() -> sLift.liftZero()).withTimeout(2).andThen(new RunCommand(() -> sLift.liftIn()).until(() -> sLift.eLift.get() > kLiftShootPos)).andThen(new InstantCommand(() -> sLift.liftZero())));
-        NamedCommands.registerCommand("ShootStart", new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(-63)), new RunCommand(() -> sFeeder.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sHopper.hopperOn()), new RunCommand(() -> driveVision(0.0, 0.0, turn1)), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))))));
-        NamedCommands.registerCommand("Shoot10", new ParallelCommandGroup(new RunCommand(() -> sHopper.hopperOn()), new RunCommand(() -> driveVision(0.0, 0.0, turn1)), new RunCommand(() -> sShooter.shootVariable(sVision.distanceToShootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80))))).withTimeout(6).andThen(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedzero()))));
+        NamedCommands.registerCommand("ShootStart", new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(-63)), new RunCommand(() -> sFeeder.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> sHopper.hopperOn()), new RunCommand(() -> driveVision(0.0, 0.0, turn1)), new RunCommand(() -> sShooter.shootVariable(sVision.shootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))))));
+        NamedCommands.registerCommand("Shoot10", new ParallelCommandGroup(new RunCommand(() -> sHopper.hopperOn()), new RunCommand(() -> driveVision(0.0, 0.0, turn1)), new RunCommand(() -> sShooter.shootVariable(sVision.shootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80))))).withTimeout(6).andThen(new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedzero()))));
         NamedCommands.registerCommand("ShootStop", new ParallelCommandGroup(new InstantCommand(() -> sHopper.hopperOff()), new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedzero())));
         NamedCommands.registerCommand("IntakeRun1", new RunCommand(() -> sIntake.intakeForward()).withTimeout(1).andThen(new InstantCommand(() -> sIntake.intakeZero())));
         NamedCommands.registerCommand("IntakeRun8", new RunCommand(() -> sIntake.intakeForward()).withTimeout(6).andThen(new InstantCommand(() -> sIntake.intakeZero())));

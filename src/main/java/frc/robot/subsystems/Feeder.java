@@ -58,4 +58,8 @@ public class Feeder extends SubsystemBase {
       mFeeder.setControl(kRequest.withVelocity(0).withSlot(0));
     }
   }
+
+  public void feedVariable1(double n) {
+    mFeeder.setControl(kRequest.withVelocity(n).withSlot(0));
+  }
 }
