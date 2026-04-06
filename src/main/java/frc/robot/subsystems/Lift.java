@@ -37,7 +37,7 @@ public class Lift extends SubsystemBase {
     if (!wLiftMax.get()) {
       eLift.reset();
     }
-    SmartDashboard.putNumber("mLiftATorque", mLiftA.getTorqueCurrent().getValueAsDouble()); //Max 
+    SmartDashboard.putNumber("mLiftATorque", mLiftA.getTorqueCurrent().getValueAsDouble()); 
     SmartDashboard.putNumber("mLiftBTorque", mLiftB.getTorqueCurrent().getValueAsDouble());
     liftTorqueChecker();
   }

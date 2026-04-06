@@ -32,8 +32,6 @@ public class Shooter extends SubsystemBase {
 
     mShooterA.getConfigurator().apply(slot0Configs);
     mShooterB.getConfigurator().apply(slot0Configs);
-
-    SmartDashboard.putNumber("ShooterSetter", 0);
   }
   
   @Override

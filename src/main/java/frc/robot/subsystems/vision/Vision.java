@@ -13,14 +13,15 @@ import frc.robot.RobotContainer;
 public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
 
-  private PIDController visionShootRotationPID = new PIDController(5.0,0.5,0.0);
+  public PIDController visionShootRotationPID = new PIDController(6.0,1.0,1.0); // 4, 0, 0
 
   private final String cameraShoot = "limelight-shoot";
   private final String cameraRight = "limelight-intake"; 
 
   private double timestamp = 0; 
 
-  private final double kMaxShootVelocity = 63;
+  private final double kMinShootVelocity = 30;
+  private final double kMaxShootVelocity = 100;
 
   private final double blueHubX = 4.625594;
   private final double blueHubY = 4.034536;
@@ -46,10 +47,13 @@ public class Vision extends SubsystemBase {
     RobotContainer.turn1 = getRotationOutput();
     SmartDashboard.putNumber("correctAnglePos", Math.abs(getDifferenceOmega()));
     SmartDashboard.putBoolean("RotatedCheck", getRotatedCheck());
-    SmartDashboard.putNumber("turn1", RobotContainer.turn1);
     SmartDashboard.putNumber("case?", caseSetter());
+    SmartDashboard.putNumber("turn1", RobotContainer.turn1);
     SmartDashboard.putNumber("Integral", visionShootRotationPID.getAccumulatedError());
+    SmartDashboard.putNumber("Derivative", visionShootRotationPID.getErrorDerivative());
+    SmartDashboard.putNumber("Tolerance", visionShootRotationPID.getErrorTolerance());
     SmartDashboard.putNumber("TurningJoystick", RobotContainer.joystick1.getRightX());
+    SmartDashboard.putNumber("Distance", getDistanceToTarget());
   }
 
   public boolean allianceCool() {
@@ -60,40 +64,42 @@ public class Vision extends SubsystemBase {
   }
 
   public double shootingSpeed() {
+    double s;
+
+    switch (caseSetter()) {
+      case 0:
+        s = velocityCalculation(getDistanceToTarget() - 0.55);
+      case 1:
+        s = velocityCalculation(getDistanceToTarget() - 0.55);
+      case 2:
+        s = velocityCalculation(getDistanceToTarget());
+      case 3:
+        s = velocityCalculation(getDistanceToTarget() - 0.55);
+      case 4:
+        s = velocityCalculation(getDistanceToTarget() - 0.55);
+      case 5:
+        s = velocityCalculation(getDistanceToTarget());
+      default:
+        s = velocityCalculation(getDistanceToTarget());
+    }
+    
+    return (s > kMinShootVelocity) ? (s < kMaxShootVelocity ? s : kMaxShootVelocity) : kMinShootVelocity;
+  }
+
+  private double velocityCalculation(double distance) {
     // // return Math.pow(((getDistanceToHub() * 39.701 - 9) / 31), 2) + 40;
     // // return ((getDistanceToHub() * 39.701) + 3.54307644 * Math.pow(10, 11) - 1.57) / (3.54307644 * Math.pow(10, 11) * Math.sin(5.0469822681 * Math.pow(10, -7))); 
     // // return ((Math.log((182.84605 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244;
     // // double v = (((Math.log((182.84605 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.98;
-    //double v = (((Math.log((183.75 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.98;
+    // double v = (((Math.log((183.75 / (getDistanceToHub() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.98;
     // double v = (((Math.log((183.75 / (getDistanceToTarget() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.90;
-    // if (v < 63) {
-    //   return v;
-    // } else {
-    //   return 63;
-    // }
+    // double v = -15 * (Math.log((7.843 * distance) - 1) -3.96686);
+    // double v = -15 * (Math.log((7.843 / distance) - 1) -3.96686);
+    // double v = -15 * (Math.log(((308.78008 / distance) - 1) - 3.96686)); // Inches
 
-    double v;
-
-    switch (caseSetter()) { // TODO: get real velocities for each case
-      case 0:
-        v = 43;
-      case 1:
-        v = 43;
-      case 2:
-        v = (((Math.log((183.75 / (getDistanceToTarget() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.90;
-      case 3:
-        v = 43;
-      case 4:
-        v = 43;
-      case 5:
-        v = (((Math.log((183.75 / (getDistanceToTarget() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.90;;
-      default:
-        v = (((Math.log((183.75 / (getDistanceToTarget() * 39.701)) - 1)) - 6.41678) / -0.133244) * 0.90;;
-    }
-    return v < kMaxShootVelocity ? v : kMaxShootVelocity;
+    double v = -15 * (Math.log((7.843 / distance) - 1) - 3.96686);
+    return v;
   }
-
-  // private double support
 
   public boolean getRotatedCheck() {
     if ((RobotContainer.calculateFieldY(RobotContainer.joystick1) * RobotContainer.getMaxSpeed() * 0.1) < -0.225) {
@@ -130,15 +136,6 @@ public class Vision extends SubsystemBase {
   }
 
   private double getCurrentAngle() {
-    // if (allianceCool()) {
-    //   if (RobotContainer.getPose().getRotation().getRadians() < 0) {
-    //     return RobotContainer.getPose().getRotation().getRadians() + Math.PI;
-    //   }
-    //   return RobotContainer.getPose().getRotation().getRadians() - Math.PI;
-    // } else {
-    //   return RobotContainer.getPose().getRotation().getRadians();
-    // }
-
     switch (caseSetter()) {
       case 0:
         return RobotContainer.getPose().getRotation().getRadians();
@@ -182,12 +179,6 @@ public class Vision extends SubsystemBase {
   }
 
   private double getTargetX() {
-    // if (allianceCool()) {
-    //   return blueHubX;
-    // } else {
-    //   return redHubX;
-    // }
-
     switch (caseSetter()) {
       case 0:
         return blueAreaX;
@@ -207,12 +198,6 @@ public class Vision extends SubsystemBase {
   }
 
   private double getTargetY() {
-    // if (allianceCool()) {
-    //   return blueHubY;
-    // } else {
-    //   return redHubY;
-    // }
-
     switch (caseSetter()) {
       case 0:
         return blueLeftY;

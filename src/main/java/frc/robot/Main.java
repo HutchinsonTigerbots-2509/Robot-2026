@@ -17,14 +17,6 @@ public final class Main {
     //     w - Switch        //
     //     j - Joystick      //
 
-    /* TODO:
-     * 
-     * Improve autos
-     * Integrate the feeder into correctAnglePos() which should be called during shooting
-     * Clean up and comment code
-     * 
-     */
-
   }
 
   public static void main(String... args) {

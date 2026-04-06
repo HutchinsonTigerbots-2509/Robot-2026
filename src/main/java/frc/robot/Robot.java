@@ -26,7 +26,6 @@ public class Robot extends TimedRobot {
         .withJoystickReplay();
     public Robot() {
         m_robotContainer = new RobotContainer();
-        // RobotContainer.autoSelect.initSendable(null);
         RobotController.setBrownoutVoltage(5);
     }
 
@@ -52,7 +51,6 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledExit() {
         CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getFeeder().feedzero()), new InstantCommand(() -> m_robotContainer.getHopper().hopperOff()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
-        // m_robotContainer.setFieldOffset();
     }
 
     @Override
@@ -69,17 +67,13 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {}
 
     @Override
-    public void autonomousExit() {
-        // m_robotContainer.setGyro(0.0);
-        // m_robotContainer.setFieldOffset();
-    }
+    public void autonomousExit() {}
 
     @Override
     public void teleopInit() {
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().cancel(m_autonomousCommand);
         }
-        // m_robotContainer.setFieldOffset();
     }
 
     @Override
