@@ -6,7 +6,6 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 
@@ -48,19 +47,9 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("ShooterSpeed", shootingSpeed());
     visionPose2dEstimator();
     turnStationary = getRotationOutput();
     turnStrafe = getStrafeRotationOutput();
-    SmartDashboard.putNumber("correctAnglePos", Math.abs(getDifferenceOmega()));
-    SmartDashboard.putBoolean("RotatedCheck", getRotatedCheck());
-    SmartDashboard.putNumber("case?", caseSetter());
-    SmartDashboard.putNumber("turn1", turnStationary);
-    SmartDashboard.putNumber("Integral", visionShootRotationPID.getAccumulatedError());
-    SmartDashboard.putNumber("Derivative", visionShootRotationPID.getErrorDerivative());
-    SmartDashboard.putNumber("Tolerance", visionShootRotationPID.getErrorTolerance());
-    SmartDashboard.putNumber("TurningJoystick", RobotContainer.joystick1.getRightX());
-    SmartDashboard.putNumber("Distance", getDistanceToTarget());
   }
 
   public boolean allianceCool() {

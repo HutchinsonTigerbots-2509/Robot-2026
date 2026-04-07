@@ -32,13 +32,10 @@ public class Lift extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("LiftSwitch", !wLiftMax.get());
-    SmartDashboard.putBoolean("LiftCycle", liftCycle);
     SmartDashboard.putNumber("LiftPos", eLift.get());
     if (!wLiftMax.get()) {
       eLift.reset();
     }
-    SmartDashboard.putNumber("mLiftATorque", mLiftA.getTorqueCurrent().getValueAsDouble()); 
-    SmartDashboard.putNumber("mLiftBTorque", mLiftB.getTorqueCurrent().getValueAsDouble());
     liftTorqueChecker();
   }
 
