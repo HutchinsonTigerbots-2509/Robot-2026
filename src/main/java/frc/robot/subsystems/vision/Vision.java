@@ -13,7 +13,11 @@ import frc.robot.RobotContainer;
 public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
 
-  public PIDController visionShootRotationPID = new PIDController(6.0,1.0,1.0); // 4, 0, 0
+  public PIDController visionShootRotationPID = new PIDController(6.0,1.0,1.0);
+  public PIDController visionStrafeRotationPID = new PIDController(4.0,0.0,0.0);
+
+  public double turnStationary;
+  public double turnStrafe;
 
   private final String cameraShoot = "limelight-shoot";
   private final String cameraRight = "limelight-intake"; 
@@ -37,6 +41,8 @@ public class Vision extends SubsystemBase {
   public Vision() {
     visionShootRotationPID.setTolerance(0.2/41.0);
     visionShootRotationPID.setSetpoint(0.0);
+    visionStrafeRotationPID.setTolerance(0.2/41.0);
+    visionStrafeRotationPID.setSetpoint(0.0);
   }
 
   @Override
@@ -44,11 +50,12 @@ public class Vision extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("ShooterSpeed", shootingSpeed());
     visionPose2dEstimator();
-    RobotContainer.turn1 = getRotationOutput();
+    turnStationary = getRotationOutput();
+    turnStrafe = getStrafeRotationOutput();
     SmartDashboard.putNumber("correctAnglePos", Math.abs(getDifferenceOmega()));
     SmartDashboard.putBoolean("RotatedCheck", getRotatedCheck());
     SmartDashboard.putNumber("case?", caseSetter());
-    SmartDashboard.putNumber("turn1", RobotContainer.turn1);
+    SmartDashboard.putNumber("turn1", turnStationary);
     SmartDashboard.putNumber("Integral", visionShootRotationPID.getAccumulatedError());
     SmartDashboard.putNumber("Derivative", visionShootRotationPID.getErrorDerivative());
     SmartDashboard.putNumber("Tolerance", visionShootRotationPID.getErrorTolerance());
@@ -125,6 +132,10 @@ public class Vision extends SubsystemBase {
 
   private double getRotationOutput() {
     return (-1.0 * visionShootRotationPID.calculate(getPropOmega(getDifferenceOmega())));
+  }
+
+  private double getStrafeRotationOutput() {
+    return (-1.0 * visionStrafeRotationPID.calculate(getPropOmega(getDifferenceOmega())));
   }
 
   private double getDifferenceOmega() {
