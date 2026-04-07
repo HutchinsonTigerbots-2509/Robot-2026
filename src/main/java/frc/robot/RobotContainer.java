@@ -131,8 +131,6 @@ public class RobotContainer {
         RunCommand intakeDrive = new RunCommand(() -> driveControllerCreep());
         intakeDrive.addRequirements(sDrivetrain);
         joystick.rightBumper().toggleOnTrue(new ParallelCommandGroup(intakeDrive, new RunCommand(() -> sIntake.intakeForward()))).toggleOnFalse(new InstantCommand(() -> sIntake.intakeZero()));
-
-        joystick.y().onTrue(new InstantCommand(() -> sLift.liftZero()).andThen(new InstantCommand(() -> sLift.liftSpeedSetter())));
         
         A1.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(53)), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable1(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
         A2.whileTrue(new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(75)), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable1(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
@@ -195,9 +193,9 @@ public class RobotContainer {
             return -joystick.getRightX() * MaxAngularRate;
         } else {
             if ((calculateFieldY(joystick) * MaxSpeed * 0.1) < -0.25) {
-                return sVision.turnStrafe - 2.5;
+                return sVision.turnStrafe - 1.5;
             } else if ((calculateFieldY(joystick) * MaxSpeed * 0.1) > 0.25) {
-                return sVision.turnStrafe + 2.5;
+                return sVision.turnStrafe + 1.5;
             } else {
                 return sVision.turnStationary;
             }

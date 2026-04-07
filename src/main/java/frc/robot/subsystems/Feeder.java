@@ -37,7 +37,7 @@ public class Feeder extends SubsystemBase {
 
   public void feedReverse() {
     mFeeder.set(1.0);
-    mFloor.set(1.0);
+    mFloor.set(-1.0);
   }
 
   public void feedZero() {
@@ -48,7 +48,7 @@ public class Feeder extends SubsystemBase {
   public void feedVariable(double n) {
     if (RobotContainer.sVision.getRotatedCheck()) {
       mFeeder.setControl(kRequest.withVelocity(n).withSlot(0));
-      mFloor.set(-1.0);
+      mFloor.set(1.0);
     } else {
       mFeeder.setControl(kRequest.withVelocity(0).withSlot(0));
       mFloor.set(0);
@@ -57,6 +57,6 @@ public class Feeder extends SubsystemBase {
 
   public void feedVariable1(double n) {
     mFeeder.setControl(kRequest.withVelocity(n).withSlot(0));
-    mFloor.set(-1.0);
+    mFloor.set(1.0);
   }
 }
