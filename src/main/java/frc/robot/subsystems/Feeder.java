@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -30,34 +31,32 @@ public class Feeder extends SubsystemBase {
   }
 
   private TalonFX mFeeder = new TalonFX(11);
+  private WPI_TalonSRX mFloor = new WPI_TalonSRX(12);
 
   final VelocityVoltage kRequest = new VelocityVoltage(0).withSlot(0);
 
-  public void feedzero() {
-    mFeeder.set(0.0);
-  }
-
-  public void feedPower() {
-    mFeeder.set(-0.8);
-  }
-
   public void feedReverse() {
-    mFeeder.set(0.3);
+    mFeeder.set(1.0);
+    mFloor.set(1.0);
   }
 
   public void feedZero() {
     mFeeder.set(0);
+    mFloor.set(0);
   }
 
   public void feedVariable(double n) {
     if (RobotContainer.sVision.getRotatedCheck()) {
       mFeeder.setControl(kRequest.withVelocity(n).withSlot(0));
+      mFloor.set(-1.0);
     } else {
       mFeeder.setControl(kRequest.withVelocity(0).withSlot(0));
+      mFloor.set(0);
     }
   }
 
   public void feedVariable1(double n) {
     mFeeder.setControl(kRequest.withVelocity(n).withSlot(0));
+    mFloor.set(-1.0);
   }
 }
