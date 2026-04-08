@@ -323,10 +323,11 @@ public class RobotContainer {
 
     public void buildAutoChooser() {
         autoSelect.setDefaultOption("Do Nothing", AutoBuilder.buildAuto("Do Nothing"));
-        autoSelect.addOption("Right", AutoBuilder.buildAuto("Right"));
-        autoSelect.addOption("Left", AutoBuilder.buildAuto("Left"));
         autoSelect.addOption("Potato", AutoBuilder.buildAuto("Potato"));
-        autoSelect.addOption("IntakeTest", AutoBuilder.buildAuto("IntakeTest"));
+        autoSelect.addOption("RightLine", AutoBuilder.buildAuto("RightLine"));
+        autoSelect.addOption("RightHook", AutoBuilder.buildAuto("RightHook"));
+        autoSelect.addOption("LeftLine", AutoBuilder.buildAuto("LeftLine"));
+        autoSelect.addOption("LeftHook", AutoBuilder.buildAuto("LeftHook"));
     }
 
     public static void ApplyStart() {
