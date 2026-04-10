@@ -16,15 +16,15 @@
     },
     {
       "anchor": {
-        "x": 5.253951807228916,
+        "x": 5.654,
         "y": 2.734602409638553
       },
       "prevControl": {
-        "x": 4.253951807228916,
+        "x": 4.654,
         "y": 2.734602409638553
       },
       "nextControl": {
-        "x": 6.253951807228916,
+        "x": 6.654,
         "y": 2.734602409638553
       },
       "isLocked": false,
@@ -32,47 +32,47 @@
     },
     {
       "anchor": {
-        "x": 7.789180722891565,
-        "y": 2.0680120481927715
+        "x": 7.389,
+        "y": 1.868
       },
       "prevControl": {
-        "x": 7.240807354623033,
-        "y": 1.266543279184916
+        "x": 6.840626631731468,
+        "y": 1.0665312309921444
       },
       "nextControl": {
-        "x": 7.930351701789563,
-        "y": 2.2743388635052297
+        "x": 7.530170978897998,
+        "y": 2.0743268153124585
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.30278313253012,
-        "y": 2.9203734939759034
+        "x": 7.803,
+        "y": 2.52
       },
       "prevControl": {
-        "x": 8.30278313253012,
-        "y": 2.6703734939759034
+        "x": 7.803,
+        "y": 2.27
       },
       "nextControl": {
-        "x": 8.30278313253012,
-        "y": 3.211346239730476
+        "x": 7.803,
+        "y": 2.810972745754573
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.30278313253012,
+        "x": 7.803,
         "y": 3.335626506024097
       },
       "prevControl": {
-        "x": 8.30278313253012,
+        "x": 7.803,
         "y": 3.085626506024097
       },
       "nextControl": {
-        "x": 8.30278313253012,
+        "x": 7.803,
         "y": 3.7906265060240987
       },
       "isLocked": false,
@@ -187,22 +187,11 @@
     {
       "name": "IntakeRun",
       "waypointRelativePos": 1.0,
-      "endWaypointRelativePos": 5.0,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "IntakeRun"
-        }
-      }
-    },
-    {
-      "name": "IntakeStop",
-      "waypointRelativePos": 5.1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "IntakeStop"
+          "name": "IntakeRun"
         }
       }
     }
@@ -213,7 +202,7 @@
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
-    "unlimited": true
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
@@ -225,5 +214,5 @@
     "velocity": 0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

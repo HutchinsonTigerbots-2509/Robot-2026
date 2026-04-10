@@ -40,17 +40,17 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getFeeder().feedZero()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
+        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getFeeder().feedZero()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getLighting().lightOff()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
     }
 
     @Override
     public void disabledPeriodic() {
-        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getFeeder().feedZero()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
+        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getFeeder().feedZero()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getLighting().lightOff()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
     }
 
     @Override
     public void disabledExit() {
-        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getFeeder().feedZero()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
+        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new InstantCommand(() -> m_robotContainer.getFeeder().feedZero()), new InstantCommand(() -> m_robotContainer.getIntake().intakeZero()), new InstantCommand(() -> m_robotContainer.getLift().liftZero()), new InstantCommand(() -> m_robotContainer.getLighting().lightOff()), new InstantCommand(() -> m_robotContainer.getShooter().shootZero())));
     }
 
     @Override

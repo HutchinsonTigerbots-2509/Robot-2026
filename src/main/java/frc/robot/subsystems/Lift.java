@@ -23,6 +23,7 @@ public class Lift extends SubsystemBase {
     mLiftB.setNeutralMode(NeutralModeValue.Brake);
     mLiftA.getConfigurator().apply(limit);
     mLiftB.getConfigurator().apply(limit);
+    defaultValues();
   }
 
   @Override
@@ -43,32 +44,36 @@ public class Lift extends SubsystemBase {
 
   private boolean liftCycle = false;
 
+  private double quarter;
+  private double fastin;
+  private double fastout;
+
   public void liftZero() {
     mLiftA.set(0);
     mLiftB.set(0);
   }
 
   public void liftOut() {
-    mLiftA.set(0.25);
-    mLiftB.set(-0.25);
+    mLiftA.set(quarter);
+    mLiftB.set(-quarter);
   }
 
   public void liftOutFast() {
-    mLiftA.set(0.8);
-    mLiftB.set(-0.8);
+    mLiftA.set(fastout);
+    mLiftB.set(-fastout);
   }
 
   public void liftIn() {
     if(liftCycle) {
-      mLiftA.set(-0.25);
-      mLiftB.set(0.25);
+      mLiftA.set(-quarter);
+      mLiftB.set(quarter);
     }
   }
 
   public void liftInFast() {
     if(liftCycle) {
-      mLiftA.set(-0.4);
-      mLiftB.set(0.4);
+      mLiftA.set(-fastin);
+      mLiftB.set(fastin);
     }
   }
 
@@ -77,7 +82,24 @@ public class Lift extends SubsystemBase {
     mLiftB.set(0.1);
   }
 
+  public void liftOutEmergency() {
+    mLiftA.set(0.1);
+    mLiftB.set(-0.1);
+  }
+
   public void modLiftCycle() {
     liftCycle = true;
+  }
+
+  public void defaultValues() {
+    quarter = 0.25;
+    fastin = 0.4;
+    fastout = 0.8;
+  }
+
+  public void preventDamage() {
+    quarter = 0;
+    fastin = 0;
+    fastout = 0;
   }
 }

@@ -16,15 +16,15 @@
     },
     {
       "anchor": {
-        "x": 8.45577108433735,
+        "x": 8.575975903614458,
         "y": 5.335
       },
       "prevControl": {
-        "x": 7.45577108433735,
+        "x": 7.575975903614458,
         "y": 5.335
       },
       "nextControl": {
-        "x": 8.70577108433735,
+        "x": 8.825975903614458,
         "y": 5.335
       },
       "isLocked": false,
@@ -103,22 +103,11 @@
     {
       "name": "IntakeRun",
       "waypointRelativePos": 0.3543424317617773,
-      "endWaypointRelativePos": 2.0,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "IntakeRun"
-        }
-      }
-    },
-    {
-      "name": "IntakeStop",
-      "waypointRelativePos": 2.1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "IntakeStop"
+          "name": "IntakeRun"
         }
       }
     }
@@ -129,7 +118,7 @@
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
-    "unlimited": true
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
@@ -141,5 +130,5 @@
     "velocity": 0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

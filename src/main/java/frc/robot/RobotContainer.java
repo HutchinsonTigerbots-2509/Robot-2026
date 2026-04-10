@@ -39,6 +39,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.autonomous.Pathplanner;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants;
+import frc.robot.subsystems.vision.Lighting;
 import frc.robot.subsystems.vision.Vision;
 
 public class RobotContainer {
@@ -78,6 +79,7 @@ public class RobotContainer {
     public static final Feeder sFeeder = new Feeder();
     public static final Intake sIntake = new Intake();
     public static final Lift sLift = new Lift();
+    public static final Lighting sLighting = new Lighting();
     public static final Shooter sShooter = new Shooter();
     public static final Vision sVision = new Vision();
     public static final Pathplanner sPathPlanner = new Pathplanner(sDrivetrain);
@@ -121,7 +123,7 @@ public class RobotContainer {
 
         joystick.povUp().onTrue(new InstantCommand(() -> setOrientationSource()));
 
-        joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootVariable(sVision.shootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
+        joystick.leftTrigger().whileTrue(new ParallelCommandGroup(new RunCommand(() -> sLighting.lightOn()).withTimeout(0.75).andThen(new InstantCommand(() -> sLighting.lightOff())), new RunCommand(() -> strafeVision()), new RunCommand(() -> sShooter.shootVariable(sVision.shootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))))).onFalse(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
         joystick.rightTrigger().whileTrue(new RunCommand(() -> sLift.liftInFast()).until(() -> sLift.eLift.get() > kLiftShootPos).andThen(new InstantCommand(() -> sLift.liftZero()))).onFalse(new RunCommand(() -> sLift.liftOutFast()).until(() -> !sLift.wLiftMax.get()).andThen(new InstantCommand(() -> sLift.liftZero())).andThen(new InstantCommand(() -> sLift.eLift.reset())).andThen(new InstantCommand(() -> sLift.modLiftCycle())));
 
         RunCommand creepDrive = new RunCommand(() -> driveControllerCreep());
@@ -140,14 +142,13 @@ public class RobotContainer {
         A6.whileTrue(new RunCommand(() -> sLift.liftIn()).until(() -> sLift.eLift.get() > kLiftMaxPos).andThen(new InstantCommand(() -> sLift.liftZero()))).onFalse(new InstantCommand(() -> sLift.liftZero()));
         A7.whileTrue(new RunCommand(() -> sLift.liftOut()).until(() -> !sLift.wLiftMax.get()).andThen(new InstantCommand(() -> sLift.liftZero())).andThen(new InstantCommand(() -> sLift.eLift.reset())).andThen(new InstantCommand(() -> sLift.modLiftCycle()))).onFalse(new InstantCommand(() -> sLift.liftZero()));
         A8.whileTrue(new RunCommand(() -> sIntake.intakeForward())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
-        B1.whileTrue(new RunCommand(() -> sLift.liftInEmergency())).onFalse(new InstantCommand(() -> sLift.liftZero()));
-        B2.whileTrue(new InstantCommand(() -> System.out.println("B2")));
+        B1.onTrue(new InstantCommand(() -> sLift.preventDamage()).andThen(new InstantCommand(() -> sLift.liftZero())));
+        B2.onTrue(new InstantCommand(() -> sLift.defaultValues()).andThen(new InstantCommand(() -> sLift.liftZero())));
         B3.whileTrue(new InstantCommand(() -> System.out.println("B3")));
         B4.whileTrue(new InstantCommand(() -> System.out.println("B4")));
         B5.whileTrue(new RunCommand(() -> sIntake.intakeReverse())).onFalse(new InstantCommand(() -> sIntake.intakeZero()));
-        B6.whileTrue(new InstantCommand(() -> System.out.println("B6")));
-        B7.whileTrue(new InstantCommand(() -> System.out.println("B7")));
-        B7.onTrue(NamedCommands.getCommand("Print"));
+        B6.whileTrue(new RunCommand(() -> sLift.liftOutEmergency())).onFalse(new InstantCommand(() -> sLift.liftZero()));
+        B7.whileTrue(new RunCommand(() -> sLift.liftInEmergency())).onFalse(new InstantCommand(() -> sLift.liftZero()));
 
         sDrivetrain.registerTelemetry(logger::telemeterize);
     }
@@ -166,6 +167,10 @@ public class RobotContainer {
 
     public Lift getLift() {
         return sLift;
+    }
+
+    public Lighting getLighting() {
+        return sLighting;
     }
 
     public Shooter getShooter() {
@@ -345,15 +350,8 @@ public class RobotContainer {
     public static void namedCommands() {
         NamedCommands.registerCommand("LiftOut", new RunCommand(() -> sLift.liftOutFast()).until(() -> !sLift.wLiftMax.get()).andThen(new InstantCommand(() -> sLift.liftZero())).andThen(new InstantCommand(() -> sLift.eLift.reset())).andThen(new InstantCommand(() -> sLift.modLiftCycle())));
         NamedCommands.registerCommand("LiftIn450", new RunCommand(() -> sLift.liftZero()).withTimeout(2).andThen(new RunCommand(() -> sLift.liftIn()).until(() -> sLift.eLift.get() > kLiftShootPos)).andThen(new InstantCommand(() -> sLift.liftZero())));
-        NamedCommands.registerCommand("ShootStart", new ParallelCommandGroup(new RunCommand(() -> sShooter.shootVariable(-63)), new RunCommand(() -> sFeeder.feedReverse())).withTimeout(1).andThen(new ParallelCommandGroup(new RunCommand(() -> driveVision(0.0, 0.0, sVision.turnStationary)), new RunCommand(() -> sShooter.shootVariable(sVision.shootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80)))))));
-        NamedCommands.registerCommand("Shoot10", new ParallelCommandGroup(new RunCommand(() -> driveVision(0.0, 0.0, sVision.turnStationary)), new RunCommand(() -> sShooter.shootVariable(sVision.shootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80))))).withTimeout(6).andThen(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero()))));
-        NamedCommands.registerCommand("ShootStop", new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero())));
-        NamedCommands.registerCommand("IntakeRun1", new RunCommand(() -> sIntake.intakeForward()).withTimeout(1).andThen(new InstantCommand(() -> sIntake.intakeZero())));
-        NamedCommands.registerCommand("IntakeRun8", new RunCommand(() -> sIntake.intakeForward()).withTimeout(6).andThen(new InstantCommand(() -> sIntake.intakeZero())));
-        NamedCommands.registerCommand("IntakeRun5", new RunCommand(() -> sIntake.intakeForward()).withTimeout(5).andThen(new InstantCommand(() -> sIntake.intakeZero())));
+        NamedCommands.registerCommand("Shoot10", new ParallelCommandGroup(new RunCommand(() -> sLighting.lightOn()).withTimeout(0.75).andThen(new InstantCommand(() -> sLighting.lightOff())), new RunCommand(() -> driveVision(0.0, 0.0, sVision.turnStationary)), new RunCommand(() -> sShooter.shootVariable(sVision.shootingSpeed())), new InstantCommand(() -> sShooter.eShooter.reset()).andThen(new RunCommand(() -> sFeeder.feedZero()).until(() -> sShooter.eShooter.get() < -80000).andThen(new RunCommand(() -> sFeeder.feedVariable(-80))))).withTimeout(6).andThen(new ParallelCommandGroup(new InstantCommand(() -> sShooter.shootZero()), new InstantCommand(() -> sFeeder.feedZero()))));
         NamedCommands.registerCommand("IntakeRun", new RunCommand(() -> sIntake.intakeForward()));
-        NamedCommands.registerCommand("IntakeStop", new InstantCommand(() -> sIntake.intakeZero()));
-        NamedCommands.registerCommand("Print", new InstantCommand(() -> System.out.println("Works!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")));
         NamedCommands.registerCommand("Delay", new RunCommand(() -> sIntake.intakeZero()).withTimeout(2).andThen(new InstantCommand(() -> sIntake.intakeZero())));
     }
 }
