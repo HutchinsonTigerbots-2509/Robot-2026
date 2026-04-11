@@ -18,11 +18,16 @@ public class Lighting extends SubsystemBase {
 
   private PWM mLight0 = new PWM(0); // Motorcontroller powering a floodlight
 
+  private double on = 1;
   public void lightOn() {
-    mLight0.setSpeed(1);
+    mLight0.setSpeed(on);
   }
 
   public void lightOff() {
     mLight0.setSpeed(0);
+  }
+
+  public void noLight() {
+    on = 0;
   }
 }

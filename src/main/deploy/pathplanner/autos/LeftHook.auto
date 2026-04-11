@@ -60,31 +60,6 @@
               }
             ]
           }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot10"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "LiftIn450"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "LiftOut"
-          }
         }
       ]
     }

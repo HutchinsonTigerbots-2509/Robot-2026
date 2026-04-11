@@ -127,7 +127,7 @@ public class DrivetrainConstants {
     private static final int kFrontLeftDriveMotorId = 1;
     private static final int kFrontLeftSteerMotorId = 2;
     private static final int kFrontLeftEncoderId = 21;
-    private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.431640625);
+    private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.22900390625);
     private static final boolean kFrontLeftSteerMotorInverted = true;
     private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -138,7 +138,7 @@ public class DrivetrainConstants {
     private static final int kFrontRightDriveMotorId = 3;
     private static final int kFrontRightSteerMotorId = 4;
     private static final int kFrontRightEncoderId = 22;
-    private static final Angle kFrontRightEncoderOffset = Rotations.of(-0.134521484375);
+    private static final Angle kFrontRightEncoderOffset = Rotations.of(-0.134765625);
     private static final boolean kFrontRightSteerMotorInverted = true;
     private static final boolean kFrontRightEncoderInverted = false;
 
@@ -149,7 +149,7 @@ public class DrivetrainConstants {
     private static final int kBackLeftDriveMotorId = 5;
     private static final int kBackLeftSteerMotorId = 6;
     private static final int kBackLeftEncoderId = 23;
-    private static final Angle kBackLeftEncoderOffset = Rotations.of(-0.372802734375);
+    private static final Angle kBackLeftEncoderOffset = Rotations.of(-0.37255859375);
     private static final boolean kBackLeftSteerMotorInverted = true;
     private static final boolean kBackLeftEncoderInverted = false;
 
@@ -160,7 +160,7 @@ public class DrivetrainConstants {
     private static final int kBackRightDriveMotorId = 7;
     private static final int kBackRightSteerMotorId = 8;
     private static final int kBackRightEncoderId = 24;
-    private static final Angle kBackRightEncoderOffset = Rotations.of(-0.42626953125);
+    private static final Angle kBackRightEncoderOffset = Rotations.of(-0.427001953125);
     private static final boolean kBackRightSteerMotorInverted = true;
     private static final boolean kBackRightEncoderInverted = false;
 
@@ -190,7 +190,7 @@ public class DrivetrainConstants {
         );
 
     /**
-     * Creates a Drivetrain instance.
+     * Creates a CommandSwerveDrivetrain instance.
      * This should only be called once in your robot program,.
      */
     public static Drivetrain createDrivetrain() {

@@ -5,85 +5,72 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LeftLine1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "LiftOut"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot10"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "LiftIn450"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LeftLine2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "LiftOut"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot10"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "LiftIn450"
-                }
-              }
-            ]
+            "name": "Delay"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "LiftOut"
+            "name": "Delay"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RightHook1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "LiftOut"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot10"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "LiftIn450"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RightLine2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "LiftOut"
+                }
+              }
+            ]
           }
         }
       ]
